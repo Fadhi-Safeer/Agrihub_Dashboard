@@ -1,16 +1,43 @@
 // lib/widgets/camera_grid.dart
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/text_styles.dart';
 import '../utils/size_config.dart';
+import 'camera_feed.dart';
 
-class CameraGrid extends StatelessWidget {
-  final List<bool> cameraConnected =
-      List.generate(10, (index) => true); // Simulate camera connectivity status
+class CameraGrid extends StatefulWidget {
+  const CameraGrid({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _CameraGridState createState() => _CameraGridState();
+}
+
+class _CameraGridState extends State<CameraGrid> {
+  late List<CameraDescription> cameras;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCameras();
+  }
+
+  Future<void> _initializeCameras() async {
+    cameras = await availableCameras();
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context); // Initialize SizeConfig
+    SizeConfig().init(context);
+
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -18,14 +45,12 @@ class CameraGrid extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: SizeConfig.proportionateScreenWidth(2),
-            vertical: SizeConfig.proportionateScreenHeight(
-                0.2), // Reduced padding top and bottom
+            vertical: SizeConfig.proportionateScreenHeight(0.2),
           ),
           child: Text(
             'Live Camera Feed',
             style: TextStyle(
-              fontSize: SizeConfig.proportionateScreenWidth(
-                  2), // Smaller font size for heading
+              fontSize: SizeConfig.proportionateScreenWidth(2),
               fontWeight: FontWeight.bold,
               color: Colors.black,
             ),
@@ -36,13 +61,12 @@ class CameraGrid extends StatelessWidget {
             builder: (context, constraints) {
               double gridHeight = constraints.maxHeight;
               double gridWidth = constraints.maxWidth;
-              int crossAxisCount = 5; // Number of columns
-              double itemHeight =
-                  gridHeight / 2; // Two rows, so divide height by 2
+              int crossAxisCount = 5;
+              double itemHeight = gridHeight / 2;
               double itemWidth = gridWidth / crossAxisCount;
 
               return GridView.builder(
-                physics: NeverScrollableScrollPhysics(), // Disable scrolling
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: 10,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
@@ -54,16 +78,12 @@ class CameraGrid extends StatelessWidget {
                   return Container(
                     color: AppColors.purpleLight,
                     child: Center(
-                      child: cameraConnected[index]
-                          ? Text(
+                      child: index < cameras.length
+                          ? CameraFeed(camera: cameras[index])
+                          : Text(
                               'Camera ${index + 1}',
-                              style:
-                                  TextStyles.heading2, // Use defined text style
+                              style: TextStyles.heading2,
                               textAlign: TextAlign.center,
-                            )
-                          : Image.asset(
-                              'assets/images/camera_placeholder.png',
-                              fit: BoxFit.cover,
                             ),
                     ),
                   );
