@@ -1,5 +1,6 @@
 import 'package:agrihub_dashboard/theme/app_colors.dart';
 import 'package:agrihub_dashboard/theme/text_styles.dart';
+import 'package:agrihub_dashboard/widgets/graphs/bar_chart.dart';
 import 'package:flutter/material.dart';
 import '../widgets/camera_grid.dart';
 import '../widgets/graphs/time_series_line_chart.dart';
@@ -11,6 +12,9 @@ class ViewersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context); // Initialize SizeConfig
+
+    // Assuming we have only 1 camera for now
+    int availableCameras = 1;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +34,9 @@ class ViewersPage extends StatelessWidget {
                     child: Padding(
                       padding: EdgeInsets.all(
                           SizeConfig.proportionateScreenWidth(4)),
-                      child: CameraGrid(), // 10 Camera Widgets
+                      child: CameraGrid(
+                          availableCameras:
+                              availableCameras), // 10 Camera Widgets or placeholders
                     ),
                   ),
                   Expanded(
@@ -42,9 +48,7 @@ class ViewersPage extends StatelessWidget {
                         children: [
                           Expanded(child: TimeSeriesLineChart()),
                           Expanded(child: PieChartSample2()), // Pie Chart
-                          Expanded(
-                              child:
-                                  Placeholder()), // Placeholder for another chart
+                          Expanded(child: BarChartSample()), // Bar Chart
                         ],
                       ),
                     ),
