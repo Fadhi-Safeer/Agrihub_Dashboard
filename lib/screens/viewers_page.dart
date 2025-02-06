@@ -29,7 +29,7 @@ class ViewersPage extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              flex: 2, // 2 parts out of 3 for the camera grid
+              flex: 5, // Increased flex value for the main content area
               child: Column(
                 children: [
                   Expanded(
@@ -62,7 +62,7 @@ class ViewersPage extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 1, // 1 part out of 3 for the right panel
+              flex: 2, // Reduced flex value for the right panel
               child: RightPanel(), // Right Panel
             ),
           ],
