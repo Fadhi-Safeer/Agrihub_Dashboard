@@ -1,8 +1,5 @@
-import 'dart:async';
-import 'dart:convert';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../globals.dart'; // Import the globals.dart file
 
 class CameraFeed extends StatefulWidget {
   final int cameraId;
@@ -14,69 +11,52 @@ class CameraFeed extends StatefulWidget {
 }
 
 class _CameraFeedState extends State<CameraFeed> {
-  Timer? _timer;
-  String _prediction = "";
+  CameraController? _controller;
+  List<CameraDescription>? _cameras;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(seconds: 3), (timer) {
-      _fetchPrediction();
-    });
+    _initializeCamera();
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _fetchPrediction() async {
-    try {
-      // Create a multipart request
-      var request =
-          http.MultipartRequest('POST', Uri.parse('$backendUrl/predict'));
-      // Add a sample image file to the request
-      request.files.add(await http.MultipartFile.fromPath(
-          'file', 'path_to_your_sample_image.jpg'));
-
-      var response = await request.send();
-      if (response.statusCode == 200) {
-        String responseBody = await response.stream.bytesToString();
-        setState(() {
-          _prediction = json.decode(responseBody);
-        });
-      } else {
-        throw Exception('Failed to load prediction');
+  Future<void> _initializeCamera() async {
+    _cameras = await availableCameras();
+    if (_cameras!.isNotEmpty) {
+      _controller = CameraController(
+        _cameras![widget.cameraId],
+        ResolutionPreset.medium,
+      );
+      await _controller?.initialize();
+      if (mounted) {
+        setState(() {});
       }
-    } catch (e) {
-      print('Error fetching prediction: $e');
     }
   }
 
   @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Image.network(
-            '$backendUrl/stream',
-            errorBuilder: (context, error, stackTrace) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error, color: Colors.red),
-                    SizedBox(height: 8),
-                    Text('Failed to load image'),
-                  ],
-                ),
-              );
-            },
-          ),
+    if (_controller == null || !_controller!.value.isInitialized) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8.0),
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: SizedBox(
+          width: _controller!.value.previewSize!.width,
+          height: _controller!.value.previewSize!.height,
+          child: CameraPreview(_controller!),
         ),
-        Text('Prediction: $_prediction'),
-      ],
+      ),
     );
   }
 }

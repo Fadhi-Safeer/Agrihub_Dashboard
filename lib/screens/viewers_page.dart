@@ -7,14 +7,15 @@ import '../widgets/graphs/time_series_line_chart.dart';
 import '../widgets/graphs/pie_chart_sample2.dart';
 import '../widgets/right_panel.dart';
 import '../utils/size_config.dart';
+import '../utils/available_cameras.dart'; // Import the available cameras file
 
 class ViewersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context); // Initialize SizeConfig
 
-    // Assuming we have only 1 camera for now
-    int availableCameras = 1;
+    // Get the list of available cameras
+    List<int> availableCameras = getAvailableCameras();
 
     return Scaffold(
       appBar: AppBar(
@@ -38,7 +39,7 @@ class ViewersPage extends StatelessWidget {
                           SizeConfig.proportionateScreenWidth(4)),
                       child: CameraGrid(
                           availableCameras:
-                              availableCameras), // 10 Camera Widgets or placeholders
+                              availableCameras), // Camera Widgets or placeholders
                     ),
                   ),
                   Expanded(
