@@ -20,6 +20,7 @@ class ViewersPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('AI Crop Monitoring & Analysis Dashboard',
             style: TextStyles.heading2),
+        centerTitle: true,
         backgroundColor: AppColors.purpleDark,
       ),
       body: Container(
@@ -49,7 +50,7 @@ class ViewersPage extends StatelessWidget {
                         children: [
                           Expanded(child: TimeSeriesLineChart()),
                           Expanded(child: PieChartSample2()), // Pie Chart
-                          Expanded(child: BarChartSample()), // Bar Chart
+                          Expanded(child: GroupedBarChart()), // Bar Chart
                         ],
                       ),
                     ),
