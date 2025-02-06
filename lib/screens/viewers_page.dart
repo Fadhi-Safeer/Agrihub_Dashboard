@@ -29,24 +29,26 @@ class ViewersPage extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              flex: 3,
+              flex: 2, // 2 parts out of 3 for the camera grid
               child: Column(
                 children: [
                   Expanded(
-                    flex: 2,
+                    flex: 2, // 2 parts out of 3 for the camera grid
                     child: Padding(
                       padding: EdgeInsets.all(
-                          SizeConfig.proportionateScreenWidth(4)),
+                          SizeConfig.proportionateScreenWidth(
+                              4)), // Padding around the CameraGrid
                       child: CameraGrid(
                           availableCameras:
                               availableCameras), // Camera Widgets or placeholders
                     ),
                   ),
                   Expanded(
-                    flex: 1,
+                    flex: 1, // 1 part out of 3 for the graphs
                     child: Padding(
                       padding: EdgeInsets.all(
-                          SizeConfig.proportionateScreenWidth(4)),
+                          SizeConfig.proportionateScreenWidth(
+                              4)), // Padding around the graphs
                       child: Row(
                         children: [
                           Expanded(child: TimeSeriesLineChart()),
@@ -60,7 +62,7 @@ class ViewersPage extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 1,
+              flex: 1, // 1 part out of 3 for the right panel
               child: RightPanel(), // Right Panel
             ),
           ],
