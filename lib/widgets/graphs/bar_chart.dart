@@ -21,7 +21,7 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Grouped Bar Chart',
+              'Resource Usage Optimization',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             SizedBox(height: 10),
@@ -77,13 +77,13 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                               getTitlesWidget: (value, meta) {
                                 switch (value.toInt()) {
                                   case 0:
-                                    return Text('Group 1',
+                                    return Text('Week 1',
                                         style: TextStyle(color: Colors.white));
                                   case 1:
-                                    return Text('Group 2',
+                                    return Text('Week 2',
                                         style: TextStyle(color: Colors.white));
                                   case 2:
-                                    return Text('Group 3',
+                                    return Text('Week 3',
                                         style: TextStyle(color: Colors.white));
                                   default:
                                     return Text('');
@@ -99,19 +99,19 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                             barsSpace: 0,
                             barRods: [
                               BarChartRodData(
-                                  toY: 20,
+                                  toY: 17,
                                   color: Color(0xFF2ADAD4),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 22,
                                   color: Color(0xFF3B82F6),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 18,
                                   color: Color(0xFF9E42DE),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                             ],
                             showingTooltipIndicators:
@@ -124,17 +124,17 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                               BarChartRodData(
                                   toY: 15,
                                   color: Color(0xFF2ADAD4),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
-                                  toY: 20,
+                                  toY: 17,
                                   color: Color(0xFF3B82F6),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 18,
                                   color: Color(0xFF9E42DE),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                             ],
                             showingTooltipIndicators:
@@ -147,17 +147,17 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                               BarChartRodData(
                                   toY: 25,
                                   color: Color(0xFF2ADAD4),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 28,
                                   color: Color(0xFF3B82F6),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
-                                  toY: 20,
+                                  toY: 17,
                                   color: Color(0xFF9E42DE),
-                                  width: 20,
+                                  width: 17,
                                   borderRadius: BorderRadius.zero),
                             ],
                             showingTooltipIndicators:
@@ -174,7 +174,7 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                     children: const <Widget>[
                       Indicator(
                         color: Color(0xFF2ADAD4),
-                        text: 'Data 1',
+                        text: 'Moisture',
                         isSquare: true,
                       ),
                       SizedBox(
@@ -182,7 +182,7 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                       ),
                       Indicator(
                         color: Color(0xFF3B82F6),
-                        text: 'Data 2',
+                        text: 'Nutrients',
                         isSquare: true,
                       ),
                       SizedBox(
@@ -190,7 +190,7 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                       ),
                       Indicator(
                         color: Color(0xFF9E42DE),
-                        text: 'Data 3',
+                        text: 'Energy',
                         isSquare: true,
                       ),
                       SizedBox(

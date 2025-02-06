@@ -59,7 +59,7 @@ class PieChart2State extends State<PieChartSample2> {
               children: const <Widget>[
                 Indicator(
                   color: Color(0xFF9E42DE),
-                  text: 'First',
+                  text: 'Early Stage',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -67,7 +67,7 @@ class PieChart2State extends State<PieChartSample2> {
                 ),
                 Indicator(
                   color: Color(0xFF3B82F6),
-                  text: 'Second',
+                  text: 'Seedling Stage',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -75,7 +75,7 @@ class PieChart2State extends State<PieChartSample2> {
                 ),
                 Indicator(
                   color: Color(0xFF2ADAD4),
-                  text: 'Third',
+                  text: 'Leafy Growth',
                   isSquare: true,
                 ),
                 SizedBox(
@@ -83,7 +83,7 @@ class PieChart2State extends State<PieChartSample2> {
                 ),
                 Indicator(
                   color: Color(0xFFD1C4E9),
-                  text: 'Fourth',
+                  text: 'Harvest Stage',
                   isSquare: true,
                 ),
                 SizedBox(
