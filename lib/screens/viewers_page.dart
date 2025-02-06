@@ -18,7 +18,8 @@ class ViewersPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('YOLO Detection Dashboard', style: TextStyles.heading2),
+        title: Text('AI Crop Monitoring & Analysis Dashboard',
+            style: TextStyles.heading2),
         backgroundColor: AppColors.purpleDark,
       ),
       body: Container(
