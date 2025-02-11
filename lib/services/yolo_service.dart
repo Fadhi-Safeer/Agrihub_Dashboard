@@ -1,30 +1,31 @@
-// lib/services/yolo_service.dart
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
-class YoloService {
-  final String baseUrl;
-
-  YoloService(this.baseUrl);
-
-  Future<List<dynamic>> predict(XFile image) async {
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$baseUrl/predict/'),
+class YOLOService {
+  static WebSocketChannel connect() {
+    return WebSocketChannel.connect(
+      Uri.parse('ws://127.0.0.1:8000/ws/detect'),
     );
+  }
 
-    request.files.add(
-      await http.MultipartFile.fromPath('file', image.path),
+  static void listen(
+    WebSocketChannel channel, {
+    required Function(String) onData,
+    required Function(dynamic) onError,
+    required Function() onDone,
+  }) {
+    channel.stream.listen(
+      (event) => onData(event as String),
+      onError: onError,
+      onDone: onDone,
     );
+  }
 
-    final response = await request.send();
+  static void sendImage(WebSocketChannel channel, List<int> bytes) {
+    channel.sink.add(bytes);
+  }
 
-    if (response.statusCode == 200) {
-      final responseData = await response.stream.bytesToString();
-      return json.decode(responseData);
-    } else {
-      throw Exception('Failed to get prediction');
-    }
+  static void close(WebSocketChannel channel) {
+    channel.sink.close(status.goingAway);
   }
 }

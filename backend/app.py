@@ -1,59 +1,47 @@
-from fastapi import FastAPI, File, UploadFile
-from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
-import cv2
-from PIL import Image
-from io import BytesIO
+import asyncio
+import websockets
 from ultralytics import YOLO
+import cv2
 import numpy as np
 
-app = FastAPI()
+# Load YOLO model
+model = YOLO('yolov8x.pt')  # Ensure you have the correct path to your YOLOv8 model
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins, change this to specific origins if needed
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+async def process_frame(websocket):
+    async for message in websocket:
+        try:
+            # Decode the image
+            nparr = np.frombuffer(message, np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-# Load YOLOv8 model
-model = YOLO('yolov8s.pt')  # Replace with your YOLO model path
+            # Perform YOLO object detection
+            results = model.predict(
+                source=image,
+                imgsz=640,
+                device='cpu',  # Use 'cuda' for GPU
+                verbose=False
+            )
 
-@app.post("/predict/")
-async def predict(file: UploadFile = File(...)):
-    contents = await file.read()
-    image = Image.open(BytesIO(contents))
+            # Process the detection results
+            bounding_boxes = []
+            for result in results:
+                if result.boxes is not None:
+                    for box in result.boxes:
+                        x1, y1, x2, y2 = box.xyxy[0]
+                        x1, y1, x2, y2 = int(x1.item()), int(y1.item()), int(x2.item()), int(y2.item())
+                        class_id = int(box.cls.item())
+                        if class_id == 0:  # Class 0 is 'person' in COCO dataset
+                            bounding_boxes.append([x1, y1, x2, y2])
 
-    # Convert image to numpy array
-    image_np = np.array(image)
+            # Send back the bounding box data
+            await websocket.send(str(bounding_boxes))
+        except Exception as e:
+            print(f"Error processing frame: {e}")
 
-    # Perform prediction
-    results = model(image_np)
-
-    # Convert results to JSON
-    predictions = results.pandas().xyxy[0].to_json(orient="records")
-
-    return predictions
-
-@app.get("/stream/")
-async def stream():
-    cap = cv2.VideoCapture(0)  # Open the default camera
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
-
-        # Convert frame to JPEG
-        _, jpeg = cv2.imencode('.jpg', frame)
-        frame_bytes = jpeg.tobytes()
-
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
-
-    cap.release()
+async def main():
+    async with websockets.serve(process_frame, "127.0.0.1", 8000):
+        print("WebSocket server started at ws://127.0.0.1:8000/ws/detect")
+        await asyncio.Future()  # Run forever
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    asyncio.run(main())
