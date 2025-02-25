@@ -1,3 +1,4 @@
+import 'package:agrihub_dashboard/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class BoundingBoxPainter extends CustomPainter {
@@ -14,7 +15,7 @@ class BoundingBoxPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.red
+      ..color = AppColors.neonGreen
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
