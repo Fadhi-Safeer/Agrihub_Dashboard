@@ -8,9 +8,9 @@ class GroupedBarChart extends StatefulWidget {
   _GroupedBarChartState createState() => _GroupedBarChartState();
 }
 
-Color colour1 = AppColors.neonCyan;
-Color colour2 = AppColors.neonPink;
-Color colour3 = AppColors.neonOrange;
+Color colour1 = AppColors.graphColor1;
+Color colour2 = AppColors.graphColor2;
+Color colour3 = AppColors.graphColor3;
 
 class _GroupedBarChartState extends State<GroupedBarChart> {
   int touchedGroupIndex = -1;

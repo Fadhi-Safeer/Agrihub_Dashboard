@@ -46,7 +46,7 @@ class TimeSeriesLineChart extends StatelessWidget {
                     FlSpot(4, 20),
                   ],
                   isCurved: false, // Set to false to make lines straight
-                  color: AppColors.neonCyan, // Use specified color
+                  color: AppColors.graphColor1, // Use specified color
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(show: true),
@@ -61,7 +61,7 @@ class TimeSeriesLineChart extends StatelessWidget {
                     FlSpot(4, 15),
                   ],
                   isCurved: false, // Set to false to make lines straight
-                  color: AppColors.neonPink, // Use specified color
+                  color: AppColors.graphColor2, // Use specified color
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(show: true),
@@ -76,7 +76,7 @@ class TimeSeriesLineChart extends StatelessWidget {
                     FlSpot(4, 12),
                   ],
                   isCurved: false, // Set to false to make lines straight
-                  color: AppColors.neonOrange, // Use specified color
+                  color: AppColors.graphColor3, // Use specified color
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(show: true),

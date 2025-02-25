@@ -59,7 +59,7 @@ class PieChart2State extends State<PieChartSample2> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const <Widget>[
                 Indicator(
-                  color: AppColors.neonCyan,
+                  color: AppColors.graphColor1,
                   text: 'Early Stage',
                   isSquare: true,
                 ),
@@ -67,7 +67,7 @@ class PieChart2State extends State<PieChartSample2> {
                   height: 4,
                 ),
                 Indicator(
-                  color: AppColors.neonGreen,
+                  color: AppColors.graphColor2,
                   text: 'Seedling Stage',
                   isSquare: true,
                 ),
@@ -75,7 +75,7 @@ class PieChart2State extends State<PieChartSample2> {
                   height: 4,
                 ),
                 Indicator(
-                  color: AppColors.neonOrange,
+                  color: AppColors.graphColor3,
                   text: 'Leafy Growth',
                   isSquare: true,
                 ),
@@ -83,7 +83,7 @@ class PieChart2State extends State<PieChartSample2> {
                   height: 4,
                 ),
                 Indicator(
-                  color: AppColors.neonPurple,
+                  color: AppColors.graphColor4,
                   text: 'Harvest Stage',
                   isSquare: true,
                 ),
@@ -110,7 +110,7 @@ class PieChart2State extends State<PieChartSample2> {
       switch (i) {
         case 0:
           return PieChartSectionData(
-            color: AppColors.neonCyan,
+            color: AppColors.graphColor1,
             value: 40,
             title: '40%',
             radius: radius,
@@ -123,7 +123,7 @@ class PieChart2State extends State<PieChartSample2> {
           );
         case 1:
           return PieChartSectionData(
-            color: AppColors.neonGreen,
+            color: AppColors.graphColor2,
             value: 30,
             title: '30%',
             radius: radius,
@@ -136,7 +136,7 @@ class PieChart2State extends State<PieChartSample2> {
           );
         case 2:
           return PieChartSectionData(
-            color: AppColors.neonOrange,
+            color: AppColors.graphColor3,
             value: 15,
             title: '15%',
             radius: radius,
@@ -149,7 +149,7 @@ class PieChart2State extends State<PieChartSample2> {
           );
         case 3:
           return PieChartSectionData(
-            color: AppColors.neonPurple,
+            color: AppColors.graphColor4,
             value: 15,
             title: '15%',
             radius: radius,
