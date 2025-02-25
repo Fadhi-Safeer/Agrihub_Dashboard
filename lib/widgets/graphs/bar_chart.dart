@@ -1,10 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../theme/app_colors.dart';
+
 class GroupedBarChart extends StatefulWidget {
   @override
   _GroupedBarChartState createState() => _GroupedBarChartState();
 }
+
+Color colour1 = AppColors.neonCyan;
+Color colour2 = AppColors.neonPink;
+Color colour3 = AppColors.neonOrange;
 
 class _GroupedBarChartState extends State<GroupedBarChart> {
   int touchedGroupIndex = -1;
@@ -100,17 +106,17 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                             barRods: [
                               BarChartRodData(
                                   toY: 17,
-                                  color: Color(0xFF2ADAD4),
+                                  color: colour1,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 22,
-                                  color: Color(0xFF3B82F6),
+                                  color: colour2,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 18,
-                                  color: Color(0xFF9E42DE),
+                                  color: colour3,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                             ],
@@ -123,17 +129,17 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                             barRods: [
                               BarChartRodData(
                                   toY: 15,
-                                  color: Color(0xFF2ADAD4),
+                                  color: colour1,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 17,
-                                  color: Color(0xFF3B82F6),
+                                  color: colour2,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 18,
-                                  color: Color(0xFF9E42DE),
+                                  color: colour3,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                             ],
@@ -146,17 +152,17 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                             barRods: [
                               BarChartRodData(
                                   toY: 25,
-                                  color: Color(0xFF2ADAD4),
+                                  color: colour1,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 28,
-                                  color: Color(0xFF3B82F6),
+                                  color: colour2,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                               BarChartRodData(
                                   toY: 17,
-                                  color: Color(0xFF9E42DE),
+                                  color: colour3,
                                   width: 17,
                                   borderRadius: BorderRadius.zero),
                             ],
@@ -171,29 +177,29 @@ class _GroupedBarChartState extends State<GroupedBarChart> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const <Widget>[
+                    children: <Widget>[
                       Indicator(
-                        color: Color(0xFF2ADAD4),
+                        color: colour1,
                         text: 'Moisture',
                         isSquare: true,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 4,
                       ),
                       Indicator(
-                        color: Color(0xFF3B82F6),
+                        color: colour2,
                         text: 'Nutrients',
                         isSquare: true,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 4,
                       ),
                       Indicator(
-                        color: Color(0xFF9E42DE),
+                        color: colour3,
                         text: 'Energy',
                         isSquare: true,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 18,
                       ),
                     ],

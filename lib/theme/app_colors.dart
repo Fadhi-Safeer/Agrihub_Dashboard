@@ -20,6 +20,7 @@ class AppColors {
   static const Color neonPink = Color(0xFFFF4081); // Neon Pink for Highlights
   static const Color neonOrange =
       Color(0xFFFF9800); // Orange for Contrast in Graphs
+  static const Color neonPurple = Color(0xFFD500F9);
 
   // Buttons & Interactive Elements
   static const Color buttonPrimary =

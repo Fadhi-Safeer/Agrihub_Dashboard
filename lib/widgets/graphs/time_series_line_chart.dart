@@ -1,3 +1,4 @@
+import 'package:agrihub_dashboard/theme/app_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class TimeSeriesLineChart extends StatelessWidget {
                     FlSpot(4, 20),
                   ],
                   isCurved: false, // Set to false to make lines straight
-                  color: Color(0xFF2ADAD4), // Use specified color
+                  color: AppColors.neonCyan, // Use specified color
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(show: true),
@@ -60,7 +61,7 @@ class TimeSeriesLineChart extends StatelessWidget {
                     FlSpot(4, 15),
                   ],
                   isCurved: false, // Set to false to make lines straight
-                  color: Color(0xFF3B82F6), // Use specified color
+                  color: AppColors.neonPink, // Use specified color
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(show: true),
@@ -75,7 +76,7 @@ class TimeSeriesLineChart extends StatelessWidget {
                     FlSpot(4, 12),
                   ],
                   isCurved: false, // Set to false to make lines straight
-                  color: Color(0xFF9E42DE), // Use specified color
+                  color: AppColors.neonOrange, // Use specified color
                   barWidth: 3,
                   isStrokeCapRound: true,
                   dotData: FlDotData(show: true),

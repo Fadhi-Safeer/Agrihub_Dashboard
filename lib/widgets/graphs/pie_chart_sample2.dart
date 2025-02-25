@@ -1,3 +1,4 @@
+import 'package:agrihub_dashboard/theme/app_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -58,7 +59,7 @@ class PieChart2State extends State<PieChartSample2> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const <Widget>[
                 Indicator(
-                  color: Color(0xFF9E42DE),
+                  color: AppColors.neonCyan,
                   text: 'Early Stage',
                   isSquare: true,
                 ),
@@ -66,7 +67,7 @@ class PieChart2State extends State<PieChartSample2> {
                   height: 4,
                 ),
                 Indicator(
-                  color: Color(0xFF3B82F6),
+                  color: AppColors.neonGreen,
                   text: 'Seedling Stage',
                   isSquare: true,
                 ),
@@ -74,7 +75,7 @@ class PieChart2State extends State<PieChartSample2> {
                   height: 4,
                 ),
                 Indicator(
-                  color: Color(0xFF2ADAD4),
+                  color: AppColors.neonOrange,
                   text: 'Leafy Growth',
                   isSquare: true,
                 ),
@@ -82,7 +83,7 @@ class PieChart2State extends State<PieChartSample2> {
                   height: 4,
                 ),
                 Indicator(
-                  color: Color(0xFFD1C4E9),
+                  color: AppColors.neonPurple,
                   text: 'Harvest Stage',
                   isSquare: true,
                 ),
@@ -109,7 +110,7 @@ class PieChart2State extends State<PieChartSample2> {
       switch (i) {
         case 0:
           return PieChartSectionData(
-            color: const Color(0xFF9E42DE),
+            color: AppColors.neonCyan,
             value: 40,
             title: '40%',
             radius: radius,
@@ -122,7 +123,7 @@ class PieChart2State extends State<PieChartSample2> {
           );
         case 1:
           return PieChartSectionData(
-            color: const Color(0xFF3B82F6),
+            color: AppColors.neonGreen,
             value: 30,
             title: '30%',
             radius: radius,
@@ -135,7 +136,7 @@ class PieChart2State extends State<PieChartSample2> {
           );
         case 2:
           return PieChartSectionData(
-            color: const Color(0xFF2ADAD4),
+            color: AppColors.neonOrange,
             value: 15,
             title: '15%',
             radius: radius,
@@ -148,7 +149,7 @@ class PieChart2State extends State<PieChartSample2> {
           );
         case 3:
           return PieChartSectionData(
-            color: const Color(0xFFD1C4E9),
+            color: AppColors.neonPurple,
             value: 15,
             title: '15%',
             radius: radius,
