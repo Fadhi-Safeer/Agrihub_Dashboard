@@ -1,46 +1,33 @@
 // lib/resource/text_styles.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 
 class TextStyles {
-  // Main Heading (Futuristic Orbitron)
+  // 🌟 Main Heading (Futuristic Glow Effect - Orbitron)
   static TextStyle mainHeading = GoogleFonts.orbitron(
-    fontSize: 32,
+    fontSize: 34, // Slightly larger for impact
     fontWeight: FontWeight.bold,
-    color: Colors.white,
-    letterSpacing: 1.5,
+    color: AppColors.textColor, // Soft White for readability
+    letterSpacing: 2.0, // Increased spacing for a sleek look
     shadows: [
       Shadow(
-        color: Colors.blueAccent.withOpacity(0.8),
+        color: AppColors.neonCyan.withOpacity(0.7), // Cyan Glow
+        blurRadius: 15,
+      ),
+      Shadow(
+        color: AppColors.neonGreen.withOpacity(0.5), // Secondary Green Glow
         blurRadius: 10,
       ),
     ],
   );
 
-  // Camera Text (Bright neon Rajdhani)
-  static TextStyle cameraText = GoogleFonts.rajdhani(
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    color: Colors.cyanAccent,
-    shadows: [
-      Shadow(
-        color: Colors.cyanAccent.withOpacity(0.9),
-        blurRadius: 15,
-      ),
-    ],
-  );
-
-  // Right Panel Text (Minimalist Quantico)
-  static TextStyle rightPanelText = GoogleFonts.quantico(
-    fontSize: 20,
-    fontWeight: FontWeight.w500,
-    color: Colors.white70,
-  );
-
-  // Graph Text (Subtle & Clean)
-  static TextStyle graphText = GoogleFonts.orbitron(
-    fontSize: 18,
-    fontWeight: FontWeight.normal,
-    color: Colors.white60,
+  // 🔹 Right Panel Heading (Sleek & Minimalist - Quantico)
+  static TextStyle rightPanelHeadingText = GoogleFonts.quantico(
+    fontSize: 22, // Slightly bigger for section headers
+    fontWeight: FontWeight.w600, // Stronger weight for importance
+    color: AppColors.textColor
+        .withOpacity(0.85), // Softer white for better contrast
+    letterSpacing: 1.2, // Balanced spacing
   );
 }

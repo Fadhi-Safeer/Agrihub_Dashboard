@@ -2,6 +2,8 @@
 import 'package:agrihub_dashboard/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
+import '../theme/text_styles.dart';
+
 class RightPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class RightPanel extends StatelessWidget {
               child: Center(
                 child: Text(
                   'Right Panel Content',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyles.rightPanelHeadingText,
                 ),
               ),
             ),
