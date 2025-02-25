@@ -14,7 +14,8 @@ dependencies:
   web_socket_channel: ^2.2.0
   image_picker: ^1.1.2
   fl_chart: ^0.70.2
-
+  google_fonts: ^4.0.4
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -24,3 +25,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/No Camera.png

@@ -13,8 +13,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Agrihub Dashboard',
       theme: ThemeData(
-        primaryColor: AppColors.purpleDark,
-        scaffoldBackgroundColor: AppColors.backgroundColor,
+        primaryColor: AppColors.topBar,
+        scaffoldBackgroundColor: AppColors.background,
       ),
       home: ViewersPage(),
     );

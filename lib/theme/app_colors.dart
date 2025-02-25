@@ -1,10 +1,33 @@
-// lib/resource/app_colors.dart
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const Color purpleDark = Color(0xFF4A148C);
-  static const Color purpleLight = Color(0xFF7B1FA2);
-  static const Color backgroundColor = Color(0xFFF3E5F5);
-  static const Color orange = Color(0xFFFFA726);
-  static const Color red = Color(0XFFf44336);
+  // Main Colors
+  static const Color background = Color(0xFF121212); // Dark Black-Grey
+  static const Color topBar = Color(0xFF311B92); // Indigo Purple
+  static const Color rightPanel = Color(0xFF5E35B1); // Deep Purple
+
+  // Camera & UI Elements
+  static const Color cameraBG = Color(0xFF1A1A2E); // Dark Blue-Black
+
+  // Text Colors
+  static const Color textColor = Color(0xFFE0E0E0); // Soft White
+  static const Color subTextColor = Color(0xFFB0BEC5); // Muted Grey-Blue
+
+  // Detection & Graph Colors
+  static const Color neonGreen =
+      Color(0xFF39FF14); // Bright Lime Green (YOLO Boxes)
+  static const Color neonCyan = Color(0xFF29B6F6); // Cyan for Graphs
+  static const Color neonPink = Color(0xFFFF4081); // Neon Pink for Highlights
+  static const Color neonOrange =
+      Color(0xFFFF9800); // Orange for Contrast in Graphs
+
+  // Buttons & Interactive Elements
+  static const Color buttonPrimary =
+      Color(0xFFD500F9); // Neon Purple for Buttons
+  static const Color buttonHover =
+      Color(0xFFFFEA00); // Neon Yellow Hover Effect
+  static const Color borderColor = Color(0xFF64FFDA); // Light Aqua Border
+
+  // Shadows & Glows
+  static const Color shadowColor = Color(0xFF00E5FF); // Electric Cyan Shadow
 }

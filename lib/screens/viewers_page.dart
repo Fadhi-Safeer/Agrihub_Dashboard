@@ -20,12 +20,12 @@ class ViewersPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('AI Crop Monitoring & Analysis Dashboard',
-            style: TextStyles.heading2),
+            style: TextStyles.mainHeading),
         centerTitle: true,
-        backgroundColor: AppColors.purpleDark,
+        backgroundColor: AppColors.topBar,
       ),
       body: Container(
-        color: const Color.fromARGB(255, 0, 0, 0),
+        color: AppColors.background,
         child: Row(
           children: [
             Expanded(
