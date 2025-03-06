@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 # Load YOLO model
-model = YOLO('yolov8x.pt')  # Ensure you have the correct path to your YOLOv8 model
+model = YOLO('backend/LETTUCE_DETECTION_MODEL.pt')  # Ensure you have the correct path to your YOLOv8 model
 
 async def process_frame(websocket):
     async for message in websocket:
