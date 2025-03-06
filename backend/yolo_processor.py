@@ -3,7 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 
 # Load YOLO model
-model = YOLO('backend/LETTUCE_DETECTION_MODEL.pt')  # Ensure you have the correct path to your YOLOv8 model
+model = YOLO('backend/Models/LETTUCE_DETECTION_MODEL.pt')  # Ensure you have the correct path to your YOLOv8 model
 
 async def process_frame(websocket):
     async for message in websocket:
