@@ -5,10 +5,10 @@ import numpy as np
 from ultralytics import YOLO
 
 # Load YOLO model
-model = YOLO('backend/LETTUCE_DETECTION_MODEL.pt')  # Ensure you have the correct path to your YOLOv8 model
-growth_model = YOLO('backend/GROWTH_CLASSIFICATION_MODEL.pt')
-disease_model = YOLO('backend/DISEASE_CLASSIFICATION_MODEL.pt')
-health_model = YOLO('backend/HEALTH_CLASSIFICATION_MODEL.pt')
+model = YOLO('backend/LETTUCE_DETECTION_MODEL.pt') 
+growth_model = YOLO('backend/Models/GROWTH_CLASSIFICATION_MODEL.pt')
+disease_model = YOLO('backend/Models/DISEASE_CLASSIFICATION_MODEL.pt')
+health_model = YOLO('backend/Models/HEALTH_CLASSIFICATION_MODEL.pt')
 
 async def process_frame(websocket):
     async for message in websocket:
