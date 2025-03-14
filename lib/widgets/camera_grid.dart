@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'camera_feed.dart';
 
 class CameraGrid extends StatelessWidget {
-  final List<int> availableCameras;
+  final List<String> availableCameras;
 
   const CameraGrid({Key? key, required this.availableCameras})
       : super(key: key);
@@ -18,24 +18,34 @@ class CameraGrid extends StatelessWidget {
         crossAxisSpacing: 4.0,
         childAspectRatio: 1.0, // Adjusted aspect ratio for taller boxes
       ),
-      itemCount: 10, // 10 cameras or placeholders
+      itemCount: 10, // Total of 10 slots
       itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: AppColors.cameraBG, // Background color from app theme
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Center(
-            child: index < availableCameras.length
-                ? CameraFeed(cameraId: availableCameras[index])
-                : FittedBox(
-                    fit: BoxFit.contain,
-                    child: Image.asset(
-                      'assets/No Camera.png',
-                    ),
-                  ),
-          ),
-        );
+        if (index < availableCameras.length) {
+          // Display the camera feed for the available camera URL
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.cameraBG,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Center(
+              child: CameraFeed(cameraUrl: availableCameras[index]),
+            ),
+          );
+        } else {
+          // Display a placeholder image for unavailable cameras
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.cameraBG,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Image.asset('assets/No Camera.png'),
+              ),
+            ),
+          );
+        }
       },
     );
   }

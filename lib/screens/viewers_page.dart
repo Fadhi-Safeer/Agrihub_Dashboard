@@ -7,15 +7,13 @@ import '../widgets/graphs/time_series_line_chart.dart';
 import '../widgets/graphs/pie_chart_sample2.dart';
 import '../widgets/right_panel.dart';
 import '../utils/size_config.dart';
-import '../utils/available_cameras.dart'; // Import the available cameras file
+import '../utils/available_cameras.dart';
 
 class ViewersPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context); // Initialize SizeConfig
-
-    // Get the list of available cameras
-    List<int> availableCameras = getAvailableCameras();
+    SizeConfig().init(context);
+    List<String> availableCameras = getAvailableCameras();
 
     return Scaffold(
       appBar: AppBar(
@@ -29,31 +27,27 @@ class ViewersPage extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              flex: 5, // Increased flex value for the main content area
+              flex: 5,
               child: Column(
                 children: [
                   Expanded(
-                    flex: 2, // 2 parts out of 3 for the camera grid
+                    flex: 2,
                     child: Padding(
                       padding: EdgeInsets.all(
-                          SizeConfig.proportionateScreenWidth(
-                              4)), // Padding around the CameraGrid
-                      child: CameraGrid(
-                          availableCameras:
-                              availableCameras), // Camera Widgets or placeholders
+                          SizeConfig.proportionateScreenWidth(4)),
+                      child: CameraGrid(availableCameras: availableCameras),
                     ),
                   ),
                   Expanded(
-                    flex: 1, // 1 part out of 3 for the graphs
+                    flex: 1,
                     child: Padding(
                       padding: EdgeInsets.all(
-                          SizeConfig.proportionateScreenWidth(
-                              4)), // Padding around the graphs
+                          SizeConfig.proportionateScreenWidth(4)),
                       child: Row(
                         children: [
                           Expanded(child: TimeSeriesLineChart()),
-                          Expanded(child: PieChartSample2()), // Pie Chart
-                          Expanded(child: GroupedBarChart()), // Bar Chart
+                          Expanded(child: PieChartSample2()),
+                          Expanded(child: GroupedBarChart()),
                         ],
                       ),
                     ),
@@ -62,8 +56,8 @@ class ViewersPage extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 2, // Reduced flex value for the right panel
-              child: RightPanel(), // Right Panel
+              flex: 2,
+              child: RightPanel(),
             ),
           ],
         ),
