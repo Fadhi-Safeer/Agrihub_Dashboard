@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
@@ -22,7 +23,8 @@ class YOLOService {
   }
 
   static void sendImage(WebSocketChannel channel, List<int> bytes) {
-    channel.sink.add(bytes);
+    print('Sending image data to backend...');
+    channel.sink.add(Uint8List.fromList(bytes));
   }
 
   static void close(WebSocketChannel channel) {
