@@ -1,84 +1,80 @@
-#WEBSOCKET APPROACH
-
 import cv2
-import numpy as np
 from ultralytics import YOLO
 
-# Load YOLO model
-model = YOLO('backend/LETTUCE_DETECTION_MODEL.pt') 
-growth_model = YOLO('backend/Models/GROWTH_CLASSIFICATION_MODEL.pt')
-disease_model = YOLO('backend/Models/DISEASE_CLASSIFICATION_MODEL.pt')
-health_model = YOLO('backend/Models/HEALTH_CLASSIFICATION_MODEL.pt')
+# Function to capture frames from the HLS stream
+def capture_frame_from_hls(hls_url):
+    cap = cv2.VideoCapture(hls_url)
+    if not cap.isOpened():
+        raise Exception(f"Failed to open HLS stream from {hls_url}")
+    return cap
 
-async def process_frame(websocket):
-    async for message in websocket:
-        try:
-            # Decode the image
-            nparr = np.frombuffer(message, np.uint8)
-            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+# Function to perform prediction on the frame and draw bounding boxes
+def yolo_process(frame, model):
+    results = model.predict(source=frame, imgsz=640, device='cpu', verbose=False)
+  
+    for result in results:
+        for box in result.boxes.data:
+            x1, y1, x2, y2 = box[:4]  # Extract coordinates
 
-            # Perform YOLO object detection
-            results = model.predict(
-                source=image,
-                imgsz=640,
-                device='cpu',  # Use 'cuda' for GPU
-                verbose=False
-            )
+            # Ensure coordinates are valid
+            if None in (x1, y1, x2, y2):
+                continue
 
-            # Process the detection results
-            bounding_boxes = []
-            classifications = []
-            for result in results:
-                if result.boxes is not None:
-                    for box in result.boxes:
-                        x1, y1, x2, y2 = box.xyxy[0]
-                        x1, y1, x2, y2 = int(x1.item()), int(y1.item()), int(x2.item()), int(y2.item())
-                        class_id = int(box.cls.item())
-                        if class_id == 0:  # Class 0 is 'person' in COCO dataset
-                            bounding_boxes.append([x1, y1, x2, y2])
-                            cropped_image = image[y1:y2, x1:x2]
-                            classification_data = classify_cropped_image(cropped_image)
-                            classifications.append(classification_data)
+            # Convert coordinates to integers
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
 
-            # Send back the bounding box data and classification data
-            response = {
-                "bounding_boxes": bounding_boxes,
-                "classifications": classifications
-            }
-            await websocket.send(str(response))
-        except Exception as e:
-            print(f"Error processing frame: {e}")
+            # Draw bounding box on the frame
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)  # Green box
 
-def classify_cropped_image(cropped_image):
-    # Perform classification for growth stage
-    growth_results = growth_model.predict(
-        source=cropped_image,
-        imgsz=640,
-        device='cpu',  # Use 'cuda' for GPU
-        verbose=False
-    )
-    growth_stage = growth_results[0].names[growth_results[0].cls[0]]
+            # Draw center point
+            center_x = int((x1 + x2) / 2)
+            center_y = int((y1 + y2) / 2)
+            cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)  # Red dot
 
-    # Perform classification for disease
-    disease_results = disease_model.predict(
-        source=cropped_image,
-        imgsz=640,
-        device='cpu',  # Use 'cuda' for GPU
-        verbose=False
-    )
-    disease_stage = disease_results[0].names[disease_results[0].cls[0]]
+    return frame
 
-    # Perform classification for health
-    health_results = health_model.predict(
-        source=cropped_image,
-        imgsz=640,
-        device='cpu',  # Use 'cuda' for GPU
-        verbose=False
-    )
-    health_stage = health_results[0].names[health_results[0].cls[0]]
+# Main function to process and display video feeds
+def main():
+    # Load YOLO model
+    model = YOLO('backend/Models/LETTUCE_DETECTION_MODEL.pt')
 
-    return {
-        "growth_stage": growth_stage,
-        "disease_stage": disease_stage,
-        "health_stage": health_stage
-}
+    # HLS stream URLs
+    hls_urls = [
+        "http://localhost:8080/camera1.m3u8",
+        "http://localhost:8080/camera2.m3u8"
+    ]
+
+    # Open video capture for each stream
+    caps = [capture_frame_from_hls(url) for url in hls_urls]
+
+    while True:
+        frames = []
+        for i, cap in enumerate(caps):
+            ret, frame = cap.read()
+            if not ret:
+                print(f"Failed to read frame from camera {i + 1}")
+                break
+
+            # Perform YOLO detection and draw bounding boxes
+            processed_frame = yolo_process(frame, model)
+            frames.append(processed_frame)
+
+        # Break if any stream fails
+        if len(frames) != len(caps):
+            break
+
+        # Display frames in separate windows
+        for i, frame in enumerate(frames):
+            cv2.imshow(f"Camera {i + 1}", frame)
+
+        # Exit on 'q' key press
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    # Release video captures and close windows
+    for cap in caps:
+        cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()

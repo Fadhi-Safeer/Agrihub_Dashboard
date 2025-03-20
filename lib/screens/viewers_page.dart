@@ -17,7 +17,7 @@ class ViewersPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('AI Crop Monitoring & Analysis Dashboard',
+        title: Text('Agricultural Growth & Research with AI Vision',
             style: TextStyles.mainHeading),
         centerTitle: true,
         backgroundColor: AppColors.topBar,

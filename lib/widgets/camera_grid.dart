@@ -10,18 +10,20 @@ class CameraGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int totalGridCount = 10; // Set total grid slots (adjustable)
+
     return GridView.builder(
       physics: NeverScrollableScrollPhysics(), // Disable scrolling
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 5, // 5 columns
         mainAxisSpacing: 4.0,
         crossAxisSpacing: 4.0,
-        childAspectRatio: 1.0, // Adjusted aspect ratio for taller boxes
+        childAspectRatio: 1.0, // Keeps square aspect ratio
       ),
-      itemCount: 10, // Total of 10 slots
+      itemCount: totalGridCount, // Fixed number of slots
       itemBuilder: (context, index) {
         if (index < availableCameras.length) {
-          // Display the camera feed for the available camera URL
+          // Display camera feed if available
           return Container(
             decoration: BoxDecoration(
               color: AppColors.cameraBG,
@@ -32,7 +34,7 @@ class CameraGrid extends StatelessWidget {
             ),
           );
         } else {
-          // Display a placeholder image for unavailable cameras
+          // Show a placeholder if no camera is present
           return Container(
             decoration: BoxDecoration(
               color: AppColors.cameraBG,

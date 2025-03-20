@@ -1,12 +1,17 @@
-import 'dart:typed_data';
+import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
 class YOLOService {
-  static WebSocketChannel connect() {
-    return WebSocketChannel.connect(
-      Uri.parse('ws://127.0.0.1:8000/ws/detect'),
-    );
+  static Map<String, WebSocketChannel> _channels = {};
+
+  static WebSocketChannel connect(String url) {
+    if (!_channels.containsKey(url)) {
+      _channels[url] = WebSocketChannel.connect(
+        Uri.parse('ws://127.0.0.1:8000'),
+      );
+    }
+    return _channels[url]!;
   }
 
   static void listen(
@@ -16,18 +21,25 @@ class YOLOService {
     required Function() onDone,
   }) {
     channel.stream.listen(
-      (event) => onData(event as String),
+      (event) {
+        final message = event as String;
+        onData(message);
+      },
       onError: onError,
       onDone: onDone,
     );
   }
 
-  static void sendImage(WebSocketChannel channel, List<int> bytes) {
-    print('Sending image data to backend...');
-    channel.sink.add(Uint8List.fromList(bytes));
+  static void sendURL(WebSocketChannel channel, String url) {
+    print('Sending URL to backend...');
+    final jsonMessage = jsonEncode({'url': url});
+    channel.sink.add(jsonMessage);
   }
 
-  static void close(WebSocketChannel channel) {
-    channel.sink.close(status.goingAway);
+  static void close(String url) {
+    if (_channels.containsKey(url)) {
+      _channels[url]!.sink.close(status.goingAway);
+      _channels.remove(url);
+    }
   }
 }
