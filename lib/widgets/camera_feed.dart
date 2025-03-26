@@ -79,15 +79,9 @@ class _CameraFeedState extends State<CameraFeed> {
         }
       },
       onError: (error) {
-        setState(() {
-          _errorMessage = 'WebSocket error: $error';
-        });
         debugPrint('WebSocket error: $error');
       },
       onDone: () {
-        setState(() {
-          _errorMessage = 'WebSocket connection closed';
-        });
         debugPrint('WebSocket connection closed');
       },
     );
