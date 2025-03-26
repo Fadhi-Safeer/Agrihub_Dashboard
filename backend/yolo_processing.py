@@ -1,8 +1,8 @@
 import cv2
 import json
-import asyncio
-import websockets
 from ultralytics import YOLO
+
+MODEL = YOLO('yolov8n.pt')
 
 # Function to capture a frame from the HLS stream
 async def capture_frame_from_hls(hls_url):
@@ -38,7 +38,7 @@ async def yolo_process(hls_url, model):
             bounding_boxes.append(bounding_box)
     
     bounding_boxes_json = json.dumps(bounding_boxes, indent=4)
-    
+    print(bounding_boxes_json)
     return bounding_boxes_json
 
 # WebSocket server handler
@@ -47,8 +47,9 @@ async def handler(websoc):
         
         async for message in websoc:
             data = json.loads(message)
+            print(message)
             hls_url = data.get('url')
-            bounding_boxes_json = await yolo_process(hls_url, model)
+            bounding_boxes_json = await yolo_process(hls_url, MODEL)
             await websoc.send(bounding_boxes_json)
     except json.JSONDecodeError as e:
         error_message = {"error": f"JSON decode error: {str(e)}"}
@@ -56,13 +57,3 @@ async def handler(websoc):
     except Exception as e:
         error_message = {"error": str(e)}
         await websoc.send(json.dumps(error_message))
-
-# Main function to start the WebSocket server
-async def main():
-    async with websockets.serve(handler, "localhost", 8000):
-        print("WebSocket server started on ws://localhost:8000")
-        await asyncio.Future()  # Run forever
-
-if __name__ == "__main__":
-    model = YOLO('yolov8n.pt')
-    asyncio.run(main())

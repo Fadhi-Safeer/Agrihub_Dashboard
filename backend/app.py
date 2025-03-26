@@ -1,10 +1,12 @@
+# Main function to start the WebSocket server
 import asyncio
 import websockets
-from yolo_processor import process_frame
+from yolo_processing import handler
+
 
 async def main():
-    async with websockets.serve(process_frame, "127.0.0.1", 8000):
-        print("WebSocket server started at ws://127.0.0.1:8000/ws/detect")
+    async with websockets.serve(handler , "localhost", 8000):
+        print("WebSocket server started on ws://localhost:8000")
         await asyncio.Future()  # Run forever
 
 if __name__ == "__main__":
