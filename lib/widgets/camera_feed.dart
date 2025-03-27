@@ -1,15 +1,13 @@
+// lib/widgets/camera_feed.dart
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-
-import '../services/yolo_service.dart';
 import 'bounding_box_painter.dart';
+import '../providers/yolo_provider.dart';
 
 class CameraFeed extends StatefulWidget {
   final String cameraUrl;
-
   const CameraFeed({Key? key, required this.cameraUrl}) : super(key: key);
 
   @override
@@ -18,20 +16,18 @@ class CameraFeed extends StatefulWidget {
 
 class _CameraFeedState extends State<CameraFeed> {
   late VideoPlayerController _controller;
-  late WebSocketChannel _channel;
   bool _isLoading = true;
   String _errorMessage = '';
-  List<Map<String, dynamic>> _boundingBoxes = [];
-  Timer? _timer;
+  Timer? _detectionTimer;
+  Timer? _croppingTimer;
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(widget.cameraUrl);
-    _channel = YOLOService.connect(widget.cameraUrl);
     _initializeController();
-    _listenToYOLOService();
-    _startSendingURLPeriodically();
+    _startDetectionTimer();
+    _startCroppingTimer();
   }
 
   Future<void> _initializeController() async {
@@ -42,8 +38,7 @@ class _CameraFeedState extends State<CameraFeed> {
       setState(() {
         _isLoading = false;
       });
-      debugPrint("Video player initialized and playing.");
-      debugPrint("Video size: ${_controller.value.size}");
+      debugPrint("Video player initialized for ${widget.cameraUrl}");
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load video: $e';
@@ -53,59 +48,42 @@ class _CameraFeedState extends State<CameraFeed> {
     }
   }
 
-  void _listenToYOLOService() {
-    YOLOService.listen(
-      _channel,
-      onData: (data) {
-        try {
-          final parsedData = jsonDecode(data);
-          debugPrint('Received data: $parsedData');
-          if (parsedData is List) {
-            setState(() {
-              _boundingBoxes = List<Map<String, dynamic>>.from(parsedData);
-            });
-            debugPrint('Bounding boxes updated: $_boundingBoxes');
-          } else {
-            setState(() {
-              _errorMessage = 'Invalid data format';
-            });
-            debugPrint('Invalid data format received: $parsedData');
-          }
-        } catch (e) {
-          setState(() {
-            _errorMessage = 'Failed to parse bounding box data: $e';
-          });
-          debugPrint('Error parsing bounding box data: $e');
-        }
-      },
-      onError: (error) {
-        debugPrint('WebSocket error: $error');
-      },
-      onDone: () {
-        debugPrint('WebSocket connection closed');
-      },
-    );
+  // Timer for sending detection requests (Step 1)
+  void _startDetectionTimer() {
+    final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
+    _detectionTimer = Timer.periodic(Duration(seconds: 6), (timer) {
+      yoloProvider.sendDetectionRequest(widget.cameraUrl);
+      debugPrint('Sent detection request for ${widget.cameraUrl}');
+    });
   }
 
-  void _startSendingURLPeriodically() {
-    _timer = Timer.periodic(Duration(seconds: 6), (timer) {
-      YOLOService.sendURL(_channel, widget.cameraUrl);
-      debugPrint('URL sent to backend: ${widget.cameraUrl}');
+  // Timer for sending cropping & classification requests (Step 2)
+  void _startCroppingTimer() {
+    final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
+    _croppingTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+      // Only send cropping request if bounding boxes are available
+      if (yoloProvider.boundingBoxes.isNotEmpty) {
+        yoloProvider.sendCroppingRequest(
+            widget.cameraUrl, yoloProvider.boundingBoxes);
+        debugPrint(
+            'Sent cropping & classification request for ${widget.cameraUrl}');
+      } else {
+        debugPrint('No bounding boxes available for cropping request.');
+      }
     });
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    YOLOService.close(widget.cameraUrl);
-    _timer?.cancel();
+    _detectionTimer?.cancel();
+    _croppingTimer?.cancel();
     super.dispose();
-    debugPrint('Disposed CameraFeed widget.');
+    debugPrint('Disposed CameraFeed for ${widget.cameraUrl}');
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Building CameraFeed widget.');
     return Stack(
       children: [
         _isLoading
@@ -121,20 +99,26 @@ class _CameraFeedState extends State<CameraFeed> {
                     aspectRatio: _controller.value.aspectRatio,
                     child: VideoPlayer(_controller),
                   ),
-        if (_boundingBoxes.isNotEmpty &&
-            _controller.value.isInitialized &&
-            _controller.value.size.width > 0 &&
-            _controller.value.size.height > 0)
-          Positioned.fill(
-            // Ensure bounding boxes cover the video
-            child: CustomPaint(
-              painter: BoundingBoxPainter(
-                boundingBoxes: _boundingBoxes,
-                cameraAspectRatio: _controller.value.aspectRatio,
-                previewSize: _controller.value.size,
-              ),
-            ),
-          ),
+        // Overlay bounding boxes from YOLOProvider
+        Consumer<YOLOProvider>(
+          builder: (context, yoloProvider, child) {
+            if (yoloProvider.boundingBoxes.isNotEmpty &&
+                _controller.value.isInitialized &&
+                _controller.value.size.width > 0 &&
+                _controller.value.size.height > 0) {
+              return Positioned.fill(
+                child: CustomPaint(
+                  painter: BoundingBoxPainter(
+                    boundingBoxes: yoloProvider.boundingBoxes,
+                    cameraAspectRatio: _controller.value.aspectRatio,
+                    previewSize: _controller.value.size,
+                  ),
+                ),
+              );
+            }
+            return SizedBox.shrink();
+          },
+        ),
       ],
     );
   }
