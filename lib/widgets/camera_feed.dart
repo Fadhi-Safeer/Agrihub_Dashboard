@@ -60,7 +60,7 @@ class _CameraFeedState extends State<CameraFeed> {
   // Timer for sending cropping & classification requests (Step 2)
   void _startCroppingTimer() {
     final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
-    _croppingTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+    _croppingTimer = Timer.periodic(Duration(seconds: 15), (timer) {
       // Only send cropping request if bounding boxes are available
       if (yoloProvider.boundingBoxes.isNotEmpty) {
         yoloProvider.sendCroppingRequest(
@@ -106,6 +106,8 @@ class _CameraFeedState extends State<CameraFeed> {
                 _controller.value.isInitialized &&
                 _controller.value.size.width > 0 &&
                 _controller.value.size.height > 0) {
+              debugPrint(
+                  '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111');
               return Positioned.fill(
                 child: CustomPaint(
                   painter: BoundingBoxPainter(

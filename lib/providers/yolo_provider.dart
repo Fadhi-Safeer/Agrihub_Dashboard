@@ -8,28 +8,28 @@ class YOLOProvider with ChangeNotifier {
   );
 
   List<Map<String, dynamic>> _boundingBoxes = [];
-  List<dynamic> _classificationResults = [];
+  List<Map<String, dynamic>> _classificationResults = [];
   String _latestFrameURL = '';
 
   List<Map<String, dynamic>> get boundingBoxes => _boundingBoxes;
-  List<dynamic> get classificationResults => _classificationResults;
+  List<Map<String, dynamic>> get classificationResults =>
+      _classificationResults;
   String get latestFrameURL => _latestFrameURL;
 
   YOLOProvider() {
     _channel.stream.listen((event) {
       try {
         final data = jsonDecode(event);
-        // Determine response type by checking for a specific key
-        if (data is List &&
-            data.isNotEmpty &&
-            data[0] is Map &&
-            data[0].containsKey("bounding_box")) {
-          // Received cropping & classification result
-          _classificationResults = data;
-          notifyListeners();
-        } else if (data is List) {
-          // Received detection bounding boxes
-          _boundingBoxes = List<Map<String, dynamic>>.from(data);
+
+        if (data is List && data.isNotEmpty && data[0] is Map) {
+          if (data[0].containsKey("classification")) {
+            // Append new classification results at the top
+            _classificationResults.insertAll(
+                0, List<Map<String, dynamic>>.from(data));
+          } else {
+            // Replace bounding boxes with new data
+            _boundingBoxes = List<Map<String, dynamic>>.from(data);
+          }
           notifyListeners();
         }
       } catch (e) {
@@ -38,24 +38,23 @@ class YOLOProvider with ChangeNotifier {
     });
   }
 
-  // Send detection request (Step 1: Only URL)
   void sendDetectionRequest(String url) {
-    _latestFrameURL = url;
-    final payload = jsonEncode({'url': url});
-    _channel.sink.add(payload);
-    notifyListeners();
+    if (url.isNotEmpty) {
+      _latestFrameURL = url;
+      final payload = jsonEncode({'url': url});
+      _channel.sink.add(payload);
+      notifyListeners();
+    }
   }
 
-  // Send cropping & classification request (Step 2: URL and bounding boxes)
   void sendCroppingRequest(
       String url, List<Map<String, dynamic>> boundingBoxes) {
-    _latestFrameURL = url;
-    final payload = jsonEncode({
-      'url': url,
-      'bounding_boxes': boundingBoxes,
-    });
-    _channel.sink.add(payload);
-    notifyListeners();
+    if (url.isNotEmpty && boundingBoxes.isNotEmpty) {
+      _latestFrameURL = url;
+      final payload = jsonEncode({'url': url, 'bounding_boxes': boundingBoxes});
+      _channel.sink.add(payload);
+      notifyListeners();
+    }
   }
 
   @override
