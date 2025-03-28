@@ -119,7 +119,7 @@ class RightPanel extends StatelessWidget {
       '$label: $value', // Combines label and value with colon separator
       style: TextStyles.rightPanelHeadingText.copyWith(
         fontWeight: FontWeight.w400,
-        fontSize: 14,
+        fontSize: 19,
       ),
     );
   }
