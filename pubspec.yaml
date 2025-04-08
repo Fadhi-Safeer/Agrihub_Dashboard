@@ -21,6 +21,7 @@ dependencies:
   screenshot: ^3.0.0
   path_provider: ^2.1.5
   provider: ^6.1.4
+  dropdown_search: ^6.0.2
 
 dev_dependencies:
   flutter_test:
@@ -32,3 +33,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/No Camera.png
+    - assets/early_growth_icon.png
+    - assets/leafy_growth_icon.png
+    - assets/head_formation_icon.png
+    - assets/harvest_stage_icon.png
+    - assets/agrivision_icon.png
