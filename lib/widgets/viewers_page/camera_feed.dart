@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'bounding_box_painter.dart';
-import '../providers/yolo_provider.dart';
+import '../../providers/yolo_provider.dart';
 
 class CameraFeed extends StatefulWidget {
   final String cameraUrl;

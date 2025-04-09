@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/yolo_provider.dart';
-import '../theme/app_colors.dart';
-import '../theme/text_styles.dart';
+import '../../providers/yolo_provider.dart';
+import '../../theme/app_colors.dart';
+import '../../theme/text_styles.dart';
 
 class RightPanel extends StatelessWidget {
   @override

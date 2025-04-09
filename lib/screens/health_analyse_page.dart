@@ -5,18 +5,22 @@ import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../widgets/monitoring_pages/elevated_info_card.dart';
 
-class GrowthMonitoringPage extends StatelessWidget {
-  const GrowthMonitoringPage({super.key});
+class HealthAnalysePage extends StatefulWidget {
+  const HealthAnalysePage({super.key});
 
+  @override
+  State<HealthAnalysePage> createState() => _HealthAnalysePageState();
+}
+
+class _HealthAnalysePageState extends State<HealthAnalysePage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
     return Scaffold(
-      backgroundColor: AppColors.monitoring_pages_background,
       body: Row(
         children: [
-          const NavigationSidebar(), // Sidebar widget
+          const NavigationSidebar(),
           Expanded(
             child: Column(
               children: [

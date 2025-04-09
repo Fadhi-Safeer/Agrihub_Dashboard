@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../theme/text_styles.dart';
+import 'package:provider/provider.dart';
+import '../providers/navigationbar_provider.dart';
+import '../theme/text_styles.dart';
 
 class NavigationSidebar extends StatelessWidget {
   const NavigationSidebar({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Access the NavigationBarProvider
+    final navigationBarProvider = Provider.of<NavigationBarProvider>(context);
+
     return Container(
       width: 250,
       color: Colors.purple[900],
@@ -16,9 +21,9 @@ class NavigationSidebar extends StatelessWidget {
             child: ClipOval(
               child: Image.asset(
                 'assets/agrivision_icon.png',
-                width: 120, // Adjust the width
-                height: 120, // Adjust the height
-                fit: BoxFit.contain, // Ensures the image fills the circle
+                width: 120,
+                height: 120,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -29,10 +34,38 @@ class NavigationSidebar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const SidebarMenuItem(title: 'HOME', isSelected: true),
-          const SidebarMenuItem(title: 'GROWTH'),
-          const SidebarMenuItem(title: 'HEALTH'),
-          const SidebarMenuItem(title: 'DISEASE'),
+          SidebarMenuItem(
+            title: 'HOME',
+            isSelected: navigationBarProvider.selectedMenu == 'HOME',
+            onTap: () {
+              navigationBarProvider.updateSelectedMenu('HOME');
+              Navigator.pushNamed(context, '/home');
+            },
+          ),
+          SidebarMenuItem(
+            title: 'GROWTH',
+            isSelected: navigationBarProvider.selectedMenu == 'GROWTH',
+            onTap: () {
+              navigationBarProvider.updateSelectedMenu('GROWTH');
+              Navigator.pushNamed(context, '/growth');
+            },
+          ),
+          SidebarMenuItem(
+            title: 'HEALTH',
+            isSelected: navigationBarProvider.selectedMenu == 'HEALTH',
+            onTap: () {
+              navigationBarProvider.updateSelectedMenu('HEALTH');
+              Navigator.pushNamed(context, '/health');
+            },
+          ),
+          SidebarMenuItem(
+            title: 'DISEASE',
+            isSelected: navigationBarProvider.selectedMenu == 'DISEASE',
+            onTap: () {
+              navigationBarProvider.updateSelectedMenu('DISEASE');
+              Navigator.pushNamed(context, '/disease');
+            },
+          ),
         ],
       ),
     );
@@ -42,11 +75,13 @@ class NavigationSidebar extends StatelessWidget {
 class SidebarMenuItem extends StatelessWidget {
   final String title;
   final bool isSelected;
+  final VoidCallback? onTap; // Callback for navigation
 
   const SidebarMenuItem({
     super.key,
     required this.title,
     this.isSelected = false,
+    this.onTap, // Accept the callback
   });
 
   @override
@@ -79,7 +114,7 @@ class SidebarMenuItem extends StatelessWidget {
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        onTap: () {},
+        onTap: onTap, // Attach the callback here
       ),
     );
   }

@@ -1,9 +1,12 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'providers/navigationbar_provider.dart';
+import 'screens/disease_detection_page.dart';
 import 'screens/growth_monitoring_page.dart';
-import 'screens/viewers_page.dart';
 import 'providers/yolo_provider.dart';
+import 'screens/health_analyse_page.dart';
+import 'screens/AGRIVISION_PAGE.dart';
+import 'screens/home_page.dart';
 import 'theme/app_colors.dart';
 
 void main() {
@@ -16,14 +19,21 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => YOLOProvider()),
+        ChangeNotifierProvider(create: (_) => NavigationBarProvider()),
       ],
       child: MaterialApp(
         title: 'Agrihub Dashboard',
         theme: ThemeData(
           primaryColor: AppColors.topBar,
-          scaffoldBackgroundColor: AppColors.background,
+          scaffoldBackgroundColor: AppColors.monitoring_pages_background,
         ),
-        home: GrowthMonitoringPage(),
+        initialRoute: '/home', // Define the initial route
+        routes: {
+          '/home': (context) => HomePage(), // Home page route
+          '/growth': (context) => GrowthMonitoringPage(), // Growth page route
+          '/health': (context) => HealthAnalysePage(), // Health page route
+          '/disease': (context) => DIseaseDetectionPage(), // Disease page route
+        },
       ),
     );
   }

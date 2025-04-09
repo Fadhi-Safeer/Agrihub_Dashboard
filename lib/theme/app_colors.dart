@@ -37,10 +37,12 @@ class AppColors {
   static const Color neonCyan = Color(0xFF29B6F6);
 
   // Growth,Health And Disease Pages
-  static const Color sidebarBackground = Color(0xFF4A0072); // Purple[900]
-  static const Color sidebarGradientStart = Color(0xFF8E24AA); // Purple[600]
-  static const Color sidebarGradientEnd = Color(0xFFD500F9); // Purple[400]
+  static const Color sidebarBackground = Color(0xFF311B92); // Purple[900]
+  static const Color sidebarGradientStart = Color(0xFF7B1FA2); // Purple[600]
+  static const Color sidebarGradientEnd = Color(0xFFE040FB); // Purple[400]
   static const Color cardBackground = Color(0xFFF3E5F5); // Purple[50]
-  static const Color cardNumberColor = Color(0xFF6A1B9A); // Purple[800]
-  static const Color cardImageBackground = Color(0xFFE1BEE7); // Purple[100]
+  static const Color cardNumberColor = Color(0xFF4A148C); // Purple[800]
+  static const Color cardImageBackground = Color(0xFFCE93D8);
+
+  static var monitoring_pages_background = Color(0xFFF9F5FF);
 }
