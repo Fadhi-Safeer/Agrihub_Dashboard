@@ -57,20 +57,39 @@ class HomePage extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
 
-                            // Middle Expanded card
+                            // Middle Expanded Description Text
+                            // Middle Expanded Description Text
                             Expanded(
                               flex: 2,
                               child: Container(
                                 height: squareSize * 2,
-                                child: ElevatedInfoCard(
-                                  title: 'Website Visitors (Pie Chart)',
-                                  number: 8500,
-                                  backgroundColor: Colors.purple[100]!,
-                                  heightMultiplier:
-                                      squareSize * 2 / 120, // Double height
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.purple[100],
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                      offset: const Offset(2, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: const SingleChildScrollView(
+                                  child: Text(
+                                    'AgriVision AI is an intelligent plant monitoring system focused on optimizing the growth and health of hydroponic crops, '
+                                    'starting with lettuce at the University Agrihub Lab. It leverages deep learning models to perform real-time detection and '
+                                    'classification of plant growth stages, health status, and potential diseases using live CCTV feeds. Designed for precision '
+                                    'agriculture, the system supports non-soil-based farming by providing continuous visual monitoring, early issue detection, and '
+                                    'data-driven insights through a Flutter-based dashboard and Python FastAPI backend. AgriVision AI enables remote access, automated '
+                                    'data analysis, and cloud storage, making it a scalable solution for modern hydroponic farming environments.',
+                                    style: TextStyle(fontSize: 14, height: 1.5),
+                                    textAlign: TextAlign.justify,
+                                  ),
                                 ),
                               ),
                             ),
+
                             const SizedBox(width: 4),
 
                             // Right column
