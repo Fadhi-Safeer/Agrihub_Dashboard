@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/text_styles.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -41,10 +43,20 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Column(
               children: [
+                // Top Heading
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    'Plant Growth Monitoring',
+                    style: TextStyles.mainHeading.copyWith(
+                      color: Colors.purple,
+                    ),
+                  ),
+                ),
                 // Growth cards grid (fixed height, non-scrollable)
                 SizedBox(
                   height: MediaQuery.of(context).size.height *
-                      0.6, // 60% of screen height
+                      0.60, // 60% of screen height
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: GridView.count(
@@ -75,7 +87,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-
                 // Fixed graph section
                 Expanded(
                   child: Padding(
@@ -115,28 +126,20 @@ class NavigationSidebar extends StatelessWidget {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 40.0),
-            child: CircleAvatar(
-              radius: 50,
-              child: ClipOval(
-                // Ensure the image is circular
-                child: Image.asset(
-                  'assets/agrivision_icon.png',
-                  width: 50, // Set the width of the image to match the radius
-                  height: 50, // Set the height of the image to match the radius
-                  fit: BoxFit
-                      .cover, // Makes sure the image fits well inside the circle
-                ),
+            padding: const EdgeInsets.only(top: 40.0, bottom: 10.0),
+            child: ClipOval(
+              child: Image.asset(
+                'assets/agrivision_icon.png',
+                width: 120, // Adjust the width
+                height: 120, // Adjust the height
+                fit: BoxFit.contain, // Ensures the image fills the circle
               ),
             ),
           ),
           Text(
             'AGRIVISION',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
+            style: TextStyles.mainHeading.copyWith(
+              fontSize: 30,
             ),
           ),
           const SizedBox(height: 20),
