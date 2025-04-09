@@ -1,6 +1,7 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'screens/growth_monitoring_page.dart';
 import 'screens/viewers_page.dart';
 import 'providers/yolo_provider.dart';
 import 'theme/app_colors.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
           primaryColor: AppColors.topBar,
           scaffoldBackgroundColor: AppColors.background,
         ),
-        home: ViewersPage(),
+        home: GrowthMonitoringPage(),
       ),
     );
   }

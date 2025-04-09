@@ -30,4 +30,32 @@ class TextStyles {
         .withOpacity(0.85), // Softer white for better contrast
     letterSpacing: 1.2, // Balanced spacing
   );
+
+  //Growth,Health And Disease Pages
+  // 🔹 Graph Section Title
+  static TextStyle graphSectionTitle = GoogleFonts.orbitron(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+    color: AppColors.cardNumberColor, // Purple[800]
+  );
+
+  // 🔹 GrowthStageCard Title
+  static TextStyle growthStageCardTitle = GoogleFonts.roboto(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: AppColors.sidebarBackground, // Purple[900]
+  );
+
+  // 🔹 Sidebar Menu Item
+  static TextStyle sidebarMenuItem = GoogleFonts.roboto(
+    fontSize: 16,
+    fontWeight: FontWeight.normal,
+    color: AppColors.textColor.withOpacity(0.7), // White70
+  );
+
+  static TextStyle sidebarMenuItemSelected = GoogleFonts.roboto(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: AppColors.textColor, // White
+  );
 }
