@@ -58,7 +58,6 @@ class HomePage extends StatelessWidget {
                             const SizedBox(width: 4),
 
                             // Middle Expanded Description Text
-                            // Middle Expanded Description Text
                             Expanded(
                               flex: 2,
                               child: Container(
@@ -157,14 +156,48 @@ class HomePage extends StatelessWidget {
                             // Right expanded to fill space
                             Expanded(
                               flex: 1,
-                              child: Container(
-                                height: squareSize * 2,
-                                child: ElevatedInfoCard(
-                                  title: 'AdWords Conversions',
-                                  number: 350,
-                                  backgroundColor: Colors.grey[300]!,
-                                  heightMultiplier:
-                                      squareSize * 2 / 120, // Double height
+                              child: GestureDetector(
+                                onTap: () {
+                                  // Navigate to AgriVision page
+                                  Navigator.pushNamed(context, '/agrivision');
+                                },
+                                child: Container(
+                                  height: squareSize * 2,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        offset: const Offset(2, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      const Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          'Go to AgriVision Page',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.deepPurple,
+                                          ),
+                                        ),
+                                      ),
+                                      Align(
+                                        alignment: Alignment.bottomRight,
+                                        child: Image.asset(
+                                          'assets/arrow.png',
+                                          width: 60,
+                                          height: 60,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

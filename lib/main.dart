@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/navigationbar_provider.dart';
+import 'screens/AGRIVISION_PAGE.dart';
 import 'screens/disease_detection_page.dart';
 import 'screens/growth_monitoring_page.dart';
 import 'providers/yolo_provider.dart';
@@ -30,8 +31,9 @@ class MyApp extends StatelessWidget {
         routes: {
           '/home': (context) => HomePage(), // Home page route
           '/growth': (context) => GrowthMonitoringPage(), // Growth page route
-          '/health': (context) => HealthAnalysePage(), // Health page route
+          '/health': (context) => HealthAnalysisPage(), // Health page route
           '/disease': (context) => DIseaseDetectionPage(), // Disease page route
+          '/agrivision': (context) => AgrivisionPage(), // Agrivision page route
         },
       ),
     );
