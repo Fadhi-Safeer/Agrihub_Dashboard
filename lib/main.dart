@@ -5,7 +5,6 @@ import 'screens/disease_detection_page.dart';
 import 'screens/growth_monitoring_page.dart';
 import 'providers/yolo_provider.dart';
 import 'screens/health_analyse_page.dart';
-import 'screens/AGRIVISION_PAGE.dart';
 import 'screens/home_page.dart';
 import 'theme/app_colors.dart';
 
