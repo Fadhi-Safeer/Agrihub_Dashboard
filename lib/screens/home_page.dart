@@ -228,6 +228,18 @@ class HomePage extends StatelessWidget {
                                         ),
                                       ),
 
+                                      // Camera Icon (Top-Right)
+                                      Positioned(
+                                        top: 16,
+                                        right: 16,
+                                        child: Image.asset(
+                                          'assets/camera.png',
+                                          width:
+                                              imageSize, // Use imageSize to control the size
+                                          height: imageSize,
+                                        ),
+                                      ),
+
                                       // Image (Left-aligned, cropped on right)
                                       Align(
                                         alignment: Alignment.bottomLeft,
@@ -256,9 +268,7 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                                width:
-                                    8), // Spacing between the right column and the bottom row
+                            // Right column
                           ],
                         ),
                       ],
