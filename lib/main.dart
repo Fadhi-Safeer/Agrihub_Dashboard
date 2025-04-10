@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomePage(), // Home page route
           '/growth': (context) => GrowthMonitoringPage(), // Growth page route
           '/health': (context) => HealthAnalysisPage(), // Health page route
-          '/disease': (context) => DIseaseDetectionPage(), // Disease page route
+          '/disease': (context) => DiseaseDetectionPage(), // Disease page route
           '/agrivision': (context) => AgrivisionPage(), // Agrivision page route
         },
       ),

@@ -38,4 +38,5 @@ flutter:
     - assets/head_formation_icon.png
     - assets/harvest_stage_icon.png
     - assets/agrivision_icon.png
-    - assets/arrow.png
+    - assets/camera.png
+    - assets/plant.png

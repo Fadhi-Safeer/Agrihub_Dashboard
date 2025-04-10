@@ -3,7 +3,7 @@ import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
-import '../widgets/monitoring_pages/elevated_info_card.dart';
+import '../widgets/monitoring_pages/elevated_card.dart';
 
 class GrowthMonitoringPage extends StatelessWidget {
   const GrowthMonitoringPage({super.key});
@@ -41,26 +41,30 @@ class GrowthMonitoringPage extends StatelessWidget {
                           (MediaQuery.of(context).size.height * 0.65),
                       mainAxisSpacing: 16.0,
                       crossAxisSpacing: 16.0,
-                      children: const [
-                        ElevatedInfoCard(
+                      children: [
+                        ElevatedCard.square(
                           title: 'Early Growth',
-                          image: 'assets/early_growth_icon.png',
-                          number: 120,
+                          description: '120 Plants',
+                          backgroundColor: AppColors.cardBackground,
+                          size: SizeConfig.proportionateScreenWidth(150),
                         ),
-                        ElevatedInfoCard(
+                        ElevatedCard.square(
                           title: 'Leafy Growth',
-                          image: 'assets/leafy_growth_icon.png',
-                          number: 90,
+                          description: '90 Plants',
+                          backgroundColor: AppColors.cardBackground,
+                          size: SizeConfig.proportionateScreenWidth(150),
                         ),
-                        ElevatedInfoCard(
+                        ElevatedCard.square(
                           title: 'Head Formation',
-                          image: 'assets/head_formation_icon.png',
-                          number: 75,
+                          description: '75 Plants',
+                          backgroundColor: AppColors.cardBackground,
+                          size: SizeConfig.proportionateScreenWidth(150),
                         ),
-                        ElevatedInfoCard(
+                        ElevatedCard.square(
                           title: 'Harvest Stage',
-                          image: 'assets/harvest_stage_icon.png',
-                          number: 60,
+                          description: '60 Plants',
+                          backgroundColor: AppColors.cardBackground,
+                          size: SizeConfig.proportionateScreenWidth(150),
                         ),
                       ],
                     ),

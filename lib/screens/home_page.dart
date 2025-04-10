@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../widgets/monitoring_pages/elevated_info_card.dart';
+import '../theme/text_styles.dart';
+import '../theme/app_colors.dart';
+import '../widgets/monitoring_pages/elevated_card.dart';
 import '../widgets/navigation_sidebar.dart'; // Import the NavigationSidebar widget
 
 class HomePage extends StatelessWidget {
@@ -10,7 +12,9 @@ class HomePage extends StatelessWidget {
     final double availableHeight =
         MediaQuery.of(context).size.height; // Total screen height
     final double squareSize =
-        availableHeight / 4.6; // Calculate square size for the cards
+        availableHeight / 4.8; // Calculate square size for the cards
+    final double boxHeight = squareSize * 2;
+    final double imageSize = boxHeight * 2 / 5; // 2/5 of the box height
 
     return Scaffold(
       body: Row(
@@ -21,16 +25,22 @@ class HomePage extends StatelessWidget {
           Expanded(
             child: Column(
               children: [
-                // App Bar
-                AppBar(
-                  title: const Text(
-                    'Agricultural Growth & Research with AI Vision',
+                // Top Heading (Updated with consistent style)
+                Padding(
+                  padding:
+                      const EdgeInsets.all(16.0), // Padding around the heading
+                  child: Text(
+                    'Agricultural Growth & Research with AI Vision', // Updated heading text
+                    style: TextStyles.mainHeading.copyWith(
+                      color: AppColors.sidebarGradientStart, // Custom color
+                    ),
                   ),
                 ),
                 // Content
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(
+                        8), // Padding around the entire scrollable content
                     child: Column(
                       children: [
                         /// TOP ROW
@@ -38,31 +48,41 @@ class HomePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Left column
-                            Column(
-                              children: [
-                                _buildSquareInfoCard(
-                                  title: 'Facebook Likes',
-                                  number: 3009,
-                                  backgroundColor: Colors.indigo[100]!,
-                                  size: squareSize,
-                                ),
-                                const SizedBox(height: 4),
-                                _buildSquareInfoCard(
-                                  title: 'YouTube Subscribers',
-                                  number: 342,
-                                  backgroundColor: Colors.indigo[200]!,
-                                  size: squareSize,
-                                ),
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal:
+                                      8), // Padding around the left column (horizontal only)
+                              child: Column(
+                                children: [
+                                  ElevatedCard.square(
+                                    title: 'Healthy Plants Detected',
+                                    description: '248',
+                                    backgroundColor: Colors.green[300]!,
+                                    size: squareSize,
+                                  ),
+                                  const SizedBox(
+                                      height:
+                                          8), // Spacing between cards in the left column
+                                  ElevatedCard.square(
+                                    title: 'Plants in Growth Stage 3',
+                                    description: '75',
+                                    backgroundColor: Colors.teal[200]!,
+                                    size: squareSize,
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(
+                                width:
+                                    8), // Spacing between the left column and the middle section
 
                             // Middle Expanded Description Text
                             Expanded(
                               flex: 2,
                               child: Container(
-                                height: squareSize * 2,
-                                padding: const EdgeInsets.all(16),
+                                height: (squareSize * 2) + 6,
+                                padding: const EdgeInsets.all(
+                                    16), // Padding inside the middle container
                                 decoration: BoxDecoration(
                                   color: Colors.purple[100],
                                   borderRadius: BorderRadius.circular(16),
@@ -76,7 +96,7 @@ class HomePage extends StatelessWidget {
                                 ),
                                 child: const SingleChildScrollView(
                                   child: Text(
-                                    'AgriVision AI is an intelligent plant monitoring system focused on optimizing the growth and health of hydroponic crops, '
+                                    'AgriVision AI is an intelligent plant monitoring system developed under APCore (Asia Pacific Center of Robotics Engineering), focused on optimizing the growth and health of hydroponic crops, '
                                     'starting with lettuce at the University Agrihub Lab. It leverages deep learning models to perform real-time detection and '
                                     'classification of plant growth stages, health status, and potential diseases using live CCTV feeds. Designed for precision '
                                     'agriculture, the system supports non-soil-based farming by providing continuous visual monitoring, early issue detection, and '
@@ -89,81 +109,99 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
 
-                            const SizedBox(width: 4),
+                            const SizedBox(
+                                width:
+                                    8), // Spacing between the middle section and the right column
 
                             // Right column
-                            Column(
-                              children: [
-                                _buildSquareInfoCard(
-                                  title: 'Google Rankings',
-                                  number: 25,
-                                  backgroundColor: Colors.indigo[300]!,
-                                  size: squareSize,
-                                ),
-                                const SizedBox(height: 4),
-                                _buildSquareInfoCard(
-                                  title: 'Trust Flow',
-                                  number: 90,
-                                  backgroundColor: Colors.indigo[400]!,
-                                  size: squareSize,
-                                ),
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal:
+                                      8), // Padding around the right column (horizontal only)
+                              child: Column(
+                                children: [
+                                  ElevatedCard.square(
+                                    title: 'Unhealthy/Diseased Plants',
+                                    description: '12',
+                                    backgroundColor: Colors.red[300]!,
+                                    size: squareSize,
+                                  ),
+                                  const SizedBox(
+                                      height:
+                                          8), // Spacing between cards in the right column
+                                  ElevatedCard.square(
+                                    title: 'Model Accuracy',
+                                    description: '92%',
+                                    backgroundColor: Colors.deepPurple[300]!,
+                                    size: squareSize,
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(
+                            height:
+                                8), // Spacing between the top row and the bottom row
 
                         /// BOTTOM ROW
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Left column
-                            Column(
-                              children: [
-                                _buildSquareInfoCard(
-                                  title: 'LinkedIn Followers',
-                                  number: 143,
-                                  backgroundColor: Colors.indigo[500]!,
-                                  size: squareSize,
-                                ),
-                                const SizedBox(height: 4),
-                                _buildSquareInfoCard(
-                                  title: 'Twitter Followers',
-                                  number: 3111,
-                                  backgroundColor: Colors.indigo[600]!,
-                                  size: squareSize,
-                                ),
-                              ],
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal:
+                                      8), // Padding around the left column (horizontal only)
+                              child: Column(
+                                children: [
+                                  ElevatedCard.square(
+                                    title: "Today's Detection Count",
+                                    description: '1,120',
+                                    backgroundColor: Colors.blueGrey[300]!,
+                                    size: squareSize,
+                                  ),
+                                  const SizedBox(
+                                      height:
+                                          8), // Spacing between cards in the left column
+                                  ElevatedCard.square(
+                                    title: 'Avg. Detection Time',
+                                    description: '0.15 sec',
+                                    backgroundColor: Colors.cyan[300]!,
+                                    size: squareSize,
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(
+                                width:
+                                    8), // Spacing between the left column and the middle card
 
                             // Slightly smaller middle card
                             Expanded(
                               flex: 2,
-                              child: Container(
-                                height: squareSize * 2,
-                                child: ElevatedInfoCard(
-                                  title: 'Audience Growth (Bar Chart)',
-                                  number: 5000,
-                                  backgroundColor: Colors.purple[200]!,
-                                  heightMultiplier:
-                                      squareSize * 2 / 120, // Double height
-                                ),
+                              child: ElevatedCard(
+                                title: 'Audience Growth (Bar Chart)',
+                                description: '5000',
+                                backgroundColor: Colors.purple[200]!,
+                                width: squareSize,
+                                height: (squareSize * 2) +
+                                    6, // Custom height calculation
                               ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(
+                                width:
+                                    16), // Spacing between the middle card and the right column
 
-                            // Right expanded to fill space
                             Expanded(
                               flex: 1,
                               child: GestureDetector(
                                 onTap: () {
-                                  // Navigate to AgriVision page
                                   Navigator.pushNamed(context, '/agrivision');
                                 },
                                 child: Container(
-                                  height: squareSize * 2,
-                                  padding: const EdgeInsets.all(12),
+                                  height: boxHeight,
+                                  padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: Colors.grey[300],
                                     borderRadius: BorderRadius.circular(16),
@@ -177,23 +215,40 @@ class HomePage extends StatelessWidget {
                                   ),
                                   child: Stack(
                                     children: [
-                                      const Align(
+                                      // Centered Text
+                                      Align(
                                         alignment: Alignment.center,
-                                        child: Text(
-                                          'Go to AgriVision Page',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.deepPurple,
-                                          ),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text('Live Monitoring'),
+                                            Text(
+                                                'Click to view real-time plant detection'),
+                                          ],
                                         ),
                                       ),
+
+                                      // Image (Left-aligned, cropped on right)
                                       Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: Image.asset(
-                                          'assets/arrow.png',
-                                          width: 60,
-                                          height: 60,
+                                        alignment: Alignment.bottomLeft,
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              32, // Full width minus padding (16 * 2)
+                                          height: boxHeight *
+                                              2 /
+                                              5, // 2/5 of the height
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                  'assets/plant.png'),
+                                              fit: BoxFit
+                                                  .cover, // Crop the right side and keep the left part
+                                              alignment: Alignment
+                                                  .centerLeft, // Ensure the left part is always visible
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -201,6 +256,9 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                             ),
+                            const SizedBox(
+                                width:
+                                    8), // Spacing between the right column and the bottom row
                           ],
                         ),
                       ],
@@ -211,25 +269,6 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  /// Helper method to build square info cards
-  Widget _buildSquareInfoCard({
-    required String title,
-    required int number,
-    required Color backgroundColor,
-    required double size,
-  }) {
-    return Container(
-      width: size + 0.3 * size,
-      height: size,
-      child: ElevatedInfoCard(
-        title: title,
-        number: number,
-        backgroundColor: backgroundColor,
-        heightMultiplier: size / 120, // Ensures the card is square
       ),
     );
   }
