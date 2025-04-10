@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'text_styles_helpers.dart'; // Import the helper functions
+import '../utils/text_util.dart'; // Import the helper functions
 import 'app_colors.dart';
 
 class TextStyles {
   // 🌟 Assigned Styles using the Helper Functions
-  static TextStyle mainHeading = getOrbitron();
+  static TextStyle mainHeading = TextUtils.getOrbitron();
 
-  static TextStyle rightPanelHeadingText = getQuantico();
+  static TextStyle rightPanelHeadingText = TextUtils.getQuantico();
 
-  static TextStyle modern = getExo2();
+  static TextStyle modern = TextUtils.getExo2();
 
-  static TextStyle futuristic = getExo2();
+  static TextStyle futuristic = TextUtils.getExo2();
 
-  static TextStyle retro = getRajdhani();
+  static TextStyle retro = TextUtils.getRajdhani();
 
   //Growth, Health, and Disease Pages
-  static TextStyle graphSectionTitle =
-      getOrbitron(fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 0.0)
-          .copyWith(
+  static TextStyle graphSectionTitle = TextUtils.getOrbitron(
+          fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 0.0)
+      .copyWith(
     color: AppColors.cardNumberColor,
   );
 
-  static TextStyle growthStageCardTitle = getRoboto(
+  static TextStyle growthStageCardTitle = TextUtils.getRoboto(
       fontSize: 20,
       fontWeight: FontWeight.bold,
       color: AppColors.sidebarBackground);
 
-  static TextStyle sidebarMenuItem = getRoboto(
+  static TextStyle sidebarMenuItem = TextUtils.getRoboto(
       fontSize: 16,
       fontWeight: FontWeight.normal,
       color: AppColors.textColor.withOpacity(0.7));
 
-  static TextStyle sidebarMenuItemSelected = getRoboto(
+  static TextStyle sidebarMenuItemSelected = TextUtils.getRoboto(
       fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textColor);
 }
