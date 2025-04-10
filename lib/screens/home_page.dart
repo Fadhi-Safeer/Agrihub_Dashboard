@@ -223,7 +223,13 @@ class HomePage extends StatelessWidget {
                                           children: [
                                             Text('Live Monitoring'),
                                             Text(
-                                                'Click to view real-time plant detection'),
+                                                'Click to view real-time plant detection',
+                                                style:
+                                                    TextStyles.modern.copyWith(
+                                                  fontSize: 16,
+                                                  color: AppColors
+                                                      .sidebarGradientStart,
+                                                )),
                                           ],
                                         ),
                                       ),
