@@ -70,8 +70,10 @@ class ElevatedCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment:
+              MainAxisAlignment.start, // Align content to the top
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Align content to the left
           children: [
             Text(
               title,
