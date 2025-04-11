@@ -75,7 +75,7 @@ class ElevatedCard extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyles.rightPanelHeadingText.copyWith(fontSize: 18),
+              style: TextStyles.elevatedCardTitle,
             ),
             const SizedBox(height: 8.0),
             Text(

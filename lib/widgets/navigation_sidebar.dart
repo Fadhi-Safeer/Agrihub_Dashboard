@@ -109,10 +109,9 @@ class SidebarMenuItem extends StatelessWidget {
         ),
         title: Text(
           title,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white70,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
+          style: isSelected
+              ? TextStyles.sidebarMenuItemSelected
+              : TextStyles.sidebarMenuItem,
         ),
         onTap: onTap, // Attach the callback here
       ),

@@ -21,16 +21,19 @@ class TextStyles {
     color: AppColors.cardNumberColor,
   );
 
-  static TextStyle growthStageCardTitle = TextUtils.getRoboto(
+  static TextStyle elevatedCardTitle = TextUtils.getMontserrat(
       fontSize: 20,
       fontWeight: FontWeight.bold,
       color: AppColors.sidebarBackground);
 
-  static TextStyle sidebarMenuItem = TextUtils.getRoboto(
+  static TextStyle elevatedCardDescription = TextUtils.getWorkSans(
       fontSize: 16,
-      fontWeight: FontWeight.normal,
-      color: AppColors.textColor.withOpacity(0.7));
+      fontWeight: FontWeight.w500,
+      color: AppColors.sidebarBackground);
 
-  static TextStyle sidebarMenuItemSelected = TextUtils.getRoboto(
-      fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textColor);
+  static TextStyle sidebarMenuItem =
+      TextUtils.getRajdhani(fontSize: 23, fontWeight: FontWeight.w500);
+
+  static TextStyle sidebarMenuItemSelected =
+      TextUtils.getRajdhani(fontSize: 23, fontWeight: FontWeight.bold);
 }

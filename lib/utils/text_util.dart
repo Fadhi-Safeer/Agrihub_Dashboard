@@ -126,4 +126,38 @@ class TextUtils {
           ],
     );
   }
+
+  // Helper function for Montserrat font style (card titles)
+  static TextStyle getMontserrat({
+    double fontSize = 20,
+    FontWeight fontWeight = FontWeight.w600,
+    double letterSpacing = 1.2,
+    Color? color,
+    List<Shadow>? shadows,
+  }) {
+    return GoogleFonts.montserrat(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
+      color: color ?? AppColors.textColor,
+      shadows: shadows,
+    );
+  }
+
+  // Helper function for Work Sans font style (card descriptions)
+  static TextStyle getWorkSans({
+    double fontSize = 24,
+    FontWeight fontWeight = FontWeight.normal,
+    double letterSpacing = 0.8,
+    Color? color,
+    List<Shadow>? shadows,
+  }) {
+    return GoogleFonts.workSans(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
+      color: color ?? AppColors.textColor.withOpacity(0.85),
+      shadows: shadows,
+    );
+  }
 }
