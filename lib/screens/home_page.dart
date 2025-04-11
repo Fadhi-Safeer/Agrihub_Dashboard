@@ -163,20 +163,27 @@ class HomePage extends StatelessWidget {
                                         child: Column(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Text('Live Monitoring'),
+                                            Text(
+                                              'Live Monitoring',
+                                              style:
+                                                  TextStyles.elevatedCardTitle,
+                                            ),
+                                            const SizedBox(height: 8),
                                             Text(
                                               'Click to view real-time plant detection',
-                                              style: TextStyles.modern.copyWith(
-                                                fontSize: 16,
+                                              style: TextStyles
+                                                  .elevatedCardDescription
+                                                  .copyWith(
                                                 color: AppColors
                                                     .sidebarGradientStart,
                                               ),
+                                              textAlign: TextAlign.center,
                                             ),
                                           ],
                                         ),
                                       ),
                                       Positioned(
-                                        top: 16,
+                                        top: 10,
                                         right: 16,
                                         child: Image.asset(
                                           'assets/camera.png',
@@ -192,7 +199,7 @@ class HomePage extends StatelessWidget {
                                                   .width -
                                               32,
                                           height: boxHeight * 2 / 5,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                             image: DecorationImage(
                                               image: AssetImage(
                                                   'assets/plant.png'),

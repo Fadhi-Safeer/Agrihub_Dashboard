@@ -7,6 +7,8 @@ class ElevatedCard extends StatelessWidget {
   final Color backgroundColor;
   final double? width; // Optional width for square or elevated cards
   final double? height; // Optional height for elevated cards
+  final Color? titleColor; // Optional color for the title
+  final Color? descriptionColor; // Optional color for the description
 
   const ElevatedCard({
     super.key,
@@ -15,6 +17,8 @@ class ElevatedCard extends StatelessWidget {
     required this.backgroundColor,
     this.width,
     this.height,
+    this.titleColor, // Title color
+    this.descriptionColor, // Description color
   });
 
   /// Factory constructor for creating square-shaped cards
@@ -23,6 +27,8 @@ class ElevatedCard extends StatelessWidget {
     required String description,
     required Color backgroundColor,
     required double size,
+    Color? titleColor,
+    Color? descriptionColor,
   }) {
     return ElevatedCard(
       title: title,
@@ -30,6 +36,8 @@ class ElevatedCard extends StatelessWidget {
       backgroundColor: backgroundColor,
       width: size,
       height: size,
+      titleColor: titleColor,
+      descriptionColor: descriptionColor,
     );
   }
 
@@ -40,6 +48,8 @@ class ElevatedCard extends StatelessWidget {
     required Color backgroundColor,
     required double width,
     required double heightMultiplier,
+    Color? titleColor,
+    Color? descriptionColor,
   }) {
     return ElevatedCard(
       title: title,
@@ -47,6 +57,8 @@ class ElevatedCard extends StatelessWidget {
       backgroundColor: backgroundColor,
       width: width,
       height: width * heightMultiplier, // Multiply width by height multiplier
+      titleColor: titleColor,
+      descriptionColor: descriptionColor,
     );
   }
 
@@ -77,12 +89,17 @@ class ElevatedCard extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyles.elevatedCardTitle,
+              style: TextStyles.elevatedCardTitle.copyWith(
+                color: titleColor ?? TextStyles.elevatedCardTitle.color,
+              ),
             ),
             const SizedBox(height: 8.0),
             Text(
               description,
-              style: const TextStyle(),
+              style: TextStyles.elevatedCardDescription.copyWith(
+                color: descriptionColor ??
+                    TextStyles.elevatedCardDescription.color,
+              ),
             ),
           ],
         ),

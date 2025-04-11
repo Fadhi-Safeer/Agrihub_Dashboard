@@ -29,7 +29,7 @@ class TextStyles {
   static TextStyle elevatedCardDescription = TextUtils.getWorkSans(
       fontSize: 16,
       fontWeight: FontWeight.w500,
-      color: AppColors.sidebarBackground);
+      color: AppColors.elevatedCardDescription);
 
   static TextStyle sidebarMenuItem =
       TextUtils.getRajdhani(fontSize: 23, fontWeight: FontWeight.w500);
