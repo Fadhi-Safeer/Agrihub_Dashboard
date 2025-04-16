@@ -3,9 +3,19 @@ import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
+import '../widgets/monitoring_pages/elevated_card.dart';
+import '../widgets/monitoring_pages/bullet_points_card.dart';
+import '../widgets/monitoring_pages/camera_selection_dropdown.dart';
 
-class DiseaseDetectionPage extends StatelessWidget {
+class DiseaseDetectionPage extends StatefulWidget {
   const DiseaseDetectionPage({super.key});
+
+  @override
+  State<DiseaseDetectionPage> createState() => _DiseaseDetectionPageState();
+}
+
+class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
+  String selectedCamera = 'camera1'; // Track selected value here
 
   @override
   Widget build(BuildContext context) {
@@ -15,15 +25,13 @@ class DiseaseDetectionPage extends StatelessWidget {
       backgroundColor: AppColors.monitoring_pages_background,
       body: Row(
         children: [
-          const NavigationSidebar(), // Sidebar widget
+          const NavigationSidebar(),
           Expanded(
             child: Center(
-              // Center the entire content
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center, // Center vertically
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Disease Detection Heading
+                  // Heading
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -33,60 +41,36 @@ class DiseaseDetectionPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16.0), // Add spacing
-                  // Dropdown Menu
+                  const SizedBox(height: 16.0),
+
+                  // Dropdown with selected value and state change
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(
-                          color: AppColors.sidebarGradientStart,
-                          width: 1.5,
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                      child: DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                        ),
-                        value: 'Option 1', // Default selected value
-                        onChanged: (String? newValue) {
-                          // Handle dropdown selection
-                        },
-                        items: <String>['Option 1', 'Option 2', 'Option 3']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: TextStyle(
-                                color: AppColors.sidebarGradientStart,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        dropdownColor: Colors.white,
-                        style: const TextStyle(color: Colors.black),
-                      ),
+                    child: CameraSelectionDropdown(
+                      value: selectedCamera,
+                      onChanged: (newCamera) {
+                        if (newCamera != null) {
+                          setState(() {
+                            selectedCamera = newCamera;
+                          });
+                        }
+                      },
                     ),
                   ),
-                  const SizedBox(height: 16.0), // Add spacing
-                  // Grid with 3/4 and 1/4 layout
+                  const SizedBox(height: 16.0),
+
+                  // Analysis Section
                   SizedBox(
                     height: SizeConfig.proportionateScreenHeight(500),
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
                         children: [
-                          // Left 3/4 Section
                           Expanded(
-                            flex: 3, // 3/4 of the width
+                            flex: 3,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: CustomInfoCard(
+                              child: ElevatedCard(
                                 title: 'Disease Analysis',
                                 description:
                                     'Detailed analysis of diseases detected.',
@@ -94,9 +78,8 @@ class DiseaseDetectionPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Right 1/4 Section
                           Expanded(
-                            flex: 1, // 1/4 of the width
+                            flex: 1,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: BulletPointsCard(
@@ -124,7 +107,8 @@ class DiseaseDetectionPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Fixed graph section
+
+                  // Graphs Section
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -144,128 +128,6 @@ class DiseaseDetectionPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// A reusable widget for a card with a title and description.
-class CustomInfoCard extends StatelessWidget {
-  final String title;
-  final String description;
-  final Color backgroundColor;
-
-  const CustomInfoCard({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.backgroundColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3), // Shadow position
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyles.mainHeading.copyWith(fontSize: 16),
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              description,
-              style: TextStyle(),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// A reusable widget for a card displaying bullet points with square bullets.
-class BulletPointsCard extends StatelessWidget {
-  final String title;
-  final List<String> bulletPoints;
-  final List<Color> bulletColors;
-
-  const BulletPointsCard({
-    super.key,
-    required this.title,
-    required this.bulletPoints,
-    required this.bulletColors,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3), // Shadow position
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyles.mainHeading.copyWith(fontSize: 16),
-            ),
-            const SizedBox(height: 8.0),
-            ...bulletPoints.asMap().entries.map((entry) {
-              int index = entry.key;
-              String point = entry.value;
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 8.0,
-                      height: 8.0,
-                      margin: const EdgeInsets.only(right: 8.0, top: 4.0),
-                      decoration: BoxDecoration(
-                        color: bulletColors[index % bulletColors.length],
-                        shape: BoxShape.rectangle,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        point,
-                        style: TextStyle(),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ],
-        ),
       ),
     );
   }
