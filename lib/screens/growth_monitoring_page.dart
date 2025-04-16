@@ -4,9 +4,24 @@ import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../widgets/monitoring_pages/elevated_card.dart';
+import '../widgets/monitoring_pages/camera_selection_dropdown.dart'; // Import dropdown widget
 
-class GrowthMonitoringPage extends StatelessWidget {
+class GrowthMonitoringPage extends StatefulWidget {
   const GrowthMonitoringPage({super.key});
+
+  @override
+  State<GrowthMonitoringPage> createState() => _GrowthMonitoringPageState();
+}
+
+class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
+  String selectedCamera = 'camera1'; // Default dropdown selection
+
+  final List<String> plantGroups = [
+    'Early Growth',
+    'Leafy Growth',
+    'Head Formation',
+    'Harvest Stage'
+  ]; // Dropdown options
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +45,20 @@ class GrowthMonitoringPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Dropdown Menu
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: CameraSelectionDropdown(
+                    onChanged: (newCamera) {
+                      if (newCamera != null) {
+                        setState(() {
+                          selectedCamera = newCamera;
+                        });
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16.0), // Add spacing
                 // Growth cards grid (fixed height, non-scrollable)
                 SizedBox(
                   height: SizeConfig.proportionateScreenHeight(500),

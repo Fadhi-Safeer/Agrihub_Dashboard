@@ -4,9 +4,17 @@ import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../widgets/monitoring_pages/elevated_cards_grid.dart';
+import '../widgets/monitoring_pages/camera_selection_dropdown.dart'; // Import dropdown widget
 
-class HealthAnalysisPage extends StatelessWidget {
+class HealthAnalysisPage extends StatefulWidget {
   const HealthAnalysisPage({super.key});
+
+  @override
+  State<HealthAnalysisPage> createState() => _HealthAnalysisPageState();
+}
+
+class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
+  String? selectedCamera = 'Camera1'; // Default dropdown selection
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +38,18 @@ class HealthAnalysisPage extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Dropdown Menu
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: CameraSelectionDropdown(
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCamera = newValue; // Update state
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16.0), // Add spacing
                 // Health cards grid (dynamic number of boxes in 2 rows)
                 SizedBox(
                   height: SizeConfig.proportionateScreenHeight(500),

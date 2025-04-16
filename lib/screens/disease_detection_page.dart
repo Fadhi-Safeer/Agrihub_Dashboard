@@ -47,7 +47,6 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: CameraSelectionDropdown(
-                      value: selectedCamera,
                       onChanged: (newCamera) {
                         if (newCamera != null) {
                           setState(() {
