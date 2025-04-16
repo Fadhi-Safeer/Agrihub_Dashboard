@@ -100,14 +100,15 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                     flex: 2,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Card(
-                        color: AppColors.cardBackground,
-                        child: Center(
-                          child: Text(
-                            'Graphs Section',
-                            style: TextStyles.graphSectionTitle,
-                          ),
-                        ),
+                      child: ElevatedCard.elevated(
+                        title: 'Graphs Section',
+                        description:
+                            'Display of analysis graphs related to growth, health, etc.',
+                        backgroundColor: AppColors.cardBackground,
+                        width:
+                            double.infinity, // Set to fill the available width
+                        heightMultiplier:
+                            0.4, // Control the height relative to the width
                       ),
                     ),
                   ),
