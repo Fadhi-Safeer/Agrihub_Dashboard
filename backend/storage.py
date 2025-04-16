@@ -3,7 +3,7 @@ import cv2
 from datetime import datetime
 
 # Directory to save images
-IMAGE_SAVE_DIR = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/camera_storage"
+IMAGE_SAVE_DIR = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
 
 # Ensure the save directory exists
 if not os.path.exists(IMAGE_SAVE_DIR):

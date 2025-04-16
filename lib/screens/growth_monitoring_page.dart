@@ -74,8 +74,7 @@ class GrowthMonitoringPage extends StatelessWidget {
                 Expanded(
                   flex: 3, // Slightly increase the graph section size
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0,
-                        16.0), // Reduced top padding to decrease space above
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                     child: Card(
                       color: AppColors.cardBackground,
                       child: Center(
