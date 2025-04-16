@@ -27,7 +27,7 @@ class TextStyles {
       color: AppColors.sidebarBackground);
 
   static TextStyle elevatedCardDescription = TextUtils.getWorkSans(
-      fontSize: 16,
+      fontSize: 17.5,
       fontWeight: FontWeight.w500,
       color: AppColors.elevatedCardDescription);
 

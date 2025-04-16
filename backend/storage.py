@@ -22,6 +22,8 @@ def save_frame_locally(frame, hls_url):
     :param camera_id: A unique identifier for the camera (e.g., camera URL or ID).
     :return: The file path where the image was saved.
     """
+    if datetime.now().hour !=00:
+        return None
     camera_id =  extract_camera_id(hls_url)
     # Generate a unique filename using the camera ID and current timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")

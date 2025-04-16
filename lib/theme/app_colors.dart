@@ -43,7 +43,7 @@ class AppColors {
   static const Color cardBackground = Color(0xFFF3E5F5); // Purple[50]
   static const Color cardNumberColor = Color(0xFF4A148C); // Purple[800]
   static const Color cardImageBackground = Color(0xFFCE93D8);
-  static const Color elevatedCardDescription = Color(0xFF006A6A); // Purple[300]
+  static const Color elevatedCardDescription = Color(0xFF654321); // Purple[300]
 
   static var monitoring_pages_background = Color(0xFFF9F5FF);
 }

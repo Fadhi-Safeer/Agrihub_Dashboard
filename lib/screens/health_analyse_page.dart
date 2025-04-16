@@ -3,7 +3,7 @@ import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
-import '../widgets/monitoring_pages/info_cards_grid.dart';
+import '../widgets/monitoring_pages/elevated_cards_grid.dart';
 
 class HealthAnalysisPage extends StatelessWidget {
   const HealthAnalysisPage({super.key});

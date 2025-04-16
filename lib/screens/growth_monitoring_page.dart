@@ -45,25 +45,25 @@ class GrowthMonitoringPage extends StatelessWidget {
                         ElevatedCard.square(
                           title: 'Early Growth',
                           description: '120 Plants',
-                          backgroundColor: AppColors.cardBackground,
+                          backgroundColor: Colors.lightGreen[300]!,
                           size: SizeConfig.proportionateScreenWidth(150),
                         ),
                         ElevatedCard.square(
                           title: 'Leafy Growth',
                           description: '90 Plants',
-                          backgroundColor: AppColors.cardBackground,
+                          backgroundColor: Colors.green[400]!,
                           size: SizeConfig.proportionateScreenWidth(150),
                         ),
                         ElevatedCard.square(
                           title: 'Head Formation',
                           description: '75 Plants',
-                          backgroundColor: AppColors.cardBackground,
+                          backgroundColor: Colors.amber[300]!,
                           size: SizeConfig.proportionateScreenWidth(150),
                         ),
                         ElevatedCard.square(
                           title: 'Harvest Stage',
                           description: '60 Plants',
-                          backgroundColor: AppColors.cardBackground,
+                          backgroundColor: Colors.orange[400]!,
                           size: SizeConfig.proportionateScreenWidth(150),
                         ),
                       ],
@@ -72,8 +72,10 @@ class GrowthMonitoringPage extends StatelessWidget {
                 ),
                 // Fixed graph section
                 Expanded(
+                  flex: 3, // Slightly increase the graph section size
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0,
+                        16.0), // Reduced top padding to decrease space above
                     child: Card(
                       color: AppColors.cardBackground,
                       child: Center(
