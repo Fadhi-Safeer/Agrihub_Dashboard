@@ -4,6 +4,7 @@ import base64
 import numpy as np
 from ultralytics import YOLO
 import torch
+from storage import save_frame_locally  
 
 
 # Load YOLO model for detection
@@ -31,6 +32,7 @@ async def capture_frame_from_hls(hls_url):
 # Existing YOLO detection process (Step 1)
 async def yolo_process(hls_url, model):
     frame = await capture_frame_from_hls(hls_url)
+    save_frame_locally(frame, hls_url)  
     results = model.predict(source=frame, imgsz=640, device=device, verbose=False)
   
     bounding_boxes = []
