@@ -14,8 +14,6 @@ class HealthAnalysisPage extends StatefulWidget {
 }
 
 class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
-  String? selectedCamera = 'Camera1'; // Default dropdown selection
-
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -41,13 +39,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                 // Dropdown Menu
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: CameraSelectionDropdown(
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCamera = newValue; // Update state
-                      });
-                    },
-                  ),
+                  child: CameraSelectionDropdown(),
                 ),
                 const SizedBox(height: 16.0), // Add spacing
                 // Health cards grid (dynamic number of boxes in 2 rows)

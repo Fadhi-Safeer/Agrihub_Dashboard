@@ -92,8 +92,8 @@ class SidebarMenuItem extends StatelessWidget {
         gradient: isSelected
             ? LinearGradient(
                 colors: [
-                  Colors.pink[600]!, // Darker pinkish purple
-                  Colors.pink[400]!, // Lighter pinkish purple
+                  const Color(0xFFAD1457), // Deep raspberry / dark magenta
+                  const Color(0xFFE91E63), // Classic vibrant magenta (middle)
                 ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,

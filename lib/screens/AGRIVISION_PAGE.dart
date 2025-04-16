@@ -17,10 +17,31 @@ class AgrivisionPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agricultural Growth & Research with AI Vision',
-            style: TextStyles.mainHeading),
-        centerTitle: true,
         backgroundColor: AppColors.topBar,
+        centerTitle: true,
+        iconTheme: const IconThemeData(
+            color: Colors.white), // Set icon (back button) color
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/agrivision_icon.png',
+              height: 40,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Agricultural Growth & Research with AI Vision',
+              style: TextStyles.mainHeading.copyWith(color: Colors.white),
+            ),
+          ],
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            // Navigate to the homepage and remove current screen from stack
+            Navigator.pushReplacementNamed(context, '/home');
+          },
+        ),
       ),
       body: Container(
         color: AppColors.background,

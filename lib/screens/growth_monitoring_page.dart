@@ -14,8 +14,6 @@ class GrowthMonitoringPage extends StatefulWidget {
 }
 
 class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
-  String selectedCamera = 'camera1'; // Default dropdown selection
-
   final List<String> plantGroups = [
     'Early Growth',
     'Leafy Growth',
@@ -48,15 +46,7 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                 // Dropdown Menu
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: CameraSelectionDropdown(
-                    onChanged: (newCamera) {
-                      if (newCamera != null) {
-                        setState(() {
-                          selectedCamera = newCamera;
-                        });
-                      }
-                    },
-                  ),
+                  child: CameraSelectionDropdown(),
                 ),
                 const SizedBox(height: 16.0), // Add spacing
                 // Growth cards grid (fixed height, non-scrollable)

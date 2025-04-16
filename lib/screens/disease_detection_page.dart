@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/cameraSelectionDropdown_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
@@ -15,8 +17,6 @@ class DiseaseDetectionPage extends StatefulWidget {
 }
 
 class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
-  String selectedCamera = 'camera1'; // Track selected value here
-
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -31,9 +31,9 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Heading
+                  // Top Heading
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Text(
                       'Disease Detection',
                       style: TextStyles.mainHeading.copyWith(
@@ -41,26 +41,17 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16.0),
 
                   // Dropdown with selected value and state change
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CameraSelectionDropdown(
-                      onChanged: (newCamera) {
-                        if (newCamera != null) {
-                          setState(() {
-                            selectedCamera = newCamera;
-                          });
-                        }
-                      },
-                    ),
+                    child: CameraSelectionDropdown(),
                   ),
                   const SizedBox(height: 16.0),
 
                   // Analysis Section
-                  SizedBox(
-                    height: SizeConfig.proportionateScreenHeight(500),
+                  Expanded(
+                    flex: 3,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Row(
@@ -106,9 +97,9 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                       ),
                     ),
                   ),
-
                   // Graphs Section
                   Expanded(
+                    flex: 2,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Card(

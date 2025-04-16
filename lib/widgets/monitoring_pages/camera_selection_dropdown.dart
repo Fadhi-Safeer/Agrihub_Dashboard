@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/available_cameras.dart';
+import '../../providers/cameraSelectionDropdown_provider.dart';
 
 class CameraSelectionDropdown extends StatelessWidget {
-  final String? value;
-  final ValueChanged<String?>? onChanged;
-
-  const CameraSelectionDropdown({
-    super.key,
-    this.value, // Accept null to indicate no selection
-    this.onChanged,
-  });
+  const CameraSelectionDropdown({super.key});
 
   /// Helper function to extract camera numbers from URLs
   List<String> extractCameraNumbers(List<String> links) {
@@ -19,8 +14,13 @@ class CameraSelectionDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> cameraLinks = getAvailableCameras(); // Get list
+    final List<String> cameraLinks =
+        getAvailableCameras(); // Get list of camera links
     final List<String> cameraNumbers = extractCameraNumbers(cameraLinks);
+
+    // Use the provider to get the selected camera and the setter to update it
+    final selectedCamera =
+        Provider.of<CameraSelectionDropdownProvider>(context).selectedCamera;
 
     return Container(
       decoration: BoxDecoration(
@@ -36,8 +36,16 @@ class CameraSelectionDropdown extends StatelessWidget {
         decoration: const InputDecoration(
           border: InputBorder.none,
         ),
-        value: cameraNumbers.contains(value) ? value : null, // default null
-        onChanged: onChanged,
+        value: cameraNumbers.contains(selectedCamera)
+            ? selectedCamera
+            : null, // Set the selected camera
+        onChanged: (newCamera) {
+          if (newCamera != null) {
+            // Update the selected camera in the provider
+            Provider.of<CameraSelectionDropdownProvider>(context, listen: false)
+                .selectedCamera = newCamera;
+          }
+        },
         hint: const Text('Select Camera'), // Shown when nothing is selected
         items: cameraNumbers.map<DropdownMenuItem<String>>((String camera) {
           return DropdownMenuItem<String>(
