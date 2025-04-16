@@ -91,7 +91,6 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                 ),
                 // Fixed graph section
                 Expanded(
-                  flex: 3, // Slightly increase the graph section size
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
                     child: Card(
