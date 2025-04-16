@@ -91,16 +91,17 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                 ),
                 // Fixed graph section
                 Expanded(
+                  flex: 2,
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-                    child: Card(
-                      color: AppColors.cardBackground,
-                      child: Center(
-                        child: Text(
-                          'Graphs Section',
-                          style: TextStyles.graphSectionTitle,
-                        ),
-                      ),
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedCard.elevated(
+                      title: 'Graphs Section',
+                      description:
+                          'Display of analysis graphs related to growth, health, etc.',
+                      backgroundColor: AppColors.cardBackground,
+                      width: double.infinity, // Set to fill the available width
+                      heightMultiplier:
+                          0.4, // Control the height relative to the width
                     ),
                   ),
                 ),
