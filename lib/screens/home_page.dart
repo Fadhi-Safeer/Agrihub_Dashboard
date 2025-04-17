@@ -1,8 +1,9 @@
+import 'package:agrihub_dashboard/widgets/graphs/pie_chart.dart';
 import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../widgets/monitoring_pages/elevated_card.dart';
-import '../widgets/navigation_sidebar.dart'; // Import the NavigationSidebar widget
+import '../widgets/navigation_sidebar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -89,11 +90,36 @@ class HomePage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   ElevatedCard.square(
-                                    title: 'Model Accuracy',
-                                    description: '92%',
-                                    backgroundColor: Colors.deepPurple[300]!,
-                                    size: squareSize,
-                                  ),
+                                      title: 'Model Accuracy',
+                                      description: '',
+                                      backgroundColor: Colors.deepPurple[300]!,
+                                      size: squareSize,
+                                      child: CustomPieChart(
+                                        values: [
+                                          40,
+                                          30,
+                                          20,
+                                          10
+                                        ], // percentages or any numeric values
+                                        colors: [
+                                          Colors.blue,
+                                          Colors.green,
+                                          Colors.orange,
+                                          Colors.red,
+                                        ],
+                                        titles: [
+                                          'Sales',
+                                          'Marketing',
+                                          'R&D',
+                                          'Support'
+                                        ],
+                                        iconPaths: [
+                                          'assets/icons/sales.png',
+                                          'assets/icons/marketing.png',
+                                          'assets/icons/research.png',
+                                          'assets/icons/support.png',
+                                        ],
+                                      )),
                                 ],
                               ),
                             ),
@@ -133,6 +159,32 @@ class HomePage extends StatelessWidget {
                                 backgroundColor: Colors.purple[200]!,
                                 width: squareSize,
                                 height: (squareSize * 2) + 6,
+                                child: CustomPieChart(
+                                  values: [
+                                    40,
+                                    30,
+                                    20,
+                                    10
+                                  ], // percentages or any numeric values
+                                  colors: [
+                                    Colors.blue,
+                                    Colors.green,
+                                    Colors.orange,
+                                    Colors.red,
+                                  ],
+                                  titles: [
+                                    'Sales',
+                                    'Marketing',
+                                    'R&D',
+                                    'Support'
+                                  ],
+                                  iconPaths: [
+                                    'assets/icons/sales.png',
+                                    'assets/icons/marketing.png',
+                                    'assets/icons/research.png',
+                                    'assets/icons/support.png',
+                                  ],
+                                ),
                               ),
                             ),
                             const SizedBox(width: 16),

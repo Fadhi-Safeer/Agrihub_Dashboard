@@ -5,10 +5,11 @@ class ElevatedCard extends StatelessWidget {
   final String title;
   final String description;
   final Color backgroundColor;
-  final double? width; // Optional width for square or elevated cards
-  final double? height; // Optional height for elevated cards
-  final Color? titleColor; // Optional color for the title
-  final Color? descriptionColor; // Optional color for the description
+  final double? width;
+  final double? height;
+  final Color? titleColor;
+  final Color? descriptionColor;
+  final Widget? child;
 
   const ElevatedCard({
     super.key,
@@ -17,8 +18,9 @@ class ElevatedCard extends StatelessWidget {
     required this.backgroundColor,
     this.width,
     this.height,
-    this.titleColor, // Title color
-    this.descriptionColor, // Description color
+    this.titleColor,
+    this.descriptionColor,
+    this.child,
   });
 
   /// Factory constructor for creating square-shaped cards
@@ -29,6 +31,7 @@ class ElevatedCard extends StatelessWidget {
     required double size,
     Color? titleColor,
     Color? descriptionColor,
+    Widget? child,
   }) {
     return ElevatedCard(
       title: title,
@@ -38,6 +41,7 @@ class ElevatedCard extends StatelessWidget {
       height: size,
       titleColor: titleColor,
       descriptionColor: descriptionColor,
+      child: child,
     );
   }
 
@@ -50,6 +54,7 @@ class ElevatedCard extends StatelessWidget {
     required double heightMultiplier,
     Color? titleColor,
     Color? descriptionColor,
+    Widget? child,
   }) {
     return ElevatedCard(
       title: title,
@@ -65,8 +70,8 @@ class ElevatedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width, // Width, if provided
-      height: height, // Height, if provided
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(8.0),
@@ -75,34 +80,39 @@ class ElevatedCard extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             spreadRadius: 2,
             blurRadius: 5,
-            offset: const Offset(0, 3), // Shadow position
+            offset: const Offset(0, 3),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.start, // Align content to the top
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Align content to the left
-          children: [
-            Text(
-              title,
-              style: TextStyles.elevatedCardTitle.copyWith(
-                color: titleColor ?? TextStyles.elevatedCardTitle.color,
-              ),
+      child: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyles.elevatedCardTitle.copyWith(
+                    color: titleColor ?? TextStyles.elevatedCardTitle.color,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                Text(
+                  description,
+                  style: TextStyles.elevatedCardDescription.copyWith(
+                    color: descriptionColor ??
+                        TextStyles.elevatedCardDescription.color,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8.0),
-            Text(
-              description,
-              style: TextStyles.elevatedCardDescription.copyWith(
-                color: descriptionColor ??
-                    TextStyles.elevatedCardDescription.color,
-              ),
-            ),
-          ],
-        ),
+          ),
+
+          // ✅ Center the child widget if provided
+          if (child != null) Center(child: child!),
+        ],
       ),
     );
   }

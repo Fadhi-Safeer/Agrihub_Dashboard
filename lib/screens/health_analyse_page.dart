@@ -4,7 +4,8 @@ import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../widgets/monitoring_pages/elevated_cards_grid.dart';
-import '../widgets/monitoring_pages/camera_selection_dropdown.dart'; // Import dropdown widget
+import '../widgets/monitoring_pages/camera_selection_dropdown.dart';
+import '../widgets/monitoring_pages/elevated_card.dart';
 
 class HealthAnalysisPage extends StatefulWidget {
   const HealthAnalysisPage({super.key});
