@@ -84,12 +84,14 @@ class ElevatedCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Text content at the top
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -110,8 +112,17 @@ class ElevatedCard extends StatelessWidget {
             ),
           ),
 
-          // ✅ Center the child widget if provided
-          if (child != null) Center(child: child!),
+          // Centered child widget below the text
+          if (child != null)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: child!,
+                ),
+              ),
+            ),
         ],
       ),
     );

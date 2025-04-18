@@ -90,36 +90,11 @@ class HomePage extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   ElevatedCard.square(
-                                      title: 'Model Accuracy',
-                                      description: '',
-                                      backgroundColor: Colors.deepPurple[300]!,
-                                      size: squareSize,
-                                      child: CustomPieChart(
-                                        values: [
-                                          40,
-                                          30,
-                                          20,
-                                          10
-                                        ], // percentages or any numeric values
-                                        colors: [
-                                          Colors.blue,
-                                          Colors.green,
-                                          Colors.orange,
-                                          Colors.red,
-                                        ],
-                                        titles: [
-                                          'Sales',
-                                          'Marketing',
-                                          'R&D',
-                                          'Support'
-                                        ],
-                                        iconPaths: [
-                                          'assets/icons/sales.png',
-                                          'assets/icons/marketing.png',
-                                          'assets/icons/research.png',
-                                          'assets/icons/support.png',
-                                        ],
-                                      )),
+                                    title: '',
+                                    description: '',
+                                    backgroundColor: Colors.deepPurple[300]!,
+                                    size: squareSize,
+                                  ),
                                 ],
                               ),
                             ),
@@ -155,34 +130,23 @@ class HomePage extends StatelessWidget {
                               flex: 2,
                               child: ElevatedCard(
                                 title: 'Audience Growth (Bar Chart)',
-                                description: '5000',
+                                description: '',
                                 backgroundColor: Colors.purple[200]!,
                                 width: squareSize,
                                 height: (squareSize * 2) + 6,
                                 child: CustomPieChart(
-                                  values: [
-                                    40,
-                                    30,
-                                    20,
-                                    10
-                                  ], // percentages or any numeric values
+                                  values: [40, 30, 20, 10],
                                   colors: [
                                     Colors.blue,
                                     Colors.green,
                                     Colors.orange,
-                                    Colors.red,
+                                    Colors.red
                                   ],
                                   titles: [
-                                    'Sales',
-                                    'Marketing',
-                                    'R&D',
-                                    'Support'
-                                  ],
-                                  iconPaths: [
-                                    'assets/icons/sales.png',
-                                    'assets/icons/marketing.png',
-                                    'assets/icons/research.png',
-                                    'assets/icons/support.png',
+                                    'Apples',
+                                    'Bananas',
+                                    'Cherries',
+                                    'Dates'
                                   ],
                                 ),
                               ),
