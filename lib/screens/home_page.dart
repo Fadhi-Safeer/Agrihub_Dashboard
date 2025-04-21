@@ -1,4 +1,4 @@
-import 'package:agrihub_dashboard/widgets/graphs/pie_chart.dart';
+import 'package:agrihub_dashboard/widgets/graphs/custom_pie_chart.dart';
 import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
