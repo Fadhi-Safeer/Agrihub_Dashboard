@@ -153,7 +153,7 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
 
                         // Overlay
                         if (isOverlayVisible)
-                          GrowthSummaryOverlay(
+                          InfoBoxOverlay(
                             onClose: () {
                               setState(() {
                                 isOverlayVisible = false;

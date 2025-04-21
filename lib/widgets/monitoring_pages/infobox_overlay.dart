@@ -3,10 +3,10 @@ import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
 import '../graphs/custom_pie_chart.dart';
 
-class GrowthSummaryOverlay extends StatelessWidget {
+class InfoBoxOverlay extends StatelessWidget {
   final VoidCallback onClose;
 
-  const GrowthSummaryOverlay({super.key, required this.onClose});
+  const InfoBoxOverlay({super.key, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
