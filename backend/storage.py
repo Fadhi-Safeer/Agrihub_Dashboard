@@ -1,41 +1,43 @@
 import os
-import cv2
+import re
+import uuid
 from datetime import datetime
+import cv2
+import numpy as np
+from classification_mapper import ClassificationMapper
 
-# Directory to save images
-IMAGE_SAVE_DIR = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
-
-# Ensure the save directory exists
-if not os.path.exists(IMAGE_SAVE_DIR):
-    os.makedirs(IMAGE_SAVE_DIR)
-
-def extract_camera_id(hls_url):
-
-    # Split the URL by '/' and take the last part, then remove the file extension
-    return os.path.basename(hls_url).split('.')[0]
-
-def save_frame_locally(frame, hls_url):
+def save_frame_locally(
+    frame: np.ndarray,
+    cam_url: str,
+    classification_results: dict,
+    base_dir: str = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
+) -> None:
     """
-    Saves the given frame to the specified directory with a unique name.
-
-    :param frame: The captured frame (numpy array).
-    :param camera_id: A unique identifier for the camera (e.g., camera URL or ID).
-    :return: The file path where the image was saved.
+    Saves classified crop frame directly in camera folder with structured naming
     """
-    if datetime.now().hour !=00:
-        return None
-    camera_id =  extract_camera_id(hls_url)
-    # Generate a unique filename using the camera ID and current timestamp
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-    filename = f"{camera_id}_{timestamp}.jpg"
+    # Ensure camera folder exists
+# Extract the filename part of the URL
 
-    # Create a subdirectory for the camera if it doesn't exist
-    camera_dir = os.path.join(IMAGE_SAVE_DIR, camera_id)
-    if not os.path.exists(camera_dir):
-        os.makedirs(camera_dir)
+    filename = cam_url.split('/')[-1]
+    name = filename.split('.')[0] 
+    cam_num = int(name.replace('camera', ''))  
 
-    # Save the frame to the camera's subdirectory
-    file_path = os.path.join(camera_dir, filename)
-    cv2.imwrite(file_path, frame)
-    print(f"Saved frame to {file_path}")
-    return file_path
+    cam_dir = os.path.join(base_dir, cam_num)
+    os.makedirs(cam_dir, exist_ok=True)
+
+    # Extract and normalize classification info
+    growth_stage = str(classification_results.get("growth", "unknown")).lower().strip()
+    health_status = str(classification_results.get("health", "unknown")).lower().strip()
+    disease_type = str(classification_results.get("disease", "")).lower().strip()
+
+    # Get classification codes
+    growth_code = ClassificationMapper.get_growth_code(growth_stage)
+    health_code = ClassificationMapper.get_health_code(health_status, disease_type)
+
+    # Generate filename (without subfolders)
+    filename = f"{cam_num}_{growth_code}_{health_code}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
+    
+    # Save directly in camera folder
+    cv2.imwrite(os.path.join(cam_dir, filename), frame)
+    
+    return

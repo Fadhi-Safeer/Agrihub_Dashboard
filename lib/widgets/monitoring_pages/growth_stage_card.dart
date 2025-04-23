@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import '../../models/growth_stage.dart';
 
@@ -27,7 +26,7 @@ class GrowthCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          // Title and Count
+          // Title only (description removed)
           Text(
             stage.title,
             style: const TextStyle(
@@ -36,15 +35,7 @@ class GrowthCard extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            stage.count,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 12), // Reduced spacing
 
           // Slot Grid
           Expanded(

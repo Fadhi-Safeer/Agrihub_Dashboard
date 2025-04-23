@@ -1,4 +1,3 @@
-// lib/widgets/camera_feed.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,7 +7,11 @@ import '../../providers/yolo_provider.dart';
 
 class CameraFeed extends StatefulWidget {
   final String cameraUrl;
-  const CameraFeed({Key? key, required this.cameraUrl}) : super(key: key);
+
+  const CameraFeed({
+    Key? key,
+    required this.cameraUrl,
+  }) : super(key: key);
 
   @override
   _CameraFeedState createState() => _CameraFeedState();
@@ -18,16 +21,13 @@ class _CameraFeedState extends State<CameraFeed> {
   late VideoPlayerController _controller;
   bool _isLoading = true;
   String _errorMessage = '';
-  Timer? _detectionTimer;
-  Timer? _croppingTimer;
+  bool _hasInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(widget.cameraUrl);
     _initializeController();
-    _startDetectionTimer();
-    _startCroppingTimer();
   }
 
   Future<void> _initializeController() async {
@@ -35,80 +35,69 @@ class _CameraFeedState extends State<CameraFeed> {
       await _controller.initialize();
       await _controller.setVolume(0);
       await _controller.play();
+
+      // Register camera with YOLO provider after successful init
+      final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
+      yoloProvider.registerCamera(widget.cameraUrl);
+
       setState(() {
         _isLoading = false;
+        _hasInitialized = true;
       });
-      debugPrint("Video player initialized for ${widget.cameraUrl}");
     } catch (e) {
       setState(() {
-        _errorMessage = 'Failed to load video: $e';
+        _errorMessage = 'Failed to load video: ${e.toString()}';
         _isLoading = false;
       });
-      debugPrint("Error initializing video player: $e");
+      debugPrint("Error initializing camera feed: ${e.toString()}");
     }
   }
 
-  // Timer for sending detection requests (Step 1)
-  void _startDetectionTimer() {
-    final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
-    _detectionTimer = Timer.periodic(Duration(seconds: 6), (timer) {
-      yoloProvider.sendDetectionRequest(widget.cameraUrl);
-      debugPrint('Sent detection request for ${widget.cameraUrl}');
-    });
-  }
-
-  // Timer for sending cropping & classification requests (Step 2)
-  void _startCroppingTimer() {
-    final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
-    _croppingTimer = Timer.periodic(Duration(seconds: 15), (timer) {
-      // Only send cropping request if bounding boxes are available
-      if (yoloProvider.boundingBoxes.isNotEmpty) {
-        yoloProvider.sendCroppingRequest(
-            widget.cameraUrl, yoloProvider.boundingBoxes);
-        debugPrint(
-            'Sent cropping & classification request for ${widget.cameraUrl}');
-      } else {
-        debugPrint('No bounding boxes available for cropping request.');
-      }
-    });
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_hasInitialized) {
+      // Re-register camera if provider changes
+      final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
+      yoloProvider.registerCamera(widget.cameraUrl);
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _detectionTimer?.cancel();
-    _croppingTimer?.cancel();
+    // Unregister camera when disposed
+    final yoloProvider = Provider.of<YOLOProvider>(context, listen: false);
+    yoloProvider.unregisterCamera(widget.cameraUrl);
     super.dispose();
-    debugPrint('Disposed CameraFeed for ${widget.cameraUrl}');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : _errorMessage.isNotEmpty
-                ? Center(
-                    child: Text(
-                      _errorMessage,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  )
-                : AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  ),
-        // Overlay bounding boxes from YOLOProvider
-        Consumer<YOLOProvider>(
-          builder: (context, yoloProvider, child) {
-            if (yoloProvider.boundingBoxes.isNotEmpty &&
-                _controller.value.isInitialized &&
-                _controller.value.size.width > 0 &&
-                _controller.value.size.height > 0) {
-              debugPrint(
-                  '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111');
-              return Positioned.fill(
+    return Consumer<YOLOProvider>(
+      builder: (context, yoloProvider, child) {
+        return Stack(
+          children: [
+            // Video Feed or Loading/Error State
+            _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _errorMessage.isNotEmpty
+                    ? Center(
+                        child: Text(
+                          _errorMessage,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      )
+                    : AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child: VideoPlayer(_controller),
+                      ),
+
+            // Bounding Box Overlay (only when this camera is active)
+            if (yoloProvider.latestFrameUrl == widget.cameraUrl &&
+                yoloProvider.boundingBoxes.isNotEmpty &&
+                _controller.value.isInitialized)
+              Positioned.fill(
                 child: CustomPaint(
                   painter: BoundingBoxPainter(
                     boundingBoxes: yoloProvider.boundingBoxes,
@@ -116,12 +105,29 @@ class _CameraFeedState extends State<CameraFeed> {
                     previewSize: _controller.value.size,
                   ),
                 ),
-              );
-            }
-            return SizedBox.shrink();
-          },
-        ),
-      ],
+              ),
+
+            // Classification Results Indicator
+            if (yoloProvider.latestFrameUrl == widget.cameraUrl &&
+                yoloProvider.classificationResults.isNotEmpty)
+              Positioned(
+                bottom: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'Results: ${yoloProvider.classificationResults.length}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

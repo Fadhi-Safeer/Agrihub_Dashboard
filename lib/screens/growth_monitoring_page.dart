@@ -22,45 +22,28 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
       count: '120 Plants',
       color: Colors.lightGreen[300]!,
       slotCount: 12,
-      slotImages: [
-        'assets/plant1.png',
-        'assets/plant2.png',
-        null,
-        'assets/plant4.png',
-      ],
+      slotImages: ['assets/leafy_growth_icon.png'],
     ),
     GrowthStage(
       title: 'Leafy Growth',
       count: '90 Plants',
       color: Colors.green[400]!,
-      slotCount: 8,
-      slotImages: [
-        'assets/plant1.png',
-        null,
-        null,
-        'assets/plant4.png',
-      ],
+      slotCount: 12,
+      slotImages: ['assets/leafy_growth_icon.png'],
     ),
     GrowthStage(
       title: 'Head Formation',
       count: '75 Plants',
       color: Colors.amber[300]!,
-      slotCount: 6,
-      slotImages: [
-        'assets/plant1.png',
-        null,
-        'assets/plant3.png',
-      ],
+      slotCount: 12,
+      slotImages: ['assets/leafy_growth_icon.png'],
     ),
     GrowthStage(
       title: 'Harvest Stage',
       count: '60 Plants',
       color: Colors.orange[400]!,
-      slotCount: 4,
-      slotImages: [
-        'assets/plant1.png',
-        'assets/plant2.png',
-      ],
+      slotCount: 12,
+      slotImages: ['assets/leafy_growth_icon.png'],
     ),
   ];
 

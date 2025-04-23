@@ -19,7 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => YOLOProvider()),
+        ChangeNotifierProvider(
+            create: (_) => YOLOProvider(websocketUrl: 'ws://localhost:8000')),
         ChangeNotifierProvider(create: (_) => NavigationBarProvider()),
         ChangeNotifierProvider(
             create: (_) => CameraSelectionDropdownProvider()),

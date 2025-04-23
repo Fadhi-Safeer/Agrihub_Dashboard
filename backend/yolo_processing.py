@@ -8,7 +8,7 @@ from storage import save_frame_locally
 
 
 # Load YOLO model for detection
-DETECTION_MODEL = YOLO('yolov8n.pt')
+DETECTION_MODEL = YOLO('yolov8m.pt')
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -32,7 +32,6 @@ async def capture_frame_from_hls(hls_url):
 # Existing YOLO detection process (Step 1)
 async def yolo_process(hls_url, model):
     frame = await capture_frame_from_hls(hls_url)
-    save_frame_locally(frame, hls_url)  
     results = model.predict(source=frame, imgsz=640, device=device, verbose=False)
   
     bounding_boxes = []
@@ -99,6 +98,7 @@ def classify_cropped_image(cropped_image):
         "growth": growth_result[0].probs.top1 if growth_result else "Unknown",
         "health": health_result[0].probs.top1 if health_result else "Unknown",
     }
+    
 
     return classification
 
@@ -133,6 +133,11 @@ async def handler(websoc):
                         continue  # Skip if crop failed
 
                     classification = classify_cropped_image(cropped)
+                    save_frame_locally(
+                        frame=cropped,
+                        cam_num=data.get('cam_num', 'cam01'),  # Get from your input data
+                        classification_results=classification
+                    )
                     encoded_image = encode_image_to_base64(cropped)  # Convert cropped image to Base64
 
                     result_entry = {
