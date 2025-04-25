@@ -2,10 +2,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../models/growth_stage.dart';
 
-class GrowthCard extends StatelessWidget {
+class ElevatedImageCard extends StatelessWidget {
   final GrowthStage stage;
 
-  const GrowthCard({super.key, required this.stage});
+  const ElevatedImageCard({super.key, required this.stage});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class GrowthCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       child: Column(
         children: [
-          // Title only (description removed)
+          // Title
           Text(
             stage.title,
             style: const TextStyle(
@@ -39,27 +39,69 @@ class GrowthCard extends StatelessWidget {
 
           // Slot Grid
           Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // First row of slots
-                Expanded(
-                  child: _buildSlotRow(
-                    startIndex: 0,
-                    itemCount: itemsPerRow,
+            child: stage.slotCount == 1
+                ? _buildSingleSlot() // Handle single slot case
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // First row of slots
+                      Expanded(
+                        child: _buildSlotRow(
+                          startIndex: 0,
+                          itemCount: itemsPerRow,
+                        ),
+                      ),
+                      // Second row of slots
+                      Expanded(
+                        child: _buildSlotRow(
+                          startIndex: itemsPerRow,
+                          itemCount:
+                              min(itemsPerRow, stage.slotCount - itemsPerRow),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                // Second row of slots
-                Expanded(
-                  child: _buildSlotRow(
-                    startIndex: itemsPerRow,
-                    itemCount: min(itemsPerRow, stage.slotCount - itemsPerRow),
-                  ),
-                ),
-              ],
+          ),
+          const SizedBox(
+              height: 12), // Add spacing between the grid and description
+
+          // Description
+          Text(
+            stage.description, // Updated to use 'description'
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.white70,
             ),
+            textAlign: TextAlign.center, // Center align the description
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSingleSlot() {
+    final String? imagePath =
+        stage.slotImages.isNotEmpty ? stage.slotImages[0] : null;
+
+    return Center(
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: imagePath != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain, // Ensures the image fits entirely
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  ),
+                )
+              : _buildPlaceholder(),
+        ),
       ),
     );
   }
@@ -91,7 +133,8 @@ class GrowthCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
                           imagePath,
-                          fit: BoxFit.cover,
+                          fit:
+                              BoxFit.contain, // Ensures the image fits entirely
                           errorBuilder: (_, __, ___) => _buildPlaceholder(),
                         ),
                       )

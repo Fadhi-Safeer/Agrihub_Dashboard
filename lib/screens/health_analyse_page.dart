@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import '../models/growth_stage.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
+import '../widgets/monitoring_pages/health_card_grid.dart';
+import '../widgets/monitoring_pages/elevated_image_card.dart';
 import '../widgets/navigation_sidebar.dart';
-import '../widgets/monitoring_pages/elevated_cards_grid.dart';
 import '../widgets/monitoring_pages/camera_selection_dropdown.dart';
-import '../widgets/monitoring_pages/elevated_card.dart';
 
 class HealthAnalysisPage extends StatefulWidget {
   const HealthAnalysisPage({super.key});
@@ -18,6 +19,16 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+
+    final List<GrowthStage> growthStages = List.generate(
+      14,
+      (index) => GrowthStage(
+        title: 'Crop ${index + 1}',
+        color: AppColors.cardBackground,
+        slotImages:
+            List.filled(2, 'assets/harvest_stage_icon.png'), // Default images
+      ),
+    );
 
     return Scaffold(
       backgroundColor: AppColors.monitoring_pages_background,
@@ -43,30 +54,17 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                   child: CameraSelectionDropdown(),
                 ),
                 const SizedBox(height: 16.0), // Add spacing
-                // Health cards grid (dynamic number of boxes in 2 rows)
-                SizedBox(
-                  height: SizeConfig.proportionateScreenHeight(500),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 8.0, bottom: 8.0, left: 16.0, right: 16.0),
-                    child: InfoCardsGrid(
-                      n: 14, // Example: Display 14 cards
-                    ),
-                  ),
-                ),
-                // Fixed graph section
+
+                // HealthCardGrid with ElevatedImageCard
                 Expanded(
-                  flex: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: ElevatedCard.elevated(
-                      title: 'Graphs Section',
-                      description:
-                          'Display of analysis graphs related to growth, health, etc.',
-                      backgroundColor: AppColors.cardBackground,
-                      width: double.infinity, // Set to fill the available width
-                      heightMultiplier:
-                          0.4, // Control the height relative to the width
+                    child: HealthCardGrid(
+                      n: growthStages.length, // Total number of cards
+                      rows: 2, // Maximum 2 rows
+                      childBuilder: (index) {
+                        return ElevatedImageCard(stage: growthStages[index]);
+                      },
                     ),
                   ),
                 ),

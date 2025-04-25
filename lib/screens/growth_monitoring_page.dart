@@ -4,7 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../utils/size_config.dart';
 import '../../widgets/navigation_sidebar.dart';
 import '../../widgets/monitoring_pages/camera_selection_dropdown.dart';
-import '../../widgets/monitoring_pages/growth_stage_card.dart';
+import '../widgets/monitoring_pages/elevated_image_card.dart';
 import '../../widgets/monitoring_pages/infobox_overlay.dart';
 import '../../models/growth_stage.dart';
 
@@ -19,30 +19,30 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
   final List<GrowthStage> growthStages = [
     GrowthStage(
       title: 'Early Growth',
-      count: '120 Plants',
+      description: '120 Plants',
       color: Colors.lightGreen[300]!,
       slotCount: 12,
       slotImages: ['assets/leafy_growth_icon.png'],
     ),
     GrowthStage(
       title: 'Leafy Growth',
-      count: '90 Plants',
+      description: '90 Plants',
       color: Colors.green[400]!,
       slotCount: 12,
       slotImages: ['assets/leafy_growth_icon.png'],
     ),
     GrowthStage(
       title: 'Head Formation',
-      count: '75 Plants',
+      description: '75 Plants',
       color: Colors.amber[300]!,
       slotCount: 12,
       slotImages: ['assets/leafy_growth_icon.png'],
     ),
     GrowthStage(
       title: 'Harvest Stage',
-      count: '60 Plants',
+      description: '60 Plants',
       color: Colors.orange[400]!,
-      slotCount: 12,
+      slotCount: 1,
       slotImages: ['assets/leafy_growth_icon.png'],
     ),
   ];
@@ -92,11 +92,13 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: GrowthCard(stage: growthStages[0]),
+                                    child: ElevatedImageCard(
+                                        stage: growthStages[0]),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
-                                    child: GrowthCard(stage: growthStages[1]),
+                                    child: ElevatedImageCard(
+                                        stage: growthStages[1]),
                                   ),
                                 ],
                               ),
@@ -106,11 +108,13 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                               child: Row(
                                 children: [
                                   Expanded(
-                                    child: GrowthCard(stage: growthStages[2]),
+                                    child: ElevatedImageCard(
+                                        stage: growthStages[2]),
                                   ),
                                   const SizedBox(width: 16),
                                   Expanded(
-                                    child: GrowthCard(stage: growthStages[3]),
+                                    child: ElevatedImageCard(
+                                        stage: growthStages[3]),
                                   ),
                                 ],
                               ),

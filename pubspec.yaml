@@ -24,6 +24,7 @@ dependencies:
   dropdown_search: ^6.0.2
   flutter_svg: ^2.0.17
   syncfusion_flutter_charts: ^29.1.38
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

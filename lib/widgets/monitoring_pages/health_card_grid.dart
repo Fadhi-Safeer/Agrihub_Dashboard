@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
-import 'elevated_card.dart';
 
-class InfoCardsGrid extends StatelessWidget {
+class HealthCardGrid extends StatelessWidget {
   final int n; // Number of cards to display
   final int rows; // Number of rows to display (1 or 2, defaults to 2)
+  final Widget Function(int index)
+      childBuilder; // Callback to build custom cards
 
-  const InfoCardsGrid({
+  const HealthCardGrid({
     super.key,
     required this.n,
     this.rows = 2, // Default number of rows
+    required this.childBuilder,
   });
 
   @override
@@ -44,20 +45,11 @@ class InfoCardsGrid extends StatelessWidget {
                 mainAxisAlignment:
                     MainAxisAlignment.center, // Center cards in the row
                 children: List.generate(endIndex - startIndex, (index) {
-                  int cardNumber = startIndex + index + 1;
                   return Flexible(
                     fit: FlexFit.tight, // Adjust card size proportionally
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 8.0,
-                          bottom: 8.0,
-                          left: 8.0,
-                          right: 8.0), // Adjusted padding
-                      child: ElevatedCard(
-                        title: 'Crop - $cardNumber',
-                        description: ' $cardNumber',
-                        backgroundColor: AppColors.cardBackground,
-                      ),
+                      padding: const EdgeInsets.all(8.0), // Adjusted padding
+                      child: childBuilder(startIndex + index),
                     ),
                   );
                 }),
