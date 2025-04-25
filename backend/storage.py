@@ -17,19 +17,20 @@ def save_frame_locally(
     """
     # Ensure camera folder exists
 # Extract the filename part of the URL
-
     filename = cam_url.split('/')[-1]
     name = filename.split('.')[0] 
     cam_num = int(name.replace('camera', ''))  
+    
 
-    cam_dir = os.path.join(base_dir, cam_num)
+    cam_dir = os.path.join(base_dir,str(cam_num))
     os.makedirs(cam_dir, exist_ok=True)
 
+    print("cam number got successfully")
     # Extract and normalize classification info
     growth_stage = str(classification_results.get("growth", "unknown")).lower().strip()
     health_status = str(classification_results.get("health", "unknown")).lower().strip()
     disease_type = str(classification_results.get("disease", "")).lower().strip()
-
+    
     # Get classification codes
     growth_code = ClassificationMapper.get_growth_code(growth_stage)
     health_code = ClassificationMapper.get_health_code(health_status, disease_type)
