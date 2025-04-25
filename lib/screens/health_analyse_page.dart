@@ -16,6 +16,8 @@ class HealthAnalysisPage extends StatefulWidget {
 }
 
 class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
+  bool _isGridExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -55,17 +57,54 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                 ),
                 const SizedBox(height: 16.0), // Add spacing
 
-                // HealthCardGrid with ElevatedImageCard
+                // Main content area
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: HealthCardGrid(
-                      n: growthStages.length, // Total number of cards
-                      rows: 2, // Maximum 2 rows
-                      childBuilder: (index) {
-                        return ElevatedImageCard(stage: growthStages[index]);
-                      },
-                    ),
+                  child: Column(
+                    children: [
+                      // HealthCardGrid with ElevatedImageCard
+                      Expanded(
+                        flex: _isGridExpanded ? 1 : 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: HealthCardGrid(
+                            n: growthStages.length,
+                            childBuilder: (index) {
+                              return ElevatedImageCard(
+                                  stage: growthStages[index]);
+                            },
+                            isExpanded: _isGridExpanded,
+                            onToggleExpand: () {
+                              setState(() {
+                                _isGridExpanded = !_isGridExpanded;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+
+                      // Graph Section (only visible when not expanded)
+                      if (!_isGridExpanded)
+                        Expanded(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: AppColors.cardBackground,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],
