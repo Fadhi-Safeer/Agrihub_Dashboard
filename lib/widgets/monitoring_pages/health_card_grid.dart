@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../theme/app_colors.dart';
 
 class HealthCardGrid extends StatefulWidget {
@@ -68,15 +67,68 @@ class _HealthCardGridState extends State<HealthCardGrid> {
     );
   }
 
+  Widget _buildEdgeGradient(BuildContext context, Alignment alignment) {
+    return SizedBox(
+      width: 60, // Width of the gradient area
+      child: Align(
+        alignment: alignment,
+        child: Container(
+          width: 60,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.0),
+                alignment == Alignment.centerLeft
+                    ? AppColors.sidebarGradientStart.withOpacity(0.1)
+                    : AppColors.sidebarGradientEnd.withOpacity(0.1),
+              ],
+              stops: const [0.0, 1.0],
+              begin: alignment == Alignment.centerLeft
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              end: alignment,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMinimalArrowButton({
+    required IconData icon,
+    required bool isActive,
+    required VoidCallback? onPressed,
+    required Alignment alignment,
+  }) {
+    return Align(
+      alignment: alignment,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: isActive ? 1.0 : 0.3,
+        child: IconButton(
+          icon: Icon(
+            icon,
+            size: 28,
+            color: AppColors.sidebarGradientEnd,
+          ),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.white.withOpacity(0.7),
+            shape: const CircleBorder(),
+            elevation: 2,
+          ),
+          onPressed: onPressed,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (widget.isExpanded) {
-          // Expanded mode - show cards in a 2-row grid
           return Column(
             children: [
-              // Expand/collapse button at the top
               Align(
                 alignment: Alignment.centerRight,
                 child: IconButton(
@@ -84,7 +136,7 @@ class _HealthCardGridState extends State<HealthCardGrid> {
                     widget.isExpanded
                         ? Icons.fullscreen_exit
                         : Icons.fullscreen,
-                    color: AppColors.sidebarGradientStart,
+                    color: AppColors.sidebarGradientEnd,
                   ),
                   onPressed: widget.onToggleExpand,
                 ),
@@ -95,66 +147,67 @@ class _HealthCardGridState extends State<HealthCardGrid> {
             ],
           );
         } else {
-          // Scrollable mode
           return Stack(
             children: [
-              // Scrollable card grid
+              // Main scrollable content
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
                 child: Row(
-                  children: List.generate(widget.n, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: SizedBox(
-                        width: constraints.maxHeight * 0.8,
-                        height: constraints.maxHeight,
-                        child: widget.childBuilder(index),
-                      ),
-                    );
-                  }),
+                  children: [
+                    // Left gradient edge
+                    _buildEdgeGradient(context, Alignment.centerLeft),
+                    // Content cards
+                    ...List.generate(widget.n, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: SizedBox(
+                          width: constraints.maxHeight * 0.8,
+                          height: constraints.maxHeight,
+                          child: widget.childBuilder(index),
+                        ),
+                      );
+                    }),
+                    // Right gradient edge
+                    _buildEdgeGradient(context, Alignment.centerRight),
+                  ],
                 ),
               ),
               // Expand button
               Positioned(
-                right: 8,
-                top: 8,
+                right: 16,
+                top: 16,
                 child: IconButton(
                   icon: Icon(
                     Icons.fullscreen,
-                    color: AppColors.sidebarGradientStart,
+                    color: AppColors.sidebarGradientEnd,
                   ),
                   onPressed: widget.onToggleExpand,
                 ),
               ),
-              // Left Arrow Button
-              if (!widget.isExpanded)
-                Positioned(
-                  left: 8,
-                  top: (constraints.maxHeight - 48) / 2,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 300),
-                    opacity: _canScrollLeft ? 1.0 : 0.0,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_left, size: 48),
-                      onPressed: _canScrollLeft ? _scrollLeft : null,
-                    ),
-                  ),
+              // Left arrow button
+              Positioned(
+                left: 8,
+                top: (constraints.maxHeight - 48) / 2,
+                child: _buildMinimalArrowButton(
+                  icon: Icons.arrow_left,
+                  isActive: _canScrollLeft,
+                  onPressed: _canScrollLeft ? _scrollLeft : null,
+                  alignment: Alignment.centerLeft,
                 ),
-              // Right Arrow Button
-              if (!widget.isExpanded)
-                Positioned(
-                  right: 8,
-                  top: (constraints.maxHeight - 48) / 2,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 300),
-                    opacity: _canScrollRight ? 1.0 : 0.0,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_right, size: 48),
-                      onPressed: _canScrollRight ? _scrollRight : null,
-                    ),
-                  ),
+              ),
+              // Right arrow button
+              Positioned(
+                right: 8,
+                top: (constraints.maxHeight - 48) / 2,
+                child: _buildMinimalArrowButton(
+                  icon: Icons.arrow_right,
+                  isActive: _canScrollRight,
+                  onPressed: _canScrollRight ? _scrollRight : null,
+                  alignment: Alignment.centerRight,
                 ),
+              ),
             ],
           );
         }
@@ -163,7 +216,7 @@ class _HealthCardGridState extends State<HealthCardGrid> {
   }
 
   Widget _buildExpandedGrid(BoxConstraints constraints) {
-    const int rows = 2; // Number of rows in expanded mode
+    const int rows = 2;
     int cardsPerRow = (widget.n / rows).ceil();
 
     return Column(

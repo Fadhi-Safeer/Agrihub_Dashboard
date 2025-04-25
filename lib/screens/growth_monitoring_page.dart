@@ -126,7 +126,7 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                         Center(
                           child: IconButton(
                             icon: Icon(
-                              Icons.info_outline,
+                              Icons.arrow_circle_right_outlined,
                               size: 40,
                               color: AppColors.sidebarGradientStart,
                             ),
