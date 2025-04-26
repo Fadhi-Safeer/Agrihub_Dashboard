@@ -6,7 +6,7 @@ import '../../widgets/navigation_sidebar.dart';
 import '../../widgets/monitoring_pages/camera_selection_dropdown.dart';
 import '../widgets/monitoring_pages/elevated_image_card.dart';
 import '../../widgets/monitoring_pages/infobox_overlay.dart';
-import '../models/ElevatedImageCard.dart';
+import '../models/ImageCard.dart';
 
 class GrowthMonitoringPage extends StatefulWidget {
   const GrowthMonitoringPage({super.key});

@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../../models/ElevatedImageCard.dart';
+import '../../models/ImageCard.dart';
 import '../../theme/text_styles.dart';
 
 class ElevatedImageCard extends StatelessWidget {

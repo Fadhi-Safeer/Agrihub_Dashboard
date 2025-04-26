@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/ElevatedImageCard.dart';
+import '../models/ImageCard.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
