@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/ImageCard.dart';
+import '../providers/image_list_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
@@ -21,26 +23,37 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    final galleryProvider = Provider.of<ImageListProvider>(context);
 
-    final List<ImageCard> imageCard = List.generate(
-      14,
-      (index) => ImageCard(
-        title: 'Crop ${index + 1}',
+    // Convert API images to ImageCard format
+    final List<ImageCard> imageCards = galleryProvider.images.map((imageItem) {
+      return ImageCard(
+        title: 'Crop Health', // You can customize this
         color: AppColors.cardBackground,
-        slotImages:
-            List.filled(2, 'assets/harvest_stage_icon.png'), // Default images
-      ),
-    );
+        slotImages: [imageItem.url], // Using the actual image URL from API
+        description: imageItem.description, // Passing health description
+      );
+    }).toList();
+
+    // Fallback to default cards if no images are loaded
+    final displayCards = imageCards.isNotEmpty
+        ? imageCards
+        : List.generate(
+            14,
+            (index) => ImageCard(
+                  title: 'Crop ${index + 1}',
+                  color: AppColors.cardBackground,
+                  slotImages: ['assets/harvest_stage_icon.png'],
+                ));
 
     return Scaffold(
       backgroundColor: AppColors.monitoring_pages_background,
       body: Row(
         children: [
-          const NavigationSidebar(), // Sidebar widget
+          const NavigationSidebar(),
           Expanded(
             child: Column(
               children: [
-                // Top Heading
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
@@ -50,26 +63,28 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                     ),
                   ),
                 ),
-                // Dropdown Menu
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: CameraSelectionDropdown(),
-                ),
-                const SizedBox(height: 16.0), // Add spacing
-
-                // Main content area
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: CameraSelectionDropdown(
+                      onCameraChanged: (selectedCamera) {
+                        // Manually trigger image loading when camera changes
+                        Provider.of<ImageListProvider>(context, listen: false)
+                            .loadImages(selectedCamera);
+                      },
+                    )),
+                const SizedBox(height: 16.0),
                 Expanded(
                   child: Column(
                     children: [
-                      // HealthCardGrid with ElevatedImageCard
                       Expanded(
                         flex: _isGridExpanded ? 1 : 2,
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: HealthCardGrid(
-                            n: imageCard.length,
+                            n: displayCards.length,
                             childBuilder: (index) {
-                              return ElevatedImageCard(stage: imageCard[index]);
+                              return ElevatedImageCard(
+                                  stage: displayCards[index]);
                             },
                             isExpanded: _isGridExpanded,
                             onToggleExpand: () {
@@ -80,8 +95,6 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                           ),
                         ),
                       ),
-
-                      // Graph Section (only visible when not expanded)
                       if (!_isGridExpanded)
                         Expanded(
                           flex: 2,

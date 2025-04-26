@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/cameraSelectionDropdown_provider.dart';
+import 'providers/image_list_provider.dart';
 import 'providers/navigationbar_provider.dart';
 import 'screens/AGRIVISION_PAGE.dart';
 import 'screens/disease_detection_page.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => NavigationBarProvider()),
         ChangeNotifierProvider(
             create: (_) => CameraSelectionDropdownProvider()),
+        ChangeNotifierProvider(create: (_) => ImageListProvider()),
       ],
       child: MaterialApp(
         title: 'Agrihub Dashboard',

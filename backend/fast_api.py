@@ -1,53 +1,68 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-import os
+from fastapi.staticfiles import StaticFiles
 from pathlib import Path
-from typing import List
-import uvicorn
+from classification_mapper import ClassificationMapper
+from fastapi.middleware.cors import CORSMiddleware
+
+
 
 app = FastAPI()
 
-# Allow frontend access (e.g., Flutter)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict this to your Flutter app's IP
+    allow_origins=["*"],  # or whatever your Flutter Web URL is
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Base storage path
-BASE_STORAGE_PATH = r"C:\Users\Fadhi Safeer\OneDrive\Documents\Internship\Agri hub\STORAGE\camera_storage"
+BASE_STORAGE = Path(r"C:\Users\Fadhi Safeer\OneDrive\Documents\Internship\Agri hub\STORAGE\camera_storage")
 
-@app.get("/images/{cam_num}", response_model=List[dict])
-def get_images(cam_num: str):
-    
-    cam_folder = os.path.join(BASE_STORAGE_PATH, cam_num)
-    if not os.path.exists(cam_folder):
-        raise HTTPException(status_code=404, detail="Camera folder not found")
-
-    # Get image files sorted by modified time (newest first)
-    files = sorted(
-        [f for f in Path(cam_folder).glob("*.jpg")],
-        key=lambda x: x.stat().st_mtime,
-        reverse=True
-    )[:14]  # limit to 14
-
-    image_data = []
-    for file in files:
-        image_data.append({
-            "filename": file.name,
-            "url": f"http://localhost:8001/image/{cam_num}/{file.name}"
-        })
-    return image_data
-
-# Endpoint to serve images
-@app.get("/image/{cam_num}/{filename}")
-def serve_image(cam_num: str, filename: str):
-    image_path = os.path.join(BASE_STORAGE_PATH, cam_num, filename)
-    if not os.path.isfile(image_path):
-        raise HTTPException(status_code=404, detail="Image not found")
-    return FileResponse(image_path)
+# Mount the static files for serving images
+app.mount("/static", StaticFiles(directory=BASE_STORAGE), name="static")
 
 
+@app.get("/images/")
+async def get_images(cam_num: str):
+    """
+    Fetch images from the specified camera's storage directory and generate a dictionary
+    containing URLs and health descriptions based on the file name.
+    """
+    # Construct the camera storage path
+    camera_storage_path = BASE_STORAGE / cam_num
+
+    # Check if the directory exists
+    if not camera_storage_path.exists() or not camera_storage_path.is_dir():
+        raise HTTPException(status_code=404, detail=f"Camera storage not found for: {cam_num}")
+
+    # Initialize the dictionary
+    images_dict = {}
+
+    # Iterate through all image files in the directory
+    for i, image_file in enumerate(camera_storage_path.glob("*.jpg"), start=1):
+        # Extract health code from the file name
+        file_parts = image_file.stem.split("_")  # Split the file name without extension
+        if len(file_parts) < 3:
+            health_code = "UNK"  # Default to unknown if the format is incorrect
+        else:
+            health_code = file_parts[2]  # Extract the third part as health code
+
+        # Map health code to a description
+        description = ClassificationMapper.get_health_status_key(health_code)
+
+        # Construct the public URL for the image
+        image_url = f"http://localhost:8001/static/{cam_num}/{image_file.name}"
+
+        # Add entry to the dictionary
+        images_dict[i] = {
+            "url": image_url,  # Public URL for the image
+            "description": description,
+        }
+
+        print(f"Image {i}: {image_file.name}, Health Code: {health_code}, Description: {description}")
+    # Check if the directory was empty
+    if not images_dict:
+        raise HTTPException(status_code=404, detail=f"No images found in camera storage for: {cam_num}")
+
+    return images_dict

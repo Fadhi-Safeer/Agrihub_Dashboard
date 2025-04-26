@@ -58,3 +58,19 @@ class ClassificationMapper:
             
         # Fallback to unknown
         return ClassificationMapper.UNKNOWN_HEALTH
+    
+    @staticmethod
+    def get_health_status_key(health_code: str) -> str:
+        """
+        Returns the health status key based on the provided health code.
+        
+        Args:
+            health_code: The health code string (e.g., "HLT", "DSD", "UNK")
+            
+        Returns:
+            str: Health status string (e.g., "healthy", "diseased", "unknown")
+        """
+        for key, value in HEALTH_STATUS_CODES.items():
+            if value == health_code:
+                return key
+        return "unknown" 

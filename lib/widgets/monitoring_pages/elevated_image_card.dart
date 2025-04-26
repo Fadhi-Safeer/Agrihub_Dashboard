@@ -74,6 +74,7 @@ class ElevatedImageCard extends StatelessWidget {
     );
   }
 
+  // In _buildSingleSlot() method:
   Widget _buildSingleSlot() {
     final String? imagePath =
         stage.slotImages.isNotEmpty ? stage.slotImages[0] : null;
@@ -89,11 +90,19 @@ class ElevatedImageCard extends StatelessWidget {
           child: imagePath != null
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.contain, // Ensures the image fits entirely
-                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                  ),
+                  child: imagePath.startsWith('http')
+                      ? Image.network(
+                          // For network images
+                          imagePath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                        )
+                      : Image.asset(
+                          // For local assets (fallback)
+                          imagePath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                        ),
                 )
               : _buildPlaceholder(),
         ),
@@ -126,12 +135,19 @@ class ElevatedImageCard extends StatelessWidget {
                 child: imagePath != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          imagePath,
-                          fit:
-                              BoxFit.contain, // Ensures the image fits entirely
-                          errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                        ),
+                        child: imagePath.startsWith('http')
+                            ? Image.network(
+                                imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) =>
+                                    _buildPlaceholder(),
+                              )
+                            : Image.asset(
+                                imagePath,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) =>
+                                    _buildPlaceholder(),
+                              ),
                       )
                     : _buildPlaceholder(),
               ),
