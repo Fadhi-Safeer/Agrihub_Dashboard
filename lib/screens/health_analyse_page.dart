@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/growth_stage.dart';
+import '../models/ElevatedImageCard.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
@@ -22,9 +22,9 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
 
-    final List<GrowthStage> growthStages = List.generate(
+    final List<ImageCard> imageCard = List.generate(
       14,
-      (index) => GrowthStage(
+      (index) => ImageCard(
         title: 'Crop ${index + 1}',
         color: AppColors.cardBackground,
         slotImages:
@@ -67,10 +67,9 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: HealthCardGrid(
-                            n: growthStages.length,
+                            n: imageCard.length,
                             childBuilder: (index) {
-                              return ElevatedImageCard(
-                                  stage: growthStages[index]);
+                              return ElevatedImageCard(stage: imageCard[index]);
                             },
                             isExpanded: _isGridExpanded,
                             onToggleExpand: () {

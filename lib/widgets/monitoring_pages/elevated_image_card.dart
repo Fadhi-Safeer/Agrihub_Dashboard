@@ -1,9 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../../models/growth_stage.dart';
+import '../../models/ElevatedImageCard.dart';
+import '../../theme/text_styles.dart';
 
 class ElevatedImageCard extends StatelessWidget {
-  final GrowthStage stage;
+  final ImageCard stage;
 
   const ElevatedImageCard({super.key, required this.stage});
 
@@ -29,12 +30,9 @@ class ElevatedImageCard extends StatelessWidget {
           // Title
           Text(
             stage.title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: TextStyles.elevatedCardTitle,
           ),
+
           const SizedBox(height: 12), // Reduced spacing
 
           // Slot Grid
@@ -68,10 +66,7 @@ class ElevatedImageCard extends StatelessWidget {
           // Description
           Text(
             stage.description, // Updated to use 'description'
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.white70,
-            ),
+            style: TextStyles.elevatedCardDescription,
             textAlign: TextAlign.center, // Center align the description
           ),
         ],
