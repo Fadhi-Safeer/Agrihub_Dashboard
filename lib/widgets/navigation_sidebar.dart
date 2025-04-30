@@ -8,7 +8,6 @@ class NavigationSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Access the NavigationBarProvider
     final navigationBarProvider = Provider.of<NavigationBarProvider>(context);
 
     return Container(
@@ -16,6 +15,7 @@ class NavigationSidebar extends StatelessWidget {
       color: Colors.purple[900],
       child: Column(
         children: [
+          // Top section (unchanged)
           Padding(
             padding: const EdgeInsets.only(top: 40.0, bottom: 10.0),
             child: ClipOval(
@@ -66,22 +66,67 @@ class NavigationSidebar extends StatelessWidget {
               Navigator.pushNamed(context, '/disease');
             },
           ),
+
+          // Spacer to push content to top
+          const Spacer(),
+
+          // Bottom assets - side by side, resizing to fit available space
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // Calculate max width for each image (half of available width minus padding)
+                final maxWidth = (constraints.maxWidth - 32) / 2;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // First asset
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxWidth: maxWidth,
+                        ),
+                        child: Image.asset(
+                          'assets/apu_logo.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Second asset
+                    Flexible(
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxWidth: maxWidth,
+                        ),
+                        child: Image.asset(
+                          'assets/apcore_logo.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
+// SidebarMenuItem class remains unchanged
 class SidebarMenuItem extends StatelessWidget {
   final String title;
   final bool isSelected;
-  final VoidCallback? onTap; // Callback for navigation
+  final VoidCallback? onTap;
 
   const SidebarMenuItem({
     super.key,
     required this.title,
     this.isSelected = false,
-    this.onTap, // Accept the callback
+    this.onTap,
   });
 
   @override
@@ -92,8 +137,8 @@ class SidebarMenuItem extends StatelessWidget {
         gradient: isSelected
             ? LinearGradient(
                 colors: [
-                  const Color(0xFFAD1457), // Deep raspberry / dark magenta
-                  const Color(0xFFE91E63), // Classic vibrant magenta (middle)
+                  const Color(0xFFAD1457),
+                  const Color(0xFFE91E63),
                 ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
@@ -113,7 +158,7 @@ class SidebarMenuItem extends StatelessWidget {
               ? TextStyles.sidebarMenuItemSelected
               : TextStyles.sidebarMenuItem,
         ),
-        onTap: onTap, // Attach the callback here
+        onTap: onTap,
       ),
     );
   }

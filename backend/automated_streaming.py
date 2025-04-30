@@ -8,13 +8,13 @@ def run_command_in_new_terminal(command):
 def main():
     # Define FFmpeg commands
     ffmpeg_cmd1 = (
-        'ffmpeg -rtsp_transport tcp -i "rtsp://admin:Apcore-2025@10.101.116.2:554/stream2" '
+        'ffmpeg -rtsp_transport tcp -i "rtsp://admin_agrihub:Apcore-2025@10.101.112.182:554/stream1" '
         '-an -c:v libx264 -preset veryfast -b:v 1000k -maxrate 1000k -bufsize 2000k -g 30 '
         '-hls_time 2 -hls_list_size 3 -hls_flags delete_segments -f hls C:\\ffmpeg\\hls\\camera1.m3u8'
     )
     
     ffmpeg_cmd2 = (
-        'ffmpeg -rtsp_transport tcp -i "rtsp://admin:Apcore-2025@10.101.112.198:554/stream2" '
+        'ffmpeg -rtsp_transport tcp -i "rtsp://admin_agrihub:Apcore-2025@10.101.115.197:554/stream1" '
         '-an -c:v libx264 -preset veryfast -b:v 1000k -maxrate 1000k -bufsize 2000k -g 30 '
         '-hls_time 2 -hls_list_size 3 -hls_flags delete_segments -f hls C:\\ffmpeg\\hls\\camera2.m3u8'
     )

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/ImageCard.dart';
+import '../models/image_item.dart';
 import '../providers/image_list_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
@@ -26,9 +27,14 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
     final galleryProvider = Provider.of<ImageListProvider>(context);
 
     // Convert API images to ImageCard format
-    final List<ImageCard> imageCards = galleryProvider.images.map((imageItem) {
+    final List<ImageCard> imageCards =
+        galleryProvider.images.asMap().entries.map((entry) {
+      int index = entry.key; // Get the index
+      ImageItem imageItem = entry.value; // Get the ImageItem
+
       return ImageCard(
-        title: 'Crop Health', // You can customize this
+        title:
+            'Crop ${index + 1}', // Dynamically assign titles as "Crop 1", "Crop 2", etc.
         color: AppColors.cardBackground,
         slotImages: [imageItem.url], // Using the actual image URL from API
         description: imageItem.description, // Passing health description

@@ -18,8 +18,9 @@ def save_frame_locally(
     # Ensure camera folder exists
 # Extract the filename part of the URL
     filename = cam_url.split('/')[-1]
-    name = filename.split('.')[0] 
-    cam_num = int(name.replace('camera', ''))  
+    cam_num = filename.split('.')[0] 
+    
+    print("cam number:", cam_num)
     
 
     cam_dir = os.path.join(base_dir,str(cam_num))

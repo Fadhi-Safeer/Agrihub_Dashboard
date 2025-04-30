@@ -49,7 +49,7 @@ async def get_images(cam_num: str):
             health_code = file_parts[2]  # Extract the third part as health code
 
         # Map health code to a description
-        description = ClassificationMapper.get_health_status_key(health_code)
+        description = (ClassificationMapper.get_health_status_key(health_code)).replace("_", " ")
 
         # Construct the public URL for the image
         image_url = f"http://localhost:8001/static/{cam_num}/{image_file.name}"
@@ -60,7 +60,6 @@ async def get_images(cam_num: str):
             "description": description,
         }
 
-        print(f"Image {i}: {image_file.name}, Health Code: {health_code}, Description: {description}")
     # Check if the directory was empty
     if not images_dict:
         raise HTTPException(status_code=404, detail=f"No images found in camera storage for: {cam_num}")

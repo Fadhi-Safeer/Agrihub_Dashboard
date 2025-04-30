@@ -100,9 +100,9 @@ def classify_cropped_image(cropped_image):
     print("Proocessed results:")
     # Extract predictions from model outputs
     classification = {
-        "disease": DISEASE_MODEL.names[disease_result[0].probs.top1] if disease_result else "Unknown",
-        "growth": GROWTH_MODEL.names[growth_result[0].probs.top1] if growth_result else "Unknown",
-        "health": HEALTH_MODEL.names[health_result[0].probs.top1] if health_result else "Unknown",
+        "disease": (DISEASE_MODEL.names[disease_result[0].probs.top1] if disease_result else "Unknown").replace("_", " "),
+        "growth": (GROWTH_MODEL.names[growth_result[0].probs.top1] if growth_result else "Unknown").replace("_", " "),
+        "health": (HEALTH_MODEL.names[health_result[0].probs.top1] if health_result else "Unknown").replace("_", " "),
     }
     
     print("Classification results:", classification)
