@@ -65,3 +65,7 @@ async def get_images(cam_num: str):
         raise HTTPException(status_code=404, detail=f"No images found in camera storage for: {cam_num}")
 
     return images_dict
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8001)

@@ -62,7 +62,7 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                                 title: 'Disease Analysis',
                                 description:
                                     'Detailed analysis of diseases detected.',
-                                backgroundColor: AppColors.cardBackground,
+                                showTopBar: true,
                               ),
                             ),
                           ),

@@ -93,6 +93,8 @@ class YOLOProvider with ChangeNotifier {
 
   void _sendDetectionRequest(String url) {
     try {
+      _boundingBoxes.clear();
+
       print("Sending detection request for: $url");
       _channel.sink.add(jsonEncode({'url': url}));
     } catch (e) {
@@ -141,7 +143,6 @@ class YOLOProvider with ChangeNotifier {
     Future.delayed(_interRequestDelay, () {
       _isProcessing = false;
       _currentCameraUrl = null;
-      _boundingBoxes.clear();
       notifyListeners();
 
       if (_cameraQueue.isNotEmpty) {

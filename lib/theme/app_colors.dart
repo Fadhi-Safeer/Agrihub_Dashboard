@@ -45,5 +45,19 @@ class AppColors {
   static const Color cardImageBackground = Color(0xFFCE93D8);
   static const Color elevatedCardDescription = Color(0xFF654321); // Purple[300]
 
+  static const Color elevatedCardBackgorund = Color(0xFFF8BBD0); // Purple[800]
   static var monitoring_pages_background = Color(0xFFF9F5FF);
+  static var navigationBarBackground = Color(0xFF3D2B2C);
+  static var monitoringPageBackgroundColour = Color.fromARGB(255, 0, 0, 0);
+
+  //Test
+  // Primary Colors
+  static const Color primaryRed = Color(0xFFE74C3C); // For errors/danger
+  static const Color primaryGreen = Color(0xFF2ECC71); // For success/vegetation
+  static const Color primaryBlue = Color(0xFF3498DB); // For information
+  static const Color primaryOrange = Color(0xFFF39C12); // For warnings
+
+  // Gradients
+
+  // Backgrounds
 }

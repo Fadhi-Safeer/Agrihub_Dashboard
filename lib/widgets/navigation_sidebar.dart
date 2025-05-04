@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/navigationbar_provider.dart';
 import '../theme/text_styles.dart';
+import '../theme/app_colors.dart';
 
 class NavigationSidebar extends StatelessWidget {
   const NavigationSidebar({super.key});
@@ -12,7 +13,7 @@ class NavigationSidebar extends StatelessWidget {
 
     return Container(
       width: 250,
-      color: Colors.purple[900],
+      color: AppColors.navigationBarBackground,
       child: Column(
         children: [
           // Top section (unchanged)
