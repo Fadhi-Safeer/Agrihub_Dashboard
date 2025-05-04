@@ -157,7 +157,6 @@ class HomePage extends StatelessWidget {
                                   flex: 3,
                                   child: ElevatedCard(
                                     title: 'CROP METRICS TREND',
-                                    description: 'Last 30 days comparison',
                                     backgroundColor: Colors.white,
                                     height: 320,
                                     showTopBar: true,
@@ -259,7 +258,9 @@ class HomePage extends StatelessWidget {
                               height: double.infinity,
                               showTopBar: true,
                               child: InkWell(
-                                onTap: () {/* Navigation */},
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/agrivision');
+                                },
                                 child: Center(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
