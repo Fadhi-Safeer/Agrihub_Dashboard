@@ -12,65 +12,52 @@ class ClassificationMapper:
 
     @staticmethod
     def get_growth_code(growth_stage: str) -> str:
-        """
-        Returns the growth stage code.
-        
-        Args:
-            growth_stage: The growth stage classification string
-            
-        Returns:
-            str: 2-letter growth code or UNK if unknown
-        """
+
         return GROWTH_STAGE_CODES.get(
             growth_stage.strip().lower(), 
             ClassificationMapper.UNKNOWN_GROWTH
         )
-
+        
     @staticmethod
-    def get_health_code(
-        health_status: str, 
-        disease_type: Optional[str] = None
-    ) -> str:
-        """
-        Returns the health status code with disease prefix if applicable.
+    def get_health_code(health_status: str) -> str:
+
+        return HEALTH_STATUS_CODES.get(
+            health_status.strip().lower(), 
+            ClassificationMapper.UNKNOWN_HEALTH
+        )
+    
+    @staticmethod
+    def get_disease_code(disease_type: str) -> str:
         
-        Args:
-            health_status: The health classification string
-            disease_type: Optional disease classification string
-            
-        Returns:
-            str: Health code (H for healthy, DXX for diseased, U for unknown)
-        """
-        health_status = health_status.strip().lower()
-        
-        # Handle healthy case
-        if health_status == "healthy":
-            return HEALTH_STATUS_CODES["healthy"]
-            
-        # Handle diseased case with disease type
-        if health_status == "diseased" and disease_type:
-            disease_type = disease_type.strip().lower()
-            disease_code = DISEASE_CODES.get(
-                disease_type,
-                ClassificationMapper.UNKNOWN_DISEASE
-            )
-            return f"D{disease_code}"
-            
-        # Fallback to unknown
-        return ClassificationMapper.UNKNOWN_HEALTH
+        print(f"Received disease type: {disease_type}")
+
+        return DISEASE_CODES.get(
+            disease_type.strip().lower(), 
+            ClassificationMapper.UNKNOWN_DISEASE
+        )
+
+    
     
     @staticmethod
     def get_health_status_key(health_code: str) -> str:
-        """
-        Returns the health status key based on the provided health code.
-        
-        Args:
-            health_code: The health code string (e.g., "HLT", "DSD", "UNK")
-            
-        Returns:
-            str: Health status string (e.g., "healthy", "diseased", "unknown")
-        """
+
         for key, value in HEALTH_STATUS_CODES.items():
             if value == health_code:
+                return key
+        return "unknown" 
+    
+    @staticmethod
+    def get_growth_stage_key(growth_code: str) -> str:
+
+        for key, value in GROWTH_STAGE_CODES.items():
+            if value == growth_code:
+                return key
+        return "unknown" 
+    
+    @staticmethod
+    def get_disease_type_key(disease_code: str) -> str:
+
+        for key, value in DISEASE_CODES.items():
+            if value == disease_code:
                 return key
         return "unknown" 

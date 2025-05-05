@@ -34,10 +34,12 @@ def save_frame_locally(
     
     # Get classification codes
     growth_code = ClassificationMapper.get_growth_code(growth_stage)
-    health_code = ClassificationMapper.get_health_code(health_status, disease_type)
+    health_code = ClassificationMapper.get_health_code(health_status)
+    disease_code = ClassificationMapper.get_disease_code(disease_type)
+    print("disease code:", disease_code)
 
     # Generate filename (without subfolders)
-    filename = f"{cam_num}_{growth_code}_{health_code}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
+    filename = f"{cam_num}_{growth_code}_{health_code}_{disease_code}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
     
     # Save directly in camera folder
     cv2.imwrite(os.path.join(cam_dir, filename), frame)

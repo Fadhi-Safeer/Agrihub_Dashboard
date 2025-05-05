@@ -10,7 +10,7 @@ from storage import save_frame_locally
 
 
 # Load YOLO model for detection
-DETECTION_MODEL = YOLO('yolov8x.pt')  # Load the YOLOv8 model for detection
+DETECTION_MODEL = YOLO('backend/Models/LETTUCE_DETECTION_MODEL.pt')  # Load the YOLOv8 model for detection
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

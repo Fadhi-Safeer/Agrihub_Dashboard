@@ -37,7 +37,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
             'Crop ${index + 1}', // Dynamically assign titles as "Crop 1", "Crop 2", etc.
         color: AppColors.cardBackground,
         slotImages: [imageItem.url], // Using the actual image URL from API
-        description: imageItem.description, // Passing health description
+        description: imageItem.health, // Passing health description
       );
     }).toList();
 

@@ -22,6 +22,7 @@ BASE_STORAGE = Path(r"C:\Users\Fadhi Safeer\OneDrive\Documents\Internship\Agri h
 # Mount the static files for serving images
 app.mount("/static", StaticFiles(directory=BASE_STORAGE), name="static")
 
+        
 
 @app.get("/images/")
 async def get_images(cam_num: str):
@@ -39,26 +40,42 @@ async def get_images(cam_num: str):
     # Initialize the dictionary
     images_dict = {}
 
-    # Iterate through all image files in the directory
     for i, image_file in enumerate(camera_storage_path.glob("*.jpg"), start=1):
-        # Extract health code from the file name
-        file_parts = image_file.stem.split("_")  # Split the file name without extension
-        if len(file_parts) < 3:
-            health_code = "UNK"  # Default to unknown if the format is incorrect
-        else:
-            health_code = file_parts[2]  # Extract the third part as health code
+        file_parts = image_file.stem.split("_")  
+        
+        # Initialize default values
+        growth_code = "UNK"  
+        health_code = "UNK"  
+        disease_code = "UNK"  # 
+        
+        # {cam_num}_{growth_code}_{health_code}_{disease_code}_{timestamp}_{uuid}.jpg
+        if len(file_parts) >= 4: 
+            growth_code = file_parts[1]  
+            health_code = file_parts[2]  
+            disease_code = file_parts[3]  
+        elif len(file_parts) == 3:  
+            growth_code = file_parts[1]
+            health_code = file_parts[2]
+        
+
 
         # Map health code to a description
-        description = (ClassificationMapper.get_health_status_key(health_code)).replace("_", " ")
+        health_description = (ClassificationMapper.get_health_status_key(health_code)).replace("_", " ")
+        growth_description = (ClassificationMapper.get_growth_stage_key(growth_code)).replace("_", " ")
+        disease_description = (ClassificationMapper.get_disease_type_key(disease_code)).replace("_", " ")
 
         # Construct the public URL for the image
         image_url = f"http://localhost:8001/static/{cam_num}/{image_file.name}"
 
         # Add entry to the dictionary
         images_dict[i] = {
-            "url": image_url,  # Public URL for the image
-            "description": description,
+            "url": image_url,  
+            "health": health_description,
+            "growth": growth_description,
+            "disease": disease_description,
+
         }
+        print(images_dict)
 
     # Check if the directory was empty
     if not images_dict:
@@ -66,6 +83,3 @@ async def get_images(cam_num: str):
 
     return images_dict
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="localhost", port=8001)

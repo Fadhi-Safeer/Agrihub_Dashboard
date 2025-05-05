@@ -1,16 +1,22 @@
 class ImageItem {
   final String url;
-  final String description;
+  final String health;
+  final String growth;
+  final String disease;
 
   ImageItem({
     required this.url,
-    required this.description,
+    required this.health,
+    required this.growth,
+    required this.disease,
   });
 
   factory ImageItem.fromJson(Map<String, dynamic> json) {
     return ImageItem(
       url: json['url'],
-      description: json['description'],
+      health: json['health'] ?? 'Unknown',
+      growth: json['growth'] ?? 'Unknown',
+      disease: json['disease'] ?? 'Unknown',
     );
   }
 }
