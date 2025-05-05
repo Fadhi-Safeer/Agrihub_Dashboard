@@ -33,11 +33,10 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
       ImageItem imageItem = entry.value; // Get the ImageItem
 
       return ImageCard(
-        title:
-            'Crop ${index + 1}', // Dynamically assign titles as "Crop 1", "Crop 2", etc.
+        title: 'Crop ${index + 1}',
         color: AppColors.cardBackground,
-        slotImages: [imageItem.url], // Using the actual image URL from API
-        description: imageItem.health, // Passing health description
+        slotImages: [imageItem.url],
+        description: imageItem.health,
       );
     }).toList();
 
