@@ -6,7 +6,7 @@ import base64
 import numpy as np
 from ultralytics import YOLO
 import torch
-from storage import save_frame_locally  
+from storage import save_camera_view_frame, save_frame_locally  
 
 
 # Load YOLO model for detection
@@ -22,6 +22,7 @@ DISEASE_MODEL = YOLO('backend/Models/DISEASE_CLASSIFICATION_MODEL.pt').to(device
 # Function to capture a frame from the HLS stream
 async def capture_frame_from_hls(hls_url):
     cap = cv2.VideoCapture(hls_url)
+
     if not cap.isOpened():
         raise Exception(f"Failed to open HLS stream from {hls_url}")
     ret, frame = cap.read()
@@ -31,9 +32,14 @@ async def capture_frame_from_hls(hls_url):
     
     return frame
 
+async def get_cam_num(hls_url):
+    return hls_url.split('/')[-1].split('.')[0] 
+
+
 # Existing YOLO detection process (Step 1)
 async def yolo_detection(hls_url, model):
     frame = await capture_frame_from_hls(hls_url)
+    save_camera_view_frame(frame, await get_cam_num(hls_url))
     print("captured frame")
     results = model.predict(source=frame, imgsz=640, device=device, verbose=False)
     bounding_boxes = []
@@ -155,6 +161,7 @@ async def handler(websoc):
                         base_dir="C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
                     )
                     print("Frame Saved")
+                    
 
                     encoded_image = encode_image_to_base64(cropped)
 
