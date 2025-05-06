@@ -304,18 +304,16 @@ class HomePage extends StatelessWidget {
                                                   width: 2,
                                                 ),
                                               ),
-                                              child: Flexible(
-                                                child: Container(
-                                                  constraints: BoxConstraints(
-                                                    maxWidth: 100,
-                                                  ),
-                                                  child: Image.asset(
-                                                    'assets/camera.png',
-                                                    fit: BoxFit.contain,
-                                                    color: Color(0xFF8E3A59),
-                                                    colorBlendMode:
-                                                        BlendMode.srcIn,
-                                                  ),
+                                              child: Container(
+                                                constraints: BoxConstraints(
+                                                  maxWidth: 100,
+                                                ),
+                                                child: Image.asset(
+                                                  'assets/camera.png',
+                                                  fit: BoxFit.contain,
+                                                  color: Color(0xFF8E3A59),
+                                                  colorBlendMode:
+                                                      BlendMode.srcIn,
                                                 ),
                                               ),
                                             ),
