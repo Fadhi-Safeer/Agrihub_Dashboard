@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
+class StackedAreaChart extends StatelessWidget {
+  final String xAxisTitle;
+  final String yAxisTitle;
+  final List<ChartData> seriesData;
+  final List<Color> seriesColors;
+
+  StackedAreaChart({
+    required this.xAxisTitle,
+    required this.yAxisTitle,
+    required this.seriesData,
+    required this.seriesColors,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SfCartesianChart(
+      plotAreaBorderWidth: 0,
+      margin: EdgeInsets.zero,
+      primaryXAxis: CategoryAxis(
+        title: AxisTitle(text: xAxisTitle),
+      ),
+      primaryYAxis: NumericAxis(
+        title: AxisTitle(text: yAxisTitle),
+        minimum: 0,
+        maximum:
+            seriesData.map((e) => e.series1).reduce((a, b) => a > b ? a : b) +
+                5, // Adjusting max value to leave space for visualization
+        interval: 5, // Set the interval for Y-axis for better distribution
+      ),
+      series: <CartesianSeries>[
+        StackedAreaSeries<ChartData, String>(
+          dataSource: seriesData,
+          xValueMapper: (ChartData data, _) => data.day,
+          yValueMapper: (ChartData data, _) => data.series1,
+          name: 'Series 1',
+          borderWidth: 2,
+          color: seriesColors[0],
+        ),
+        StackedAreaSeries<ChartData, String>(
+          dataSource: seriesData,
+          xValueMapper: (ChartData data, _) => data.day,
+          yValueMapper: (ChartData data, _) => data.series2,
+          name: 'Series 2',
+          borderWidth: 2,
+          color: seriesColors[1],
+        ),
+        StackedAreaSeries<ChartData, String>(
+          dataSource: seriesData,
+          xValueMapper: (ChartData data, _) => data.day,
+          yValueMapper: (ChartData data, _) => data.series3,
+          name: 'Series 3',
+          borderWidth: 2,
+          color: seriesColors[2],
+        ),
+      ],
+    );
+  }
+}
+
+class ChartData {
+  ChartData(this.day, this.series1, this.series2, this.series3);
+
+  final String day;
+  final double series1;
+  final double series2;
+  final double series3;
+}

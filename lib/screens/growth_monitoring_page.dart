@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
 import '../../utils/size_config.dart';
@@ -8,8 +7,8 @@ import '../../widgets/navigation_sidebar.dart';
 import '../../widgets/monitoring_pages/camera_selection_dropdown.dart';
 import '../../widgets/monitoring_pages/infobox_overlay.dart';
 import '../../providers/image_list_provider.dart';
-import '../../models/ImageCard.dart'; // Import the ImageCard model
-import '../../widgets/monitoring_pages/elevated_image_card.dart'; // Update import path as needed
+import '../../models/ImageCard.dart';
+import '../../widgets/monitoring_pages/elevated_image_card.dart';
 
 class GrowthMonitoringPage extends StatefulWidget {
   const GrowthMonitoringPage({super.key});
