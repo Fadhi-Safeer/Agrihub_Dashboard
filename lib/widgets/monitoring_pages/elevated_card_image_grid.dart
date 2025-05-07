@@ -86,7 +86,6 @@ class ElevatedCardWithImageGrid extends StatelessWidget {
   }
 
   Widget _buildImageGrid() {
-    // Calculate number of rows needed (max 2 as requested)
     final int rowCount = (images.length / imagesPerRow).ceil().clamp(1, 2);
     final int itemsInLastRow = images.length % imagesPerRow;
 
@@ -106,13 +105,20 @@ class ElevatedCardWithImageGrid extends StatelessWidget {
             child: Row(
               children: List.generate(itemsInThisRow, (itemIndex) {
                 final imageIndex = rowIndex * imagesPerRow + itemIndex;
+
                 return Expanded(
                   child: Padding(
                     padding: EdgeInsets.only(
                       top: imageSpacing,
                       left: itemIndex > 0 ? imageSpacing : 0,
                     ),
-                    child: images[imageIndex],
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: images[imageIndex],
+                      ),
+                    ),
                   ),
                 );
               }),
