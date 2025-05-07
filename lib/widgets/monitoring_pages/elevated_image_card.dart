@@ -79,31 +79,24 @@ class ElevatedImageCard extends StatelessWidget {
     final String? imagePath =
         stage.slotImages.isNotEmpty ? stage.slotImages[0] : null;
 
-    return Center(
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
+    return Expanded(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(4),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
           child: imagePath != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: imagePath.startsWith('http')
-                      ? Image.network(
-                          // For network images
-                          imagePath,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                        )
-                      : Image.asset(
-                          // For local assets (fallback)
-                          imagePath,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                        ),
-                )
+              ? imagePath.startsWith('http')
+                  ? Image.network(
+                      imagePath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                    )
+                  : Image.asset(
+                      imagePath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                    )
               : _buildPlaceholder(),
         ),
       ),

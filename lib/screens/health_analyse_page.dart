@@ -26,11 +26,16 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
     SizeConfig().init(context);
     final galleryProvider = Provider.of<ImageListProvider>(context);
 
-    // Convert API images to ImageCard format
+// Filter out images with growth == "camera_view" and convert to List first
+    final filteredImages = galleryProvider.images
+        .where((imageItem) => imageItem.growth != "camera_view")
+        .toList();
+
+// Convert filtered images to ImageCard format
     final List<ImageCard> imageCards =
-        galleryProvider.images.asMap().entries.map((entry) {
-      int index = entry.key; // Get the index
-      ImageItem imageItem = entry.value; // Get the ImageItem
+        filteredImages.asMap().entries.map((entry) {
+      int index = entry.key;
+      ImageItem imageItem = entry.value;
 
       return ImageCard(
         title: 'Crop ${index + 1}',
