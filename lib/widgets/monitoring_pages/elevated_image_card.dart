@@ -11,6 +11,7 @@ class ElevatedImageCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int itemsPerRow = (stage.slotCount / 2).ceil();
+    final bool hasDescription = stage.description.trim().isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
@@ -33,23 +34,22 @@ class ElevatedImageCard extends StatelessWidget {
             style: TextStyles.elevatedCardTitle,
           ),
 
-          const SizedBox(height: 12), // Reduced spacing
+          const SizedBox(height: 12),
 
           // Slot Grid
           Expanded(
+            flex: 3,
             child: stage.slotCount == 1
-                ? _buildSingleSlot() // Handle single slot case
+                ? _buildSingleSlot(hasDescription: hasDescription)
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // First row of slots
                       Expanded(
                         child: _buildSlotRow(
                           startIndex: 0,
                           itemCount: itemsPerRow,
                         ),
                       ),
-                      // Second row of slots
                       Expanded(
                         child: _buildSlotRow(
                           startIndex: itemsPerRow,
@@ -60,31 +60,35 @@ class ElevatedImageCard extends StatelessWidget {
                     ],
                   ),
           ),
-          const SizedBox(
-              height: 12), // Add spacing between the grid and description
 
-          // Description
-          Text(
-            stage.description, // Updated to use 'description'
-            style: TextStyles.elevatedCardDescription,
-            textAlign: TextAlign.center, // Center align the description
-          ),
+          if (hasDescription) const SizedBox(height: 12),
+
+          // Description (only if present)
+          if (hasDescription)
+            Text(
+              stage.description,
+              style: TextStyles.elevatedCardDescription,
+              textAlign: TextAlign.center,
+            ),
         ],
       ),
     );
   }
 
-  // In _buildSingleSlot() method:
-  Widget _buildSingleSlot() {
+  Widget _buildSingleSlot({required bool hasDescription}) {
     final String? imagePath =
         stage.slotImages.isNotEmpty ? stage.slotImages[0] : null;
 
     return Expanded(
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(4),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+      flex:
+          hasDescription ? 1 : 2, // Take more vertical space if no description
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+          ),
           child: imagePath != null
               ? imagePath.startsWith('http')
                   ? Image.network(

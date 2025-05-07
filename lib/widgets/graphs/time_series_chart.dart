@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class MultiGradientLineChart extends StatelessWidget {
+class TimeSeriesChart extends StatelessWidget {
   final List<TimeSeriesDataSet> dataSets;
   final bool showMarkers;
   final bool showArea;
 
-  const MultiGradientLineChart({
+  const TimeSeriesChart({
     super.key,
     required this.dataSets,
     this.showMarkers = true,

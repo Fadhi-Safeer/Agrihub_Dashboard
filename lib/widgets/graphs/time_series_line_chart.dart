@@ -90,13 +90,3 @@ class TimeSeriesLineChart extends StatelessWidget {
     );
   }
 }
-
-void main() {
-  runApp(MaterialApp(
-    home: TimeSeriesLineChart(),
-    theme: ThemeData(
-      scaffoldBackgroundColor:
-          Colors.black, // Set scaffold background color to black
-    ),
-  ));
-}

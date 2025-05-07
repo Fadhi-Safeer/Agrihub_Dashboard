@@ -29,7 +29,6 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
     // Create disease analysis ImageCard model
     final ImageCard diseaseAnalysisCard = ImageCard(
       title: 'Disease Analysis',
-      description: 'Detailed analysis of diseases detected.',
       color: AppColors.cardBackground,
       slotCount: 1, // Single image
       slotImages: galleryProvider.images.isNotEmpty

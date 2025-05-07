@@ -162,7 +162,7 @@ class HomePage extends StatelessWidget {
                                       height: 320,
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
-                                        child: MultiGradientLineChart(
+                                        child: TimeSeriesChart(
                                           showArea: true,
                                           showMarkers: true,
                                           dataSets: [
