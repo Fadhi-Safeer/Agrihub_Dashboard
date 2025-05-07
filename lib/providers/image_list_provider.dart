@@ -17,7 +17,7 @@ class ImageListProvider with ChangeNotifier {
   String get errorMessage => _errorMessage;
   String? get currentCamera => _currentCamera;
 
-  Future<void> loadImages(String camNum) async {
+  Future<void> loadImages(String camNum, {bool camera_view = false}) async {
     if (_isLoading || _currentCamera == camNum) return;
 
     _isLoading = true;
@@ -25,7 +25,7 @@ class ImageListProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _images = await _repository.fetchImages(camNum);
+      _images = await _repository.fetchImages(camNum, camera_view: camera_view);
       _currentCamera = camNum;
     } on CameraNotFoundException catch (e) {
       _errorMessage = 'Camera not found: ${e.message}';

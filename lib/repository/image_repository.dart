@@ -14,9 +14,12 @@ class ImageRepository {
     http.Client? client,
   }) : client = client ?? http.Client();
 
-  Future<List<ImageItem>> fetchImages(String camNum) async {
+  Future<List<ImageItem>> fetchImages(String camNum,
+      {bool camera_view = false}) async {
     debugPrint("Fetching images for camera: $camNum");
-    final url = Uri.parse("$baseUrl/images/?cam_num=$camNum");
+    final url =
+        Uri.parse("$baseUrl/images/?cam_num=$camNum&camera_view=$camera_view");
+
     debugPrint("URL: $url");
 
     try {
