@@ -196,7 +196,7 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                                     padding: const EdgeInsets.only(
                                         left: 8.0), // Equal padding
                                     child: StackedAreaChart(
-                                      xAxisTitle: 'Days',
+                                      xAxisTitle: '',
                                       yAxisTitle: 'Values',
                                       seriesData: [
                                         ChartData('Day 1', 3, 2, 1),

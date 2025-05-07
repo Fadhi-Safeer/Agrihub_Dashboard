@@ -20,15 +20,17 @@ class StackedAreaChart extends StatelessWidget {
       plotAreaBorderWidth: 0,
       margin: EdgeInsets.zero,
       primaryXAxis: CategoryAxis(
-        title: AxisTitle(text: xAxisTitle),
+        title: xAxisTitle.isEmpty
+            ? AxisTitle(text: '')
+            : AxisTitle(text: xAxisTitle),
       ),
       primaryYAxis: NumericAxis(
         title: AxisTitle(text: yAxisTitle),
         minimum: 0,
         maximum:
             seriesData.map((e) => e.series1).reduce((a, b) => a > b ? a : b) +
-                5, // Adjusting max value to leave space for visualization
-        interval: 5, // Set the interval for Y-axis for better distribution
+                5,
+        interval: 5,
       ),
       series: <CartesianSeries>[
         StackedAreaSeries<ChartData, String>(
