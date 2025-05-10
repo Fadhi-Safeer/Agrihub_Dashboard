@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
 import '../graphs/custom_pie_chart.dart';
+import '../graphs/scatter_plot.dart';
 
 class InfoBoxOverlay extends StatelessWidget {
   final VoidCallback onClose;
@@ -44,22 +45,62 @@ class InfoBoxOverlay extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  // Auto-adjusting Pie Chart Section
                   Expanded(
                     flex: 3,
-                    child: Center(
-                      child: CustomPieChart(
-                        values: [40, 30, 20, 10],
-                        colors: [
-                          Colors.blue,
-                          Colors.green,
-                          Colors.orange,
-                          Colors.red
-                        ],
-                        titles: ['Apples', 'Bananas', 'Cherries', 'Dates'],
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: CustomPieChart(
+                            values: [40, 30, 20, 10],
+                            colors: [
+                              Colors.blue,
+                              Colors.green,
+                              Colors.orange,
+                              Colors.red,
+                            ],
+                            titles: ['Apples', 'Bananas', 'Cherries', 'Dates'],
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Expanded(
+                          child: ScatterPlot(
+                            dataPoints: [
+                              Point(
+                                  x: 10,
+                                  y: 200,
+                                  color: Colors.blue,
+                                  shape: PointShape.circle),
+                              Point(
+                                  x: 150,
+                                  y: 35,
+                                  color: Colors.red,
+                                  size: 10,
+                                  shape: PointShape.circle),
+                              // ... (rest of your points)
+                              Point(
+                                  x: 190,
+                                  y: 45,
+                                  color: Colors.deepOrange,
+                                  shape: PointShape.circle),
+                            ],
+                            title: 'Custom Scatter Plot',
+                            xAxisLabel: 'Days',
+                            yAxisLabel: 'Value',
+                            backgroundColor: AppColors.cardBackground,
+                            gridColor: Colors.grey.shade200,
+                            axisColor: Colors.black87,
+                            textColor: Colors.black87,
+                            showGrid: true,
+                            showLabels: true,
+                            animate: true,
+                            animationDuration: Duration(milliseconds: 800),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: 10),
 
                   // Growth Summary Text
