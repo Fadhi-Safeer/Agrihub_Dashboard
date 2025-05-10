@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/ImageCard.dart';
 import '../models/image_item.dart';
+import '../providers/health_status_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
 import '../widgets/monitoring_pages/health_card_grid.dart';
 import '../widgets/monitoring_pages/elevated_image_card.dart';
+import '../widgets/monitoring_pages/health_status_bulb.dart';
+import '../widgets/monitoring_pages/top_bard.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../widgets/monitoring_pages/camera_selection_dropdown.dart';
 
@@ -25,17 +28,21 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final galleryProvider = Provider.of<ImageListProvider>(context);
+    final healthProvider = Provider.of<HealthStatusProvider>(context);
 
-// Filter out images with growth == "camera_view" and convert to List first
+    // Filter out images with growth == "camera_view"
     final filteredImages = galleryProvider.images
         .where((imageItem) => imageItem.growth != "camera_view")
         .toList();
 
-// Convert filtered images to ImageCard format
+    // Update health status in provider
+    healthProvider.updateStatus(filteredImages);
+
+    // Convert filtered images to ImageCard format
     final List<ImageCard> imageCards =
         filteredImages.asMap().entries.map((entry) {
-      int index = entry.key;
-      ImageItem imageItem = entry.value;
+      final index = entry.key;
+      final imageItem = entry.value;
 
       return ImageCard(
         title: 'Crop ${index + 1}',
@@ -51,10 +58,11 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
         : List.generate(
             14,
             (index) => ImageCard(
-                  title: 'Crop ${index + 1}',
-                  color: AppColors.cardBackground,
-                  slotImages: ['assets/harvest_stage_icon.png'],
-                ));
+              title: 'Crop ${index + 1}',
+              color: AppColors.cardBackground,
+              slotImages: ['assets/harvest_stage_icon.png'],
+            ),
+          );
 
     return Scaffold(
       backgroundColor: AppColors.monitoring_pages_background,
@@ -64,24 +72,39 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
           Expanded(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Health Analysis',
-                    style: TextStyles.mainHeading.copyWith(
-                      color: AppColors.sidebarGradientStart,
+                Stack(
+                  children: [
+                    TopBar(
+                      title: 'Health Analysis',
+                      textStyle: TextStyles.mainHeading.copyWith(
+                        color: AppColors.sidebarGradientStart,
+                      ),
+                      bulbSize: 30,
                     ),
-                  ),
+                    const SizedBox(height: 16),
+                    Positioned(
+                      right: 16,
+                      top: 16,
+                      child: Consumer<HealthStatusProvider>(
+                        builder: (context, healthProvider, _) {
+                          return HealthStatusLight(
+                            isHealthy: healthProvider.allFullyNutritional,
+                            size: 30,
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: CameraSelectionDropdown(
-                      onCameraChanged: (selectedCamera) {
-                        // Manually trigger image loading when camera changes
-                        Provider.of<ImageListProvider>(context, listen: false)
-                            .loadImages(selectedCamera);
-                      },
-                    )),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: CameraSelectionDropdown(
+                    onCameraChanged: (selectedCamera) {
+                      Provider.of<ImageListProvider>(context, listen: false)
+                          .loadImages(selectedCamera);
+                    },
+                  ),
+                ),
                 const SizedBox(height: 16.0),
                 Expanded(
                   child: Column(
@@ -92,16 +115,11 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                           padding: const EdgeInsets.all(16.0),
                           child: HealthCardGrid(
                             n: displayCards.length,
-                            childBuilder: (index) {
-                              return ElevatedImageCard(
-                                  stage: displayCards[index]);
-                            },
+                            childBuilder: (index) =>
+                                ElevatedImageCard(stage: displayCards[index]),
                             isExpanded: _isGridExpanded,
-                            onToggleExpand: () {
-                              setState(() {
-                                _isGridExpanded = !_isGridExpanded;
-                              });
-                            },
+                            onToggleExpand: () => setState(
+                                () => _isGridExpanded = !_isGridExpanded),
                           ),
                         ),
                       ),

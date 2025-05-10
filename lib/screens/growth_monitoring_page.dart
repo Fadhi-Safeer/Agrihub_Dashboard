@@ -1,3 +1,4 @@
+import 'package:agrihub_dashboard/widgets/monitoring_pages/top_bard.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/text_styles.dart';
@@ -106,15 +107,14 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
           Expanded(
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Plant Growth Monitoring',
-                    style: TextStyles.mainHeading.copyWith(
-                      color: AppColors.sidebarGradientStart,
-                    ),
+                TopBar(
+                  title: 'Plant Growth Monitoring',
+                  textStyle: TextStyles.mainHeading.copyWith(
+                    color: AppColors.sidebarGradientStart,
                   ),
+                  bulbSize: 30,
                 ),
+                const SizedBox(height: 16),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -172,7 +172,7 @@ class ScatterPlotPainter extends CustomPainter {
   // Padding values
   final double paddingLeft = 60;
   final double paddingRight = 20;
-  final double paddingTop = 20;
+  final double paddingTop = 5;
   final double paddingBottom = 40;
 
   ScatterPlotPainter({

@@ -41,7 +41,10 @@ class InfoBoxOverlay extends StatelessWidget {
                 children: [
                   Text(
                     'Growth Summary',
-                    style: TextStyles.elevatedCardTitle,
+                    style: TextStyles.elevatedCardTitle.copyWith(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 10),
 
@@ -62,13 +65,13 @@ class InfoBoxOverlay extends StatelessWidget {
                             titles: ['Apples', 'Bananas', 'Cherries', 'Dates'],
                           ),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         Expanded(
                           child: ScatterPlot(
                             dataPoints: [
                               Point(
                                   x: 10,
-                                  y: 200,
+                                  y: 300,
                                   color: Colors.blue,
                                   shape: PointShape.circle),
                               Point(
@@ -77,7 +80,6 @@ class InfoBoxOverlay extends StatelessWidget {
                                   color: Colors.red,
                                   size: 10,
                                   shape: PointShape.circle),
-                              // ... (rest of your points)
                               Point(
                                   x: 190,
                                   y: 45,
@@ -94,7 +96,8 @@ class InfoBoxOverlay extends StatelessWidget {
                             showGrid: true,
                             showLabels: true,
                             animate: true,
-                            animationDuration: Duration(milliseconds: 800),
+                            animationDuration:
+                                const Duration(milliseconds: 800),
                           ),
                         ),
                       ],
@@ -103,20 +106,29 @@ class InfoBoxOverlay extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // Growth Summary Text
-                  const Text(
-                    'Total Plants: 345',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 5),
-                  const Text(
-                    'Average Growth Rate: 78%',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 5),
-                  const Text(
-                    'Next Harvest: 12 days',
-                    style: TextStyle(fontSize: 16),
+                  // Side by side stats cards
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildStatCard(
+                        icon: Icons.eco,
+                        value: '345',
+                        label: 'Total Plants',
+                        color: Colors.green,
+                      ),
+                      _buildStatCard(
+                        icon: Icons.trending_up,
+                        value: '78%',
+                        label: 'Avg Growth',
+                        color: Colors.blue,
+                      ),
+                      _buildStatCard(
+                        icon: Icons.calendar_today,
+                        value: '12',
+                        label: 'Harvest Days',
+                        color: Colors.orange,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 15),
 
@@ -140,6 +152,46 @@ class InfoBoxOverlay extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black54,
+            ),
+          ),
+        ],
       ),
     );
   }

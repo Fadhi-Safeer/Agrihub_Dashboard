@@ -8,6 +8,7 @@ import '../utils/size_config.dart';
 import '../widgets/graphs/area_chart.dart' as custom_charts;
 import '../widgets/graphs/area_chart.dart';
 import '../widgets/graphs/correlation_graph.dart';
+import '../widgets/monitoring_pages/top_bard.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../widgets/monitoring_pages/bullet_points_card.dart';
 import '../widgets/monitoring_pages/camera_selection_dropdown.dart';
@@ -49,14 +50,12 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
             child: Column(
               children: [
                 // Top Heading
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Disease Detection',
-                    style: TextStyles.mainHeading.copyWith(
-                      color: AppColors.sidebarGradientStart,
-                    ),
+                TopBar(
+                  title: 'Disease Detection',
+                  textStyle: TextStyles.mainHeading.copyWith(
+                    color: AppColors.sidebarGradientStart,
                   ),
+                  bulbSize: 30,
                 ),
 
                 // Dropdown with selected value and state change
