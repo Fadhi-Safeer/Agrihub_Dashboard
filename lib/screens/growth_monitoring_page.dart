@@ -101,94 +101,136 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
 
     return Scaffold(
       backgroundColor: AppColors.monitoring_pages_background,
-      body: Row(
+      body: Stack(
         children: [
-          const NavigationSidebar(),
-          Expanded(
-            child: Column(
-              children: [
-                TopBar(
-                  title: 'Plant Growth Monitoring',
-                  textStyle: TextStyles.mainHeading.copyWith(
-                    color: AppColors.sidebarGradientStart,
-                  ),
-                ),
-                const SizedBox(height: 16),
+          // Main content
+          Row(
+            children: [
+              const NavigationSidebar(),
+              Expanded(
+                child: Column(
+                  children: [
+                    TopBar(
+                      title: 'Plant Growth Monitoring',
+                      textStyle: TextStyles.mainHeading.copyWith(
+                        color: AppColors.sidebarGradientStart,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: CameraSelectionDropdown(
-                    onCameraChanged: (cameraId) {
-                      setState(() => selectedCamera = cameraId);
-                      galleryProvider.loadImages(cameraId);
-                    },
-                  ),
-                ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: CameraSelectionDropdown(
+                        onCameraChanged: (cameraId) {
+                          setState(() => selectedCamera = cameraId);
+                          galleryProvider.loadImages(cameraId);
+                        },
+                      ),
+                    ),
 
-                const SizedBox(height: 16),
+                    const SizedBox(height: 16),
 
-                // Main content: 2x2 grid of image cards
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Stack(
-                      children: [
-                        Column(
+                    // Main content: 2x2 grid of image cards
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Stack(
                           children: [
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Expanded(child: imageCards[0]),
-                                  const SizedBox(width: 16),
-                                  Expanded(child: imageCards[1]),
-                                ],
-                              ),
+                            Column(
+                              children: [
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Expanded(child: imageCards[0]),
+                                      const SizedBox(width: 16),
+                                      Expanded(child: imageCards[1]),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Expanded(child: imageCards[2]),
+                                      const SizedBox(width: 16),
+                                      Expanded(child: imageCards[3]),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 16),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Expanded(child: imageCards[2]),
-                                  const SizedBox(width: 16),
-                                  Expanded(child: imageCards[3]),
-                                ],
+
+                            // Center Info Button
+                            Center(
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.info_outline,
+                                  size: 40,
+                                  color: AppColors.sidebarGradientStart,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isOverlayVisible = true;
+                                  });
+                                },
                               ),
                             ),
                           ],
                         ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
 
-                        // Center Info Button
-                        Center(
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.info_outline,
-                              size: 40,
-                              color: AppColors.sidebarGradientStart,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                isOverlayVisible = true;
-                              });
-                            },
+          // Info Overlay - Now positioned at the root level Stack
+          if (isOverlayVisible)
+            Row(
+              children: [
+                // Empty space with width equal to the NavigationSidebar
+                const NavigationSidebar(),
+
+                // Overlay covering everything except the sidebar
+                Expanded(
+                  child: Stack(
+                    children: [
+                      // Full-width dark background
+                      Positioned.fill(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              isOverlayVisible = false;
+                            });
+                          },
+                          child: Container(
+                            color: Colors.black.withOpacity(0.5),
                           ),
                         ),
+                      ),
 
-                        // Info Overlay
-                        if (isOverlayVisible)
-                          InfoBoxOverlay(
-                            onClose: () {
-                              setState(() {
-                                isOverlayVisible = false;
-                              });
-                            },
-                          ),
-                      ],
-                    ),
+                      // Centered content panel with horizontal margins
+                      Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width *
+                              0.1, // 10% margin on each side
+                          vertical: MediaQuery.of(context).size.height *
+                              0.1, // 10% margin on top and bottom
+                        ),
+                        child: InfoBoxOverlay(
+                          onClose: () {
+                            setState(() {
+                              isOverlayVisible = false;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
         ],
       ),
     );

@@ -1,6 +1,6 @@
 import 'package:agrihub_dashboard/theme/app_colors.dart';
 import 'package:agrihub_dashboard/theme/text_styles.dart';
-import 'package:agrihub_dashboard/widgets/graphs/bar_chart.dart';
+import 'package:agrihub_dashboard/widgets/graphs/combination_chart.dart';
 import 'package:flutter/material.dart';
 import '../widgets/agrivision_page/camera_grid.dart';
 import '../widgets/graphs/time_series_line_chart.dart';
@@ -68,7 +68,10 @@ class AgrivisionPage extends StatelessWidget {
                         children: [
                           Expanded(child: TimeSeriesLineChart()),
                           Expanded(child: PieChartSample2()),
-                          Expanded(child: GroupedBarChart()),
+                          Expanded(
+                              child: CombinationChart(
+                            data: [],
+                          )),
                         ],
                       ),
                     ),

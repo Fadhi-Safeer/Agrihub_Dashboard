@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
-import '../graphs/custom_pie_chart.dart';
-import '../graphs/scatter_plot.dart';
+import '../graphs/combination_chart.dart';
+import '../graphs/donut_chart.dart';
+import '../graphs/time_series_chart.dart';
+import '../monitoring_pages/graph_section.dart';
 
 class InfoBoxOverlay extends StatelessWidget {
   final VoidCallback onClose;
@@ -11,18 +13,93 @@ class InfoBoxOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Creating the growth graphs list for use with GraphsSection
+    final List<Widget> growthGraphs = [
+      // Growth Rate Chart (time_series_chart.dart)
+      TimeSeriesChart(
+        dataSets: [
+          TimeSeriesDataSet(
+            name: 'Nitrogen',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 35),
+              TimeSeriesData(DateTime(2025, 4, 8), 45),
+              TimeSeriesData(DateTime(2025, 4, 15), 60),
+              TimeSeriesData(DateTime(2025, 4, 22), 70),
+              TimeSeriesData(DateTime(2025, 4, 29), 65),
+            ],
+            color: Colors.green,
+            gradient: LinearGradient(
+              colors: [Colors.green, Colors.greenAccent],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          TimeSeriesDataSet(
+            name: 'Phosphorus',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 45),
+              TimeSeriesData(DateTime(2025, 4, 8), 50),
+              TimeSeriesData(DateTime(2025, 4, 15), 40),
+              TimeSeriesData(DateTime(2025, 4, 22), 45),
+              TimeSeriesData(DateTime(2025, 4, 29), 55),
+            ],
+            color: Colors.blue,
+          ),
+          TimeSeriesDataSet(
+            name: 'Potassium',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 55),
+              TimeSeriesData(DateTime(2025, 4, 8), 60),
+              TimeSeriesData(DateTime(2025, 4, 15), 65),
+              TimeSeriesData(DateTime(2025, 4, 22), 50),
+              TimeSeriesData(DateTime(2025, 4, 29), 60),
+            ],
+            color: Colors.orange,
+          ),
+        ],
+        showMarkers: true,
+        showArea: false,
+      ),
+
+      // Growth Stage Distribution (custom_pie_chart.dart)
+      DonutChart(
+        data: [
+          DonutChartData('Early Growth', 10, Colors.lightGreen[300]!),
+          DonutChartData('Leafy Growth', 15, Colors.green[400]!),
+          DonutChartData('Head Formation', 8, Colors.amber[300]!),
+          DonutChartData('Harvest Stage', 12, Colors.orange[400]!),
+        ],
+        title: 'Plant Growth Stages',
+        showLegend: true,
+        showLabels: true,
+        enableTooltip: true,
+      ),
+      // Environmental Impact on Growth (combination_chart.dart)
+      CombinationChart(
+        data: [
+          CombinationChartData('Week 1', 2.5, 20),
+          CombinationChartData('Week 2', 3.0, 22),
+          CombinationChartData('Week 3', 3.5, 25),
+          CombinationChartData('Week 4', 4.0, 28),
+          CombinationChartData('Week 5', 4.2, 30),
+          CombinationChartData('Week 6', 4.5, 32),
+        ],
+      )
+    ];
+
     return GestureDetector(
       onTap: onClose,
       child: Container(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.transparent,
         child: Center(
           child: GestureDetector(
             onTap: () {},
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.7,
+              width: MediaQuery.of(context).size.width * 0.85,
+              height: MediaQuery.of(context).size.height * 0.8,
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.9,
-                maxHeight: MediaQuery.of(context).size.height * 0.6,
+                maxWidth: MediaQuery.of(context).size.width * 0.95,
+                maxHeight: MediaQuery.of(context).size.height * 0.9,
               ),
               decoration: BoxDecoration(
                 color: AppColors.cardBackground,
@@ -39,74 +116,25 @@ class InfoBoxOverlay extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Growth Summary',
-                    style: TextStyles.elevatedCardTitle.copyWith(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: CustomPieChart(
-                            values: [40, 30, 20, 10],
-                            colors: [
-                              Colors.blue,
-                              Colors.green,
-                              Colors.orange,
-                              Colors.red,
-                            ],
-                            titles: ['Apples', 'Bananas', 'Cherries', 'Dates'],
-                          ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Growth Summary',
+                        style: TextStyles.elevatedCardTitle.copyWith(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
                         ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: ScatterPlot(
-                            dataPoints: [
-                              Point(
-                                  x: 10,
-                                  y: 300,
-                                  color: Colors.blue,
-                                  shape: PointShape.circle),
-                              Point(
-                                  x: 150,
-                                  y: 35,
-                                  color: Colors.red,
-                                  size: 10,
-                                  shape: PointShape.circle),
-                              Point(
-                                  x: 190,
-                                  y: 45,
-                                  color: Colors.deepOrange,
-                                  shape: PointShape.circle),
-                            ],
-                            title: 'Custom Scatter Plot',
-                            xAxisLabel: 'Days',
-                            yAxisLabel: 'Value',
-                            backgroundColor: AppColors.cardBackground,
-                            gridColor: Colors.grey.shade200,
-                            axisColor: Colors.black87,
-                            textColor: Colors.black87,
-                            showGrid: true,
-                            showLabels: true,
-                            animate: true,
-                            animationDuration:
-                                const Duration(milliseconds: 800),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: onClose,
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 15),
 
-                  const SizedBox(height: 10),
-
-                  // Side by side stats cards
+                  // Stats cards row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -130,6 +158,20 @@ class InfoBoxOverlay extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 20),
+
+                  // GraphsSection takes the majority of the space
+                  Expanded(
+                    child: GraphsSection(
+                      title: 'Growth Analytics',
+                      graphs: growthGraphs,
+                      height:
+                          double.infinity, // Let it expand to available height
+                      padding: EdgeInsets
+                          .zero, // Remove padding as the container already has padding
+                    ),
+                  ),
+
                   const SizedBox(height: 15),
 
                   // Progress Bar Section

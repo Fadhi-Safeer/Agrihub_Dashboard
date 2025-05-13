@@ -48,6 +48,7 @@ class TimeSeriesChart extends StatelessWidget {
   List<CartesianSeries<TimeSeriesData, DateTime>> _buildSeries() {
     return dataSets.map((dataSet) {
       if (showArea) {
+        // If showArea is true, use SplineAreaSeries to fill the area
         return SplineAreaSeries<TimeSeriesData, DateTime>(
           name: dataSet.name,
           dataSource: dataSet.data,
@@ -66,6 +67,7 @@ class TimeSeriesChart extends StatelessWidget {
           ),
         );
       } else {
+        // Otherwise, use SplineSeries for lines without shading
         return SplineSeries<TimeSeriesData, DateTime>(
           name: dataSet.name,
           dataSource: dataSet.data,

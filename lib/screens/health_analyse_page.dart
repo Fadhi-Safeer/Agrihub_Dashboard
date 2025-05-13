@@ -6,6 +6,10 @@ import '../providers/image_list_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
+import '../widgets/graphs/combination_chart.dart';
+import '../widgets/graphs/radar_chart.dart';
+import '../widgets/graphs/time_series_chart.dart';
+import '../widgets/monitoring_pages/graph_section.dart';
 import '../widgets/monitoring_pages/health_card_grid.dart';
 import '../widgets/monitoring_pages/elevated_image_card.dart';
 import '../widgets/monitoring_pages/health_status_bulb.dart';
@@ -105,6 +109,85 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
             ),
           );
 
+    // Define the health analysis graphs
+    final List<Widget> healthGraphs = [
+      TimeSeriesChart(
+        dataSets: [
+          TimeSeriesDataSet(
+            name: 'Nitrogen',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 35),
+              TimeSeriesData(DateTime(2025, 4, 8), 45),
+              TimeSeriesData(DateTime(2025, 4, 15), 60),
+              TimeSeriesData(DateTime(2025, 4, 22), 70),
+              TimeSeriesData(DateTime(2025, 4, 29), 65),
+            ],
+            color: Colors.green,
+            gradient: LinearGradient(
+              colors: [Colors.green, Colors.greenAccent],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          TimeSeriesDataSet(
+            name: 'Phosphorus',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 45),
+              TimeSeriesData(DateTime(2025, 4, 8), 50),
+              TimeSeriesData(DateTime(2025, 4, 15), 40),
+              TimeSeriesData(DateTime(2025, 4, 22), 45),
+              TimeSeriesData(DateTime(2025, 4, 29), 55),
+            ],
+            color: Colors.blue,
+          ),
+          TimeSeriesDataSet(
+            name: 'Potassium',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 55),
+              TimeSeriesData(DateTime(2025, 4, 8), 60),
+              TimeSeriesData(DateTime(2025, 4, 15), 65),
+              TimeSeriesData(DateTime(2025, 4, 22), 50),
+              TimeSeriesData(DateTime(2025, 4, 29), 60),
+            ],
+            color: Colors.orange,
+          ),
+        ],
+        showMarkers: true,
+        showArea: false,
+      ),
+
+      // Health Distribution
+      RadarChart(
+        data: [
+          RadarChartData(label: "Growth", value: 0.8),
+          RadarChartData(label: "Health", value: 0.6),
+          RadarChartData(label: "Nutrients", value: 0.9),
+          RadarChartData(label: "Moisture", value: 0.7),
+          RadarChartData(label: "Light", value: 0.5),
+        ],
+        fillColor: Colors.orange.withOpacity(0.3),
+        borderColor: Colors.deepOrange,
+        gridColor: Colors.black12,
+        labelColor: Colors.black87,
+        divisions: 5,
+        labelFontSize: 14,
+        borderWidth: 2.0,
+        gridWidth: 1.0,
+        showLabels: true,
+        animate: true,
+        animationDuration: 800,
+      ),
+
+      CombinationChart(data: [
+        CombinationChartData('Week 1', 6.5, 15),
+        CombinationChartData('Week 2', 6.3, 20),
+        CombinationChartData('Week 3', 6.7, 35),
+        CombinationChartData('Week 4', 7.0, 30),
+        CombinationChartData('Week 5', 6.8, 26),
+        CombinationChartData('Week 6', 6.8, 28),
+      ])
+    ];
+
     return Scaffold(
       backgroundColor: AppColors.monitoring_pages_background,
       body: Row(
@@ -168,22 +251,11 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                       if (!_isGridExpanded)
                         Expanded(
                           flex: 2,
-                          child: Padding(
+                          // This is the only part that's changed - replacing the Container with GraphsSection
+                          child: GraphsSection(
+                            title: 'Health Analysis Trends',
+                            graphs: healthGraphs,
                             padding: const EdgeInsets.all(16.0),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: AppColors.cardBackground,
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ),
                         ),
                     ],
@@ -196,4 +268,28 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
       ),
     );
   }
+}
+
+// Data classes for the charts
+class NutritionData {
+  final String week;
+  final double value;
+
+  NutritionData(this.week, this.value);
+}
+
+class HealthData {
+  final String category;
+  final double percentage;
+  final Color color;
+
+  HealthData(this.category, this.percentage, this.color);
+}
+
+class WaterData {
+  final String day;
+  final double waterUsage;
+  final double phLevel;
+
+  WaterData(this.day, this.waterUsage, this.phLevel);
 }
