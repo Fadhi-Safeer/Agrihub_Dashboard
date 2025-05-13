@@ -112,7 +112,6 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
                   textStyle: TextStyles.mainHeading.copyWith(
                     color: AppColors.sidebarGradientStart,
                   ),
-                  bulbSize: 30,
                 ),
                 const SizedBox(height: 16),
 

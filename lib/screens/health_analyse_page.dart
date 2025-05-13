@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/ImageCard.dart';
-import '../models/image_item.dart';
 import '../providers/health_status_provider.dart';
 import '../providers/image_list_provider.dart';
 import '../theme/text_styles.dart';
@@ -23,12 +22,25 @@ class HealthAnalysisPage extends StatefulWidget {
 
 class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
   bool _isGridExpanded = false;
+  bool _isFirstBuild = true;
 
   @override
-  Widget build(BuildContext context) {
-    SizeConfig().init(context);
-    final galleryProvider = Provider.of<ImageListProvider>(context);
-    final healthProvider = Provider.of<HealthStatusProvider>(context);
+  void initState() {
+    super.initState();
+    // Schedule an update for after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateHealthStatus();
+    });
+  }
+
+  void _updateHealthStatus() {
+    // Safely update the health provider outside of the build or dependency cycle
+    if (!mounted) return;
+
+    final galleryProvider =
+        Provider.of<ImageListProvider>(context, listen: false);
+    final healthProvider =
+        Provider.of<HealthStatusProvider>(context, listen: false);
 
     // Filter out images with growth == "camera_view"
     final filteredImages = galleryProvider.images
@@ -37,6 +49,35 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
 
     // Update health status in provider
     healthProvider.updateStatus(filteredImages);
+  }
+
+  @override
+  void didUpdateWidget(HealthAnalysisPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Schedule update after the frame is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateHealthStatus();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig().init(context);
+    final galleryProvider = Provider.of<ImageListProvider>(context);
+
+    // Check if we need to update on first build
+    if (_isFirstBuild) {
+      _isFirstBuild = false;
+      // Schedule an update after this frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _updateHealthStatus();
+      });
+    }
+
+    // Filter out images with growth == "camera_view"
+    final filteredImages = galleryProvider.images
+        .where((imageItem) => imageItem.growth != "camera_view")
+        .toList();
 
     // Convert filtered images to ImageCard format
     final List<ImageCard> imageCards =
@@ -71,6 +112,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
           const NavigationSidebar(),
           Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Stack(
                   children: [
@@ -81,7 +123,6 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                       ),
                       bulbSize: 30,
                     ),
-                    const SizedBox(height: 16),
                     Positioned(
                       right: 16,
                       top: 16,
@@ -96,6 +137,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: CameraSelectionDropdown(

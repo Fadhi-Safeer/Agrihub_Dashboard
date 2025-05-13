@@ -79,30 +79,27 @@ class ElevatedImageCard extends StatelessWidget {
     final String? imagePath =
         stage.slotImages.isNotEmpty ? stage.slotImages[0] : null;
 
-    return Expanded(
-      flex:
-          hasDescription ? 1 : 2, // Take more vertical space if no description
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-          ),
-          child: imagePath != null
-              ? imagePath.startsWith('http')
-                  ? Image.network(
-                      imagePath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                    )
-                  : Image.asset(
-                      imagePath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                    )
-              : _buildPlaceholder(),
+    // Removed the Expanded widget that was causing the issue
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
         ),
+        child: imagePath != null
+            ? imagePath.startsWith('http')
+                ? Image.network(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  )
+                : Image.asset(
+                    imagePath,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                  )
+            : _buildPlaceholder(),
       ),
     );
   }

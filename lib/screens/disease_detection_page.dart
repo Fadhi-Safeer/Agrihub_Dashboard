@@ -55,7 +55,6 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                   textStyle: TextStyles.mainHeading.copyWith(
                     color: AppColors.sidebarGradientStart,
                   ),
-                  bulbSize: 30,
                 ),
 
                 // Dropdown with selected value and state change
