@@ -184,13 +184,11 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                 // Graphs Section using the new GraphsSection widget
                 Expanded(
                   flex: 2,
-                  child: Expanded(
-                    child: GraphsSection(
-                      title: 'Growth Analytics',
-                      graphs: diseaseGraphs,
-                      height: double.infinity,
-                      padding: EdgeInsets.zero,
-                    ),
+                  child: GraphsSection(
+                    title: 'Growth Analytics',
+                    graphs: diseaseGraphs,
+                    height: double.infinity,
+                    padding: EdgeInsets.zero,
                   ),
                 ),
               ],
