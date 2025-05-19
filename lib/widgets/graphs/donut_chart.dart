@@ -29,10 +29,7 @@ class DonutChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ChartTitle? chartTitle;
-    if (title != null && title!.isNotEmpty) {
-      chartTitle = ChartTitle(text: title!);
-    }
+    if (title != null && title!.isNotEmpty) {}
     return SfCircularChart(
       title: (title != null && title!.isNotEmpty)
           ? ChartTitle(text: title!)
