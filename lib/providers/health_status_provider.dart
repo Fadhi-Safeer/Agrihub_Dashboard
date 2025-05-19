@@ -10,7 +10,7 @@ class HealthStatusProvider extends ChangeNotifier {
   void updateStatus(List<ImageItem> images) {
     final newStatus = images.isNotEmpty &&
         images.every(
-            (image) => image.health?.toLowerCase() == "fully nutritional");
+            (image) => image.health.toLowerCase() == "fully nutritional");
 
     if (_allFullyNutritional != newStatus) {
       _allFullyNutritional = newStatus;
