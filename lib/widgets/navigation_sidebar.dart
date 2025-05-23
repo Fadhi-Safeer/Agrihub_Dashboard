@@ -4,8 +4,49 @@ import '../providers/navigationbar_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 
-class NavigationSidebar extends StatelessWidget {
+class NavigationSidebar extends StatefulWidget {
   const NavigationSidebar({super.key});
+
+  @override
+  State<NavigationSidebar> createState() => _NavigationSidebarState();
+}
+
+class _NavigationSidebarState extends State<NavigationSidebar> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Sync the provider with the current route on widget initialization
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncWithCurrentRoute();
+    });
+  }
+
+  void _syncWithCurrentRoute() {
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final navigationBarProvider =
+        Provider.of<NavigationBarProvider>(context, listen: false);
+
+    String menuFromRoute = _getMenuFromRouteName(currentRoute);
+    if (navigationBarProvider.selectedMenu != menuFromRoute) {
+      navigationBarProvider.updateSelectedMenu(menuFromRoute);
+    }
+  }
+
+  String _getMenuFromRouteName(String? routeName) {
+    switch (routeName) {
+      case '/home':
+        return 'HOME';
+      case '/growth':
+        return 'GROWTH';
+      case '/health':
+        return 'HEALTH';
+      case '/disease':
+        return 'DISEASE';
+      default:
+        return 'HOME';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -11,14 +11,24 @@ class CombinationChartData {
 
 class CombinationChart extends StatelessWidget {
   final List<CombinationChartData> data;
+  final String title;
+  final String xAxisTitle;
+  final String yAxisTitle;
 
-  const CombinationChart({super.key, required this.data});
+  const CombinationChart({
+    super.key,
+    required this.data,
+    this.title = "",
+    this.xAxisTitle = "",
+    this.yAxisTitle = "",
+  });
 
   @override
   Widget build(BuildContext context) {
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
-      title: ChartTitle(text: 'Health Rate vs Temperature'),
+      title: ChartTitle(
+          text: title.isEmpty ? 'Health Rate vs Temperature' : title),
       legend: Legend(
         isVisible: true,
         position: LegendPosition.top,
@@ -26,11 +36,13 @@ class CombinationChart extends StatelessWidget {
       ),
       tooltipBehavior: TooltipBehavior(enable: true),
       primaryXAxis: CategoryAxis(
+        title: AxisTitle(text: xAxisTitle),
         majorGridLines: const MajorGridLines(width: 0),
         labelStyle: TextStyle(color: Colors.grey[600], fontSize: 10),
       ),
       primaryYAxis: NumericAxis(
-        title: AxisTitle(text: 'Disease Rate (cm/week)'),
+        title: AxisTitle(
+            text: yAxisTitle.isEmpty ? 'Disease Rate (cm/week)' : yAxisTitle),
         axisLine: const AxisLine(width: 0),
         majorTickLines: const MajorTickLines(size: 0),
         majorGridLines: const MajorGridLines(width: 0.5, color: Colors.black12),
