@@ -15,6 +15,26 @@ class TimeSeriesChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate min and max values from all data sets
+    double minY = double.infinity;
+    double maxY = double.negativeInfinity;
+
+    for (var dataSet in dataSets) {
+      for (var data in dataSet.data) {
+        if (data.value < minY) minY = data.value;
+        if (data.value > maxY) maxY = data.value;
+      }
+    }
+
+    // Add some padding to the min and max values
+    final double padding = (maxY - minY) * 0.1;
+    minY = (minY - padding).clamp(0, double.infinity);
+    maxY = (maxY + padding).clamp(0, 100);
+
+    // Calculate nice interval for axis labels
+    final double range = maxY - minY;
+    final double interval = _calculateNiceInterval(range);
+
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
       margin: EdgeInsets.zero,
@@ -34,8 +54,9 @@ class TimeSeriesChart extends StatelessWidget {
         labelStyle: TextStyle(color: Colors.grey[600], fontSize: 10),
       ),
       primaryYAxis: NumericAxis(
-        minimum: 0,
-        maximum: 100,
+        minimum: minY,
+        maximum: maxY,
+        interval: interval,
         axisLine: const AxisLine(width: 0),
         majorTickLines: const MajorTickLines(size: 0),
         majorGridLines: const MajorGridLines(width: 0.5, color: Colors.black12),
@@ -45,11 +66,40 @@ class TimeSeriesChart extends StatelessWidget {
     );
   }
 
+  double _calculateNiceInterval(double range) {
+    const List<double> possibleSteps = [
+      0.1,
+      0.2,
+      0.25,
+      0.5,
+      1,
+      2,
+      2.5,
+      5,
+      10,
+      20,
+      25,
+      50,
+      100
+    ];
+    const int targetSteps = 5;
+
+    double roughStep = range / targetSteps;
+    double niceStep = possibleSteps.last;
+    for (var step in possibleSteps) {
+      if (step >= roughStep) {
+        niceStep = step;
+        break;
+      }
+    }
+
+    return niceStep;
+  }
+
   List<CartesianSeries<TimeSeriesData, DateTime>> _buildSeries() {
     return dataSets.map((dataSet) {
       if (showArea) {
-        // If showArea is true, use SplineAreaSeries to fill the area
-        return SplineAreaSeries<TimeSeriesData, DateTime>(
+        return AreaSeries<TimeSeriesData, DateTime>(
           name: dataSet.name,
           dataSource: dataSet.data,
           xValueMapper: (d, _) => d.time,
@@ -57,7 +107,6 @@ class TimeSeriesChart extends StatelessWidget {
           gradient: dataSet.gradient,
           borderColor: dataSet.color,
           borderWidth: 2,
-          splineType: SplineType.cardinal,
           markerSettings: MarkerSettings(
             isVisible: showMarkers,
             shape: DataMarkerType.circle,
@@ -67,15 +116,13 @@ class TimeSeriesChart extends StatelessWidget {
           ),
         );
       } else {
-        // Otherwise, use SplineSeries for lines without shading
-        return SplineSeries<TimeSeriesData, DateTime>(
+        return LineSeries<TimeSeriesData, DateTime>(
           name: dataSet.name,
           dataSource: dataSet.data,
           xValueMapper: (d, _) => d.time,
           yValueMapper: (d, _) => d.value,
           color: dataSet.color,
           width: 2,
-          splineType: SplineType.cardinal,
           markerSettings: MarkerSettings(
             isVisible: showMarkers,
             shape: DataMarkerType.circle,

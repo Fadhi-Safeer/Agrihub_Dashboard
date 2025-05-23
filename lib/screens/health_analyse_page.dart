@@ -114,42 +114,96 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
       TimeSeriesChart(
         dataSets: [
           TimeSeriesDataSet(
-            name: 'Nitrogen',
+            name: 'Growth Rate (%)',
             data: [
-              TimeSeriesData(DateTime(2025, 4, 1), 35),
-              TimeSeriesData(DateTime(2025, 4, 8), 45),
-              TimeSeriesData(DateTime(2025, 4, 15), 60),
-              TimeSeriesData(DateTime(2025, 4, 22), 70),
-              TimeSeriesData(DateTime(2025, 4, 29), 65),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 28)), 15.2),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 21)), 28.7),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 14)), 45.3),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 7)), 62.8),
+              TimeSeriesData(DateTime.now(), 78.5),
             ],
-            color: const Color(0xFF00C851), // Vibrant Green
+            color: Colors.green,
             gradient: LinearGradient(
-              colors: [const Color(0xFF00C851), const Color(0xFF7ED321)],
+              colors: [
+                Colors.green.withOpacity(0.3),
+                Colors.green.withOpacity(0.1),
+              ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
           ),
           TimeSeriesDataSet(
-            name: 'Phosphorus',
+            name: 'Humidity (%)',
             data: [
-              TimeSeriesData(DateTime(2025, 4, 1), 45),
-              TimeSeriesData(DateTime(2025, 4, 8), 50),
-              TimeSeriesData(DateTime(2025, 4, 15), 40),
-              TimeSeriesData(DateTime(2025, 4, 22), 45),
-              TimeSeriesData(DateTime(2025, 4, 29), 55),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 28)), 62.0),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 21)), 65.5),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 14)), 68.2),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 7)), 64.8),
+              TimeSeriesData(DateTime.now(), 61.3),
             ],
-            color: const Color(0xFF2196F3), // Vibrant Blue
+            color: Colors.blue,
+            gradient: LinearGradient(
+              colors: [
+                Colors.blue.withOpacity(0.3),
+                Colors.blue.withOpacity(0.1),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
           TimeSeriesDataSet(
-            name: 'Potassium',
+            name: 'Water Level (%)',
             data: [
-              TimeSeriesData(DateTime(2025, 4, 1), 55),
-              TimeSeriesData(DateTime(2025, 4, 8), 60),
-              TimeSeriesData(DateTime(2025, 4, 15), 65),
-              TimeSeriesData(DateTime(2025, 4, 22), 50),
-              TimeSeriesData(DateTime(2025, 4, 29), 60),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 28)), 85.0),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 21)), 78.5),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 14)), 72.2),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 7)), 68.8),
+              TimeSeriesData(DateTime.now(), 65.3),
             ],
-            color: const Color(0xFFFF6B35), // Vibrant Orange
+            color: Colors.cyan,
+            gradient: LinearGradient(
+              colors: [
+                Colors.cyan.withOpacity(0.3),
+                Colors.cyan.withOpacity(0.1),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          TimeSeriesDataSet(
+            name: 'Health Score (%)',
+            data: [
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 28)), 70.1),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 21)), 73.3),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 14)), 76.5),
+              TimeSeriesData(
+                  DateTime.now().subtract(const Duration(days: 7)), 74.4),
+              TimeSeriesData(DateTime.now(), 72.2),
+            ],
+            color: Colors.orange,
+            gradient: LinearGradient(
+              colors: [
+                Colors.orange.withOpacity(0.3),
+                Colors.orange.withOpacity(0.1),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
           ),
         ],
         showMarkers: true,
@@ -159,11 +213,12 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
       // Health Distribution
       RadarChart(
         data: [
-          RadarChartData(label: "Growth", value: 0.8),
-          RadarChartData(label: "Health", value: 0.6),
-          RadarChartData(label: "Nutrients", value: 0.9),
-          RadarChartData(label: "Moisture", value: 0.7),
-          RadarChartData(label: "Light", value: 0.5),
+          RadarChartData(label: "Nitrogen", value: 0.75),
+          RadarChartData(label: "Phosphorus", value: 0.65),
+          RadarChartData(label: "Potassium", value: 0.70),
+          RadarChartData(label: "Calcium", value: 0.55),
+          RadarChartData(label: "Magnesium", value: 0.60),
+          RadarChartData(label: "Iron", value: 0.50),
         ],
         fillColor:
             const Color(0xFFFF6B35).withOpacity(0.3), // Vibrant Pink fill
@@ -179,14 +234,21 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
         animationDuration: 800,
       ),
 
-      CombinationChart(data: [
-        CombinationChartData('Week 1', 6.5, 15),
-        CombinationChartData('Week 2', 6.3, 20),
-        CombinationChartData('Week 3', 6.7, 35),
-        CombinationChartData('Week 4', 7.0, 30),
-        CombinationChartData('Week 5', 6.8, 26),
-        CombinationChartData('Week 6', 6.8, 28),
-      ])
+      CombinationChart(
+        data: [
+          CombinationChartData('Week 1', 78.5, 26.2),
+          CombinationChartData('Week 2', 72.1, 28.5),
+          CombinationChartData('Week 3', 68.9, 29.8),
+          CombinationChartData('Week 4', 75.3, 27.1),
+          CombinationChartData('Week 5', 81.2, 25.9),
+          CombinationChartData('Week 6', 77.8, 26.8),
+          CombinationChartData('Week 7', 73.4, 28.2),
+          CombinationChartData('Week 8', 79.6, 26.5),
+        ],
+        title: "Environmental Factors vs Plant Health",
+        xAxisTitle: "Time Period",
+        yAxisTitle: "Health Score (%)",
+      )
     ];
 
     return Scaffold(

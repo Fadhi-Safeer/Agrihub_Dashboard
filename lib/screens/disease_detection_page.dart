@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/app_colors.dart';
 import '../utils/size_config.dart';
-import '../widgets/graphs/area_chart.dart';
 import '../widgets/graphs/donut_chart.dart';
 import '../widgets/graphs/time_series_chart.dart';
 import '../widgets/monitoring_pages/graph_section.dart';
@@ -47,21 +46,21 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
       TimeSeriesChart(
         dataSets: [
           TimeSeriesDataSet(
-            name: 'Disease Rate',
+            name: 'Disease Rate (%)',
             data: [
+              TimeSeriesData(DateTime(2025, 5, 1), 3.2),
               TimeSeriesData(
-                  DateTime.now().subtract(const Duration(days: 21)), 45),
+                  DateTime(2025, 5, 8), 3.8), // slight increase due to weather
+              TimeSeriesData(DateTime(2025, 5, 15), 4.2), // minor peak
               TimeSeriesData(
-                  DateTime.now().subtract(const Duration(days: 14)), 65),
-              TimeSeriesData(
-                  DateTime.now().subtract(const Duration(days: 7)), 35),
-              TimeSeriesData(DateTime.now(), 20),
+                  DateTime(2025, 5, 22), 3.9), // small drop after treatment
+              TimeSeriesData(DateTime(2025, 5, 29), 3.6), // gradual recovery
             ],
-            color: Colors.red,
+            color: Colors.green,
             gradient: LinearGradient(
               colors: [
-                Colors.red.withOpacity(0.3),
-                Colors.red.withOpacity(0.1),
+                Colors.green.withOpacity(0.3),
+                Colors.green.withOpacity(0.1),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -69,7 +68,7 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
           ),
         ],
         showMarkers: true,
-        showArea: true,
+        showArea: false,
       ),
 
 // Growth Stage Distribution (custom_pie_chart.dart)

@@ -11,12 +11,43 @@ class NavigationSidebar extends StatefulWidget {
   State<NavigationSidebar> createState() => _NavigationSidebarState();
 }
 
-class _NavigationSidebarState extends State<NavigationSidebar> {
+class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
+  late final RouteObserver<PageRoute> _routeObserver;
+
+  @override
+  void initState() {
+    super.initState();
+    _routeObserver = RouteObserver<PageRoute>();
+    // Delay the initial sync to avoid build-phase conflicts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncWithCurrentRoute();
+    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) {
+      _routeObserver.subscribe(this, route);
+    }
+  }
 
-    // Sync the provider with the current route on widget initialization
+  @override
+  void dispose() {
+    _routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPush() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncWithCurrentRoute();
+    });
+  }
+
+  @override
+  void didPopNext() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _syncWithCurrentRoute();
     });
@@ -26,16 +57,21 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
     final currentRoute = ModalRoute.of(context)?.settings.name;
     final navigationBarProvider =
         Provider.of<NavigationBarProvider>(context, listen: false);
-
     String menuFromRoute = _getMenuFromRouteName(currentRoute);
+
     if (navigationBarProvider.selectedMenu != menuFromRoute) {
-      navigationBarProvider.updateSelectedMenu(menuFromRoute);
+      // Schedule the update for the next frame
+      Future.microtask(() {
+        navigationBarProvider.updateSelectedMenu(menuFromRoute);
+      });
     }
   }
 
   String _getMenuFromRouteName(String? routeName) {
-    switch (routeName) {
+    if (routeName == null) return 'HOME';
+    switch (routeName.toLowerCase()) {
       case '/home':
+      case '/':
         return 'HOME';
       case '/growth':
         return 'GROWTH';
@@ -57,7 +93,6 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
       color: AppColors.navigationBarBackground,
       child: Column(
         children: [
-          // Top section (unchanged)
           Padding(
             padding: const EdgeInsets.only(top: 40.0, bottom: 10.0),
             child: ClipOval(
@@ -71,63 +106,57 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
           ),
           Text(
             'AGRIVISION',
-            style: TextStyles.mainHeading.copyWith(
-              fontSize: 30,
-            ),
+            style: TextStyles.mainHeading.copyWith(fontSize: 30),
           ),
           const SizedBox(height: 20),
           SidebarMenuItem(
             title: 'HOME',
             isSelected: navigationBarProvider.selectedMenu == 'HOME',
             onTap: () {
-              navigationBarProvider.updateSelectedMenu('HOME');
-              Navigator.pushNamed(context, '/home');
+              if (navigationBarProvider.selectedMenu != 'HOME') {
+                Navigator.pushReplacementNamed(context, '/home');
+              }
             },
           ),
           SidebarMenuItem(
             title: 'GROWTH',
             isSelected: navigationBarProvider.selectedMenu == 'GROWTH',
             onTap: () {
-              navigationBarProvider.updateSelectedMenu('GROWTH');
-              Navigator.pushNamed(context, '/growth');
+              if (navigationBarProvider.selectedMenu != 'GROWTH') {
+                Navigator.pushReplacementNamed(context, '/growth');
+              }
             },
           ),
           SidebarMenuItem(
             title: 'HEALTH',
             isSelected: navigationBarProvider.selectedMenu == 'HEALTH',
             onTap: () {
-              navigationBarProvider.updateSelectedMenu('HEALTH');
-              Navigator.pushNamed(context, '/health');
+              if (navigationBarProvider.selectedMenu != 'HEALTH') {
+                Navigator.pushReplacementNamed(context, '/health');
+              }
             },
           ),
           SidebarMenuItem(
             title: 'DISEASE',
             isSelected: navigationBarProvider.selectedMenu == 'DISEASE',
             onTap: () {
-              navigationBarProvider.updateSelectedMenu('DISEASE');
-              Navigator.pushNamed(context, '/disease');
+              if (navigationBarProvider.selectedMenu != 'DISEASE') {
+                Navigator.pushReplacementNamed(context, '/disease');
+              }
             },
           ),
-
-          // Spacer to push content to top
           const Spacer(),
-
-          // Bottom assets - side by side, resizing to fit available space
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                // Calculate max width for each image (half of available width minus padding)
                 final maxWidth = (constraints.maxWidth - 32) / 2;
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // First asset
                     Flexible(
                       child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: maxWidth,
-                        ),
+                        constraints: BoxConstraints(maxWidth: maxWidth),
                         child: Image.asset(
                           'assets/apu_logo.png',
                           fit: BoxFit.contain,
@@ -135,12 +164,9 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    // Second asset
                     Flexible(
                       child: Container(
-                        constraints: BoxConstraints(
-                          maxWidth: maxWidth,
-                        ),
+                        constraints: BoxConstraints(maxWidth: maxWidth),
                         child: Image.asset(
                           'assets/apcore_logo.png',
                           fit: BoxFit.contain,
@@ -158,7 +184,6 @@ class _NavigationSidebarState extends State<NavigationSidebar> {
   }
 }
 
-// SidebarMenuItem class remains unchanged
 class SidebarMenuItem extends StatelessWidget {
   final String title;
   final bool isSelected;
@@ -177,10 +202,10 @@ class SidebarMenuItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       decoration: BoxDecoration(
         gradient: isSelected
-            ? LinearGradient(
+            ? const LinearGradient(
                 colors: [
-                  const Color(0xFFAD1457),
-                  const Color(0xFFE91E63),
+                  Color(0xFFAD1457),
+                  Color(0xFFE91E63),
                 ],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
