@@ -56,7 +56,7 @@ class AppColors {
   static const Color primaryRed = Color(0xFFE74C3C); // For errors/danger
   static const Color primaryGreen = Color(0xFF2ECC71); // For success/vegetation
   static const Color primaryBlue = Color(0xFF3498DB); // For information
-  static const Color primaryOrange = Color(0xFFF39C12); // For warnings
+  static const Color primaryOrange = Color(0xFFF39C12);
 
   // Gradients
 

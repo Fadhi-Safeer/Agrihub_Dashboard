@@ -85,14 +85,19 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
         enableTooltip: true,
       ),
       // Growth Stage Distribution (custom_pie_chart.dart)
-      CombinationChart(data: [
-        CombinationChartData('Week 1', 6.5, 15),
-        CombinationChartData('Week 2', 6.3, 20),
-        CombinationChartData('Week 3', 6.7, 35),
-        CombinationChartData('Week 4', 7.0, 30),
-        CombinationChartData('Week 5', 6.8, 26),
-        CombinationChartData('Week 6', 6.8, 28),
-      ]),
+      CombinationChart(
+        data: [
+          CombinationChartData('Week 1', 6.5, 15),
+          CombinationChartData('Week 2', 6.3, 20),
+          CombinationChartData('Week 3', 6.7, 35),
+          CombinationChartData('Week 4', 7.0, 30),
+          CombinationChartData('Week 5', 6.8, 26),
+          CombinationChartData('Week 6', 6.8, 28),
+        ],
+        title: "Disease Rate vs Temperature",
+        xAxisTitle: "Time Period",
+        yAxisTitle: "Disease Rate (%)",
+      ),
     ];
 
     return Scaffold(

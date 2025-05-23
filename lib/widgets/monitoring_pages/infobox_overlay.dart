@@ -157,14 +157,19 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
       // Combination Chart
       CombinationChart(
         data: [
-          CombinationChartData('Week 1', 2.5, 20),
-          CombinationChartData('Week 2', 3.0, 22),
-          CombinationChartData('Week 3', 3.5, 25),
-          CombinationChartData('Week 4', 4.0, 28),
-          CombinationChartData('Week 5', 4.2, 30),
-          CombinationChartData('Week 6', 4.5, 32),
+          CombinationChartData('Week 1', 22.5, 26.2),
+          CombinationChartData('Week 2', 28.1, 28.5),
+          CombinationChartData('Week 3', 35.4, 29.8),
+          CombinationChartData('Week 4', 42.0, 27.1),
+          CombinationChartData('Week 5', 48.3, 25.9),
+          CombinationChartData('Week 6', 54.7, 26.8),
+          CombinationChartData('Week 7', 61.2, 28.2),
+          CombinationChartData('Week 8', 68.9, 26.5),
         ],
-      ),
+        title: "Environmental Factors vs Plant Growth",
+        xAxisTitle: "Time Period",
+        yAxisTitle: "Growth (%)",
+      )
     ];
 
     return GestureDetector(
