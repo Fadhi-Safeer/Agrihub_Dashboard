@@ -14,6 +14,7 @@ import '../widgets/monitoring_pages/camera_selection_dropdown.dart';
 import '../providers/image_list_provider.dart';
 import '../models/ImageCard.dart';
 import '../widgets/monitoring_pages/elevated_image_card.dart';
+import '../widgets/graphs/combination_chart.dart';
 
 class DiseaseDetectionPage extends StatefulWidget {
   const DiseaseDetectionPage({super.key});
@@ -71,37 +72,28 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
         showArea: true,
       ),
 
-      // Weather Correlation Graph
-      StackedAreaChart(
-        xAxisTitle: '',
-        yAxisTitle: 'Values',
-        seriesData: [
-          ChartData('Day 1', 3, 2, 1),
-          ChartData('Day 2', 4, 3, 2),
-          ChartData('Day 3', 2, 5, 3),
-          ChartData('Day 4', 5, 2, 4),
-          ChartData('Day 5', 3, 4, 2),
-        ],
-        seriesColors: [
-          Colors.blue.withOpacity(0.6),
-          Colors.green.withOpacity(0.6),
-          Colors.red.withOpacity(0.6),
-        ],
-      ),
-
 // Growth Stage Distribution (custom_pie_chart.dart)
       DonutChart(
         data: [
-          DonutChartData('Early Growth', 25, Colors.blue),
-          DonutChartData('Leafy Growth', 38, Colors.green),
-          DonutChartData('Head Formation', 12, Colors.red),
-          DonutChartData('Harvest Stage', 25, Colors.orange),
+          DonutChartData('Downy Mildew', 2, Colors.blue),
+          DonutChartData('Bacterial', 8, Colors.orange),
+          DonutChartData('Septoria Blight On Lettuce', 10, Colors.red),
+          DonutChartData('Healthy', 75, Colors.green),
         ],
-        title: 'Plant Growth Stages',
+        title: 'Disease Detected',
         showLegend: true,
         showLabels: true,
         enableTooltip: true,
       ),
+      // Growth Stage Distribution (custom_pie_chart.dart)
+      CombinationChart(data: [
+        CombinationChartData('Week 1', 6.5, 15),
+        CombinationChartData('Week 2', 6.3, 20),
+        CombinationChartData('Week 3', 6.7, 35),
+        CombinationChartData('Week 4', 7.0, 30),
+        CombinationChartData('Week 5', 6.8, 26),
+        CombinationChartData('Week 6', 6.8, 28),
+      ]),
     ];
 
     return Scaffold(
@@ -158,12 +150,12 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                             child: BulletPointsCard(
                               title: 'Key Points',
                               bulletPoints: [
-                                'Point 1',
-                                'Point 2',
-                                'Point 3',
-                                'Point 4',
-                                'Point 5',
-                                'Point 6',
+                                'Bacterial',
+                                'Downy Mildew On Lettuce',
+                                'Powdery Mildew On Lettuce',
+                                'Septoria Blight On Lettuce',
+                                'Viral',
+                                'Wilt And Leaf Blight On Lettuce',
                               ],
                               bulletColors: [
                                 Colors.red,
@@ -185,7 +177,7 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
                 Expanded(
                   flex: 2,
                   child: GraphsSection(
-                    title: 'Growth Analytics',
+                    title: 'Disease Analytics',
                     graphs: diseaseGraphs,
                     height: double.infinity,
                     padding: EdgeInsets.zero,

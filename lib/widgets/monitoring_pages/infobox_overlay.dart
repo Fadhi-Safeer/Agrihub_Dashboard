@@ -1,21 +1,82 @@
 import 'package:flutter/material.dart';
 import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
+import '../graphs/area_chart.dart';
 import '../graphs/combination_chart.dart';
 import '../graphs/donut_chart.dart';
 import '../graphs/time_series_chart.dart';
 import '../monitoring_pages/graph_section.dart';
+import '../../services/api_service.dart';
+import '../../services/graph_data_handler.dart';
 
-class InfoBoxOverlay extends StatelessWidget {
+class InfoBoxOverlay extends StatefulWidget {
   final VoidCallback onClose;
 
   const InfoBoxOverlay({super.key, required this.onClose});
 
   @override
+  _InfoBoxOverlayState createState() => _InfoBoxOverlayState();
+}
+
+class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
+  final ApiService _apiService = ApiService(baseUrl: 'http://127.0.0.1:8002');
+  late GraphDataHandler _dataHandler;
+
+  bool _isLoadingGrowthStages = true;
+  String _growthStagesError = '';
+  List<ChartData> _growthStagesData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _dataHandler = GraphDataHandler(_apiService);
+    _loadGrowthStageData();
+  }
+
+  Future<void> _loadGrowthStageData() async {
+    try {
+      final data = await _dataHandler.fetchGrowthStageTimelineData();
+
+      final List<String> labels = List<String>.from(data['labels']);
+      final List<double> earlyGrowth = List<double>.from(data['early_growth']);
+      final List<double> leafyGrowth = List<double>.from(data['leafy_growth']);
+      final List<double> headFormation =
+          List<double>.from(data['head_formation']);
+      final List<double> harvestStage =
+          List<double>.from(data['harvest_stage']);
+
+      if (labels.isEmpty ||
+          earlyGrowth.length != labels.length ||
+          leafyGrowth.length != labels.length ||
+          headFormation.length != labels.length ||
+          harvestStage.length != labels.length) {
+        throw Exception('Data length mismatch or empty data received');
+      }
+
+      setState(() {
+        _growthStagesData = List.generate(labels.length, (i) {
+          return ChartData(
+            labels[i],
+            earlyGrowth[i],
+            leafyGrowth[i],
+            headFormation[i],
+            harvestStage[i],
+          );
+        });
+        _isLoadingGrowthStages = false;
+      });
+    } catch (e) {
+      setState(() {
+        _growthStagesError = 'Error: $e';
+        _isLoadingGrowthStages = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Creating the growth graphs list for use with GraphsSection
     final List<Widget> growthGraphs = [
-      // Growth Rate Chart (time_series_chart.dart)
+      // Time Series Graph
       TimeSeriesChart(
         dataSets: [
           TimeSeriesDataSet(
@@ -61,7 +122,7 @@ class InfoBoxOverlay extends StatelessWidget {
         showArea: false,
       ),
 
-      // Growth Stage Distribution (custom_pie_chart.dart)
+      // Donut chart
       DonutChart(
         data: [
           DonutChartData('Early Growth', 10, Colors.lightGreen[300]!),
@@ -74,7 +135,26 @@ class InfoBoxOverlay extends StatelessWidget {
         showLabels: true,
         enableTooltip: true,
       ),
-      // Environmental Impact on Growth (combination_chart.dart)
+
+      // Stacked area chart from API
+      if (_isLoadingGrowthStages)
+        const Center(child: CircularProgressIndicator())
+      else if (_growthStagesError.isNotEmpty)
+        Center(child: Text(_growthStagesError))
+      else
+        StackedAreaChart(
+          seriesData: _growthStagesData,
+          xAxisTitle: '',
+          yAxisTitle: '',
+          seriesColors: [
+            Colors.lightGreen[300]!,
+            Colors.green[400]!,
+            Colors.amber[300]!,
+            Colors.orange[400]!,
+          ],
+        ),
+
+      // Combination Chart
       CombinationChart(
         data: [
           CombinationChartData('Week 1', 2.5, 20),
@@ -84,11 +164,11 @@ class InfoBoxOverlay extends StatelessWidget {
           CombinationChartData('Week 5', 4.2, 30),
           CombinationChartData('Week 6', 4.5, 32),
         ],
-      )
+      ),
     ];
 
     return GestureDetector(
-      onTap: onClose,
+      onTap: widget.onClose,
       child: Container(
         color: Colors.transparent,
         child: Center(
@@ -116,6 +196,7 @@ class InfoBoxOverlay extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -128,13 +209,13 @@ class InfoBoxOverlay extends StatelessWidget {
                       ),
                       IconButton(
                         icon: const Icon(Icons.close),
-                        onPressed: onClose,
+                        onPressed: widget.onClose,
                       ),
                     ],
                   ),
                   const SizedBox(height: 15),
 
-                  // Stats cards row
+                  // Stat cards
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -160,21 +241,19 @@ class InfoBoxOverlay extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // GraphsSection takes the majority of the space
+                  // Graphs section
                   Expanded(
                     child: GraphsSection(
                       title: 'Growth Analytics',
                       graphs: growthGraphs,
-                      height:
-                          double.infinity, // Let it expand to available height
-                      padding: EdgeInsets
-                          .zero, // Remove padding as the container already has padding
+                      height: double.infinity,
+                      padding: EdgeInsets.zero,
                     ),
                   ),
 
                   const SizedBox(height: 15),
 
-                  // Progress Bar Section
+                  // Progress bar
                   Container(
                     height: 4,
                     decoration: BoxDecoration(

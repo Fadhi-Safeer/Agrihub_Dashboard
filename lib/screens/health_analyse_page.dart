@@ -109,7 +109,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
             ),
           );
 
-    // Define the health analysis graphs
+// Define the health analysis graphs
     final List<Widget> healthGraphs = [
       TimeSeriesChart(
         dataSets: [
@@ -122,9 +122,9 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
               TimeSeriesData(DateTime(2025, 4, 22), 70),
               TimeSeriesData(DateTime(2025, 4, 29), 65),
             ],
-            color: Colors.green,
+            color: const Color(0xFF00C851), // Vibrant Green
             gradient: LinearGradient(
-              colors: [Colors.green, Colors.greenAccent],
+              colors: [const Color(0xFF00C851), const Color(0xFF7ED321)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -138,7 +138,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
               TimeSeriesData(DateTime(2025, 4, 22), 45),
               TimeSeriesData(DateTime(2025, 4, 29), 55),
             ],
-            color: Colors.blue,
+            color: const Color(0xFF2196F3), // Vibrant Blue
           ),
           TimeSeriesDataSet(
             name: 'Potassium',
@@ -149,7 +149,7 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
               TimeSeriesData(DateTime(2025, 4, 22), 50),
               TimeSeriesData(DateTime(2025, 4, 29), 60),
             ],
-            color: Colors.orange,
+            color: const Color(0xFFFF6B35), // Vibrant Orange
           ),
         ],
         showMarkers: true,
@@ -165,10 +165,11 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
           RadarChartData(label: "Moisture", value: 0.7),
           RadarChartData(label: "Light", value: 0.5),
         ],
-        fillColor: Colors.orange.withOpacity(0.3),
-        borderColor: Colors.deepOrange,
-        gridColor: Colors.black12,
-        labelColor: Colors.black87,
+        fillColor:
+            const Color(0xFFFF6B35).withOpacity(0.3), // Vibrant Pink fill
+        borderColor: const Color(0xFFE91E63), // Vibrant Pink border
+        gridColor: Colors.grey.withOpacity(0.3),
+        labelColor: const Color(0xFF424242), // Dark grey for readability
         divisions: 5,
         labelFontSize: 14,
         borderWidth: 2.0,

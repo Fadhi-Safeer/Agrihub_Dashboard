@@ -59,7 +59,10 @@ class BulletPointsCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         point,
-                        style: TextStyle(),
+                        style: TextStyles.rightPanelHeadingText.copyWith(
+                          color: Colors.black,
+                          fontSize: 14.0,
+                        ),
                       ),
                     ),
                   ],

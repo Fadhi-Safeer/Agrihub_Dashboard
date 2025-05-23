@@ -18,7 +18,7 @@ class CombinationChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
-      title: ChartTitle(text: 'Environmental Impact on Growth'),
+      title: ChartTitle(text: 'Health Rate vs Temperature'),
       legend: Legend(
         isVisible: true,
         position: LegendPosition.top,
@@ -30,7 +30,7 @@ class CombinationChart extends StatelessWidget {
         labelStyle: TextStyle(color: Colors.grey[600], fontSize: 10),
       ),
       primaryYAxis: NumericAxis(
-        title: AxisTitle(text: 'Growth Rate (cm/week)'),
+        title: AxisTitle(text: 'Disease Rate (cm/week)'),
         axisLine: const AxisLine(width: 0),
         majorTickLines: const MajorTickLines(size: 0),
         majorGridLines: const MajorGridLines(width: 0.5, color: Colors.black12),

@@ -7,7 +7,7 @@ class HealthStatusLight extends StatelessWidget {
   const HealthStatusLight({
     super.key,
     required this.isHealthy,
-    this.size = 40.0,
+    this.size = 60.0,
   });
 
   @override
@@ -17,15 +17,24 @@ class HealthStatusLight extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          Icon(
-            Icons.lightbulb,
-            size: size,
-            color: isHealthy ? Colors.green : Colors.red,
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              isHealthy ? Colors.green : Colors.red,
+              BlendMode.srcIn,
+            ),
+            child: Image.asset(
+              'assets/healthy_detector.png',
+              width: size,
+              height: size,
+            ),
           ),
-          Icon(
-            Icons.lightbulb_outline,
-            size: size,
-            color: Colors.black.withOpacity(0.2),
+          Opacity(
+            opacity: 0.2,
+            child: Image.asset(
+              'assets/healthy_detector.png',
+              width: size,
+              height: size,
+            ),
           ),
         ],
       ),

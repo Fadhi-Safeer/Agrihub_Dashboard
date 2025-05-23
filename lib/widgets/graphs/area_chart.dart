@@ -16,6 +16,13 @@ class StackedAreaChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double maxY = [
+      ...seriesData.map((e) => e.series1),
+      ...seriesData.map((e) => e.series2),
+      ...seriesData.map((e) => e.series3),
+      ...seriesData.map((e) => e.series4),
+    ].reduce((a, b) => a > b ? a : b);
+
     return SfCartesianChart(
       plotAreaBorderWidth: 0,
       margin: EdgeInsets.zero,
@@ -27,9 +34,7 @@ class StackedAreaChart extends StatelessWidget {
       primaryYAxis: NumericAxis(
         title: AxisTitle(text: yAxisTitle),
         minimum: 0,
-        maximum:
-            seriesData.map((e) => e.series1).reduce((a, b) => a > b ? a : b) +
-                5,
+        maximum: maxY + 5,
         interval: 5,
       ),
       series: <CartesianSeries>[
@@ -57,16 +62,25 @@ class StackedAreaChart extends StatelessWidget {
           borderWidth: 2,
           color: seriesColors[2],
         ),
+        StackedAreaSeries<ChartData, String>(
+          dataSource: seriesData,
+          xValueMapper: (ChartData data, _) => data.day,
+          yValueMapper: (ChartData data, _) => data.series4,
+          name: 'Series 4',
+          borderWidth: 2,
+          color: seriesColors[3],
+        ),
       ],
     );
   }
 }
 
 class ChartData {
-  ChartData(this.day, this.series1, this.series2, this.series3);
+  ChartData(this.day, this.series1, this.series2, this.series3, this.series4);
 
   final String day;
   final double series1;
   final double series2;
   final double series3;
+  final double series4;
 }
