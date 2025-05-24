@@ -36,4 +36,7 @@ class TextStyles {
 
   static TextStyle sidebarMenuItemSelected =
       TextUtils.getRajdhani(fontSize: 23, fontWeight: FontWeight.bold);
+
+  static var aboutCardDescription = TextUtils.getMontserrat(
+      fontSize: 20, fontWeight: FontWeight.bold, color: Colors.brown[900]);
 }

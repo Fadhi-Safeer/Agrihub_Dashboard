@@ -20,16 +20,21 @@ def save_frame_locally(
     
     print("cam number:", cam_num)
     
+    print("base dir:", base_dir)
+    cam_dir = os.path.join(base_dir, str(cam_num))
+    print("cam dir:", cam_dir)
+    os.makedirs(cam_num, exist_ok=True)
+    print("cam dir created successfully")
 
-    cam_dir = os.path.join(base_dir,str(cam_num))
-    os.makedirs(cam_dir, exist_ok=True)
+
 
     print("cam number got successfully")
-    # Extract and normalize classification info
-    growth_stage = str(classification_results.get("growth", "unknown")).lower().strip()
-    health_status = str(classification_results.get("health", "unknown")).lower().strip()
-    disease_type = str(classification_results.get("disease", "")).lower().strip()
-    
+# Extract and normalize classification info
+    growth_stage = str(classification_results.get("growth", "unknown")).lower().strip().replace(" ", "_")
+    health_status = str(classification_results.get("health", "unknown")).lower().strip().replace(" ", "_")
+    disease_type = str(classification_results.get("disease", "")).lower().strip().replace(" ", "_")
+
+
     # Get classification codes
     growth_code = ClassificationMapper.get_growth_code(growth_stage)
     health_code = ClassificationMapper.get_health_code(health_status)
@@ -38,7 +43,7 @@ def save_frame_locally(
 
     # Generate filename (without subfolders)
     filename = f"{cam_num}_{growth_code}_{health_code}_{disease_code}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
-    
+    print("filename:", filename)
     # Save directly in camera folder
     cv2.imwrite(os.path.join(cam_dir, filename), frame)
     

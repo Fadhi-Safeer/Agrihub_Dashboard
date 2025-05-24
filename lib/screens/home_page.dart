@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
                           children: [
                             _buildTopBarCard(
                               'FIELD HEALTH',
-                              '75%',
+                              '89%',
                               Colors.green,
                               [
                                 Color.fromRGBO(169, 45, 101, 1.0),
@@ -123,7 +123,7 @@ class HomePage extends StatelessWidget {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    'Smart Insights',
+                                                    'About',
                                                     style: TextStyles
                                                         .elevatedCardTitle
                                                         .copyWith(
@@ -132,7 +132,7 @@ class HomePage extends StatelessWidget {
                                                     ),
                                                   ),
                                                   Text(
-                                                    'Tap for AI-generated recommendations',
+                                                    'Tap for more info about our project',
                                                     style: TextStyles
                                                         .elevatedCardDescription,
                                                     overflow:
@@ -411,35 +411,56 @@ class HomePage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Field Summary', style: TextStyles.elevatedCardTitle),
+        title: Text(
+          'About AgriVision AI',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppColors.sidebarGradientStart,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildBulletPoint('Overall crop health is good (75%)'),
-            const SizedBox(height: 8),
-            _buildBulletPoint('3 areas need attention (see alerts)'),
-            const SizedBox(height: 8),
-            _buildBulletPoint('Optimal growth rate detected'),
-            const SizedBox(height: 8),
-            _buildBulletPoint('Next irrigation recommended in 2 days'),
-            const SizedBox(height: 16),
             Text(
-              'Recommendations:',
-              style: TextStyles.elevatedCardTitle.copyWith(fontSize: 16),
+              'AgriVision, short for "Agricultural Growth & Research with AI Vision", is an innovative AI-driven monitoring system developed under APCORE (Asia Pacific Center of Robotics Engineering).',
+              style: TextStyles.aboutCardDescription,
             ),
-            const SizedBox(height: 8),
-            _buildBulletPoint('Apply nitrogen fertilizer in northern section'),
-            const SizedBox(height: 8),
-            _buildBulletPoint('Schedule pest control for next week'),
+            const SizedBox(height: 12),
+            Text(
+              'This project empowers researchers and farmers with real-time insights into crop health, growth patterns, and disease detection. Using advanced computer vision and deep learning models (like YOLO), it enables seamless monitoring and smart decision-making for both hydroponic and traditional farms.',
+              style: TextStyles.aboutCardDescription,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'AgriVision is designed to be accessible, scalable, and cloud-integrated—offering a futuristic yet practical solution to modern agricultural challenges.',
+              style: TextStyles.aboutCardDescription,
+            ),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Dismiss',
-                style: TextStyle(color: AppColors.sidebarGradientStart)),
+            child: Text(
+              'Close',
+              style: TextStyle(color: AppColors.sidebarGradientStart),
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabContent(List<String> points) {
+    return ListView.separated(
+      itemCount: points.length,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("• ", style: TextStyle(fontSize: 16)),
+          Expanded(child: Text(points[index], style: TextStyle(fontSize: 14))),
         ],
       ),
     );

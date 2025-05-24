@@ -8,6 +8,7 @@ class GraphsSection extends StatelessWidget {
   final List<Widget> graphs;
   final double height;
   final EdgeInsetsGeometry padding;
+  final Color color; // <-- New color parameter
 
   const GraphsSection({
     Key? key,
@@ -15,6 +16,7 @@ class GraphsSection extends StatelessWidget {
     required this.graphs,
     this.height = 300,
     this.padding = const EdgeInsets.all(16.0),
+    this.color = AppColors.cardBackground, // <-- Default value
   }) : super(key: key);
 
   @override
@@ -25,7 +27,7 @@ class GraphsSection extends StatelessWidget {
       padding: padding,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
+          color: color, // <-- Use the passed or default color here
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
@@ -58,7 +60,6 @@ class GraphsSection extends StatelessWidget {
   Widget _buildFixedGraphsLayout() {
     return Row(
       children: List.generate(graphs.length, (index) {
-        // Add a divider between graphs
         final bool isLast = index == graphs.length - 1;
 
         return Expanded(
@@ -81,9 +82,8 @@ class GraphsSection extends StatelessWidget {
         children: List.generate(graphs.length, (index) {
           final bool isLast = index == graphs.length - 1;
 
-          // When scrollable, we need fixed width for each graph
           return Container(
-            width: 300, // Fixed width for each graph in scrollable mode
+            width: 300,
             padding: EdgeInsets.only(
               left: index == 0 ? 0 : 8.0,
               right: isLast ? 0 : 8.0,

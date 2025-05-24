@@ -15,6 +15,7 @@ GROWTH_STAGE_CODES = {
     'early_growth': 'EG',
     'harvest_stage': 'HS',
     'leafy_growth': 'LG',
+    'head_formation': 'HF',
     'unknown': 'UNK'
 }
 

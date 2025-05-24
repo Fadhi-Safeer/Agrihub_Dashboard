@@ -10,7 +10,7 @@ from storage import save_camera_view_frame, save_frame_locally
 
 
 # Load YOLO model for detection
-DETECTION_MODEL = YOLO('backend/Models/LETTUCE_DETECTION_MODEL.pt')  # Load the YOLOv8 model for detection
+DETECTION_MODEL = YOLO('C:/Users/Fadhi Safeer/OneDrive/Documents/GitHub/Agrihub_Dashboard/backend/Models/LETTUCE_DETECTION_MODEL-hydroponic.pt')  # Load the YOLOv8 model for detection
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -33,6 +33,8 @@ async def capture_frame_from_hls(hls_url):
     return frame
 
 async def get_cam_num(hls_url):
+    print("hls url:", hls_url)
+    print(hls_url.split('/')[-1].split('.')[0] )
     return hls_url.split('/')[-1].split('.')[0] 
 
 
@@ -155,9 +157,14 @@ async def handler(websoc):
                     # If classification contains "error", skip sending that result
                     if "error" in classification:
                         continue
+                    
+                    print(hls_url)
+                    cam_num = await get_cam_num(hls_url)
+
+                    print("cam numberrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr:", cam_num)
 
                     save_frame_locally(
-                        cropped, hls_url, classification,
+                        cropped, cam_num, classification,
                         base_dir="C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
                     )
                     print("Frame Saved")

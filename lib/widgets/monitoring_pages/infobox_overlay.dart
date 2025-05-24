@@ -125,9 +125,9 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
       // Donut chart
       DonutChart(
         data: [
-          DonutChartData('Early Growth', 10, Colors.lightGreen[300]!),
-          DonutChartData('Leafy Growth', 15, Colors.green[400]!),
-          DonutChartData('Head Formation', 8, Colors.amber[300]!),
+          DonutChartData('Early Growth', 45, Colors.lightGreen[300]!),
+          DonutChartData('Leafy Growth', 30, Colors.green[400]!),
+          DonutChartData('Head Formation', 56, Colors.amber[300]!),
           DonutChartData('Harvest Stage', 12, Colors.orange[400]!),
         ],
         title: 'Plant Growth Stages',
