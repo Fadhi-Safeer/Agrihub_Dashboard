@@ -34,27 +34,23 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
     final ImageCard diseaseAnalysisCard = ImageCard(
       title: 'Disease Analysis',
       color: AppColors.cardBackground,
-      slotCount: 1, // Single image
+      slotCount: 1,
       slotImages: galleryProvider.images.isNotEmpty
           ? [galleryProvider.images.first.url]
           : [],
     );
 
-    // Define the graphs that will be displayed in the graphs section
     final List<Widget> diseaseGraphs = [
-      // Disease rate over time chart
       TimeSeriesChart(
         dataSets: [
           TimeSeriesDataSet(
             name: 'Disease Rate (%)',
             data: [
               TimeSeriesData(DateTime(2025, 5, 1), 3.2),
-              TimeSeriesData(
-                  DateTime(2025, 5, 8), 3.8), // slight increase due to weather
-              TimeSeriesData(DateTime(2025, 5, 15), 4.2), // minor peak
-              TimeSeriesData(
-                  DateTime(2025, 5, 22), 3.9), // small drop after treatment
-              TimeSeriesData(DateTime(2025, 5, 29), 3.6), // gradual recovery
+              TimeSeriesData(DateTime(2025, 5, 8), 3.8),
+              TimeSeriesData(DateTime(2025, 5, 15), 4.2),
+              TimeSeriesData(DateTime(2025, 5, 22), 3.9),
+              TimeSeriesData(DateTime(2025, 5, 29), 3.6),
             ],
             color: Colors.green,
             gradient: LinearGradient(
@@ -70,8 +66,6 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
         showMarkers: true,
         showArea: false,
       ),
-
-// Growth Stage Distribution (custom_pie_chart.dart)
       DonutChart(
         data: [
           DonutChartData('Downy Mildew', 2, Colors.blue),
@@ -84,7 +78,6 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
         showLabels: true,
         enableTooltip: true,
       ),
-      // Growth Stage Distribution (custom_pie_chart.dart)
       CombinationChart(
         data: [
           CombinationChartData('Week 1', 6.5, 15),
@@ -102,93 +95,90 @@ class _DiseaseDetectionPageState extends State<DiseaseDetectionPage> {
 
     return Scaffold(
       backgroundColor: AppColors.monitoring_pages_background,
-      body: Row(
+      body: Stack(
         children: [
-          const NavigationSidebar(),
-          Expanded(
-            child: Column(
-              children: [
-                // Top Heading
-                TopBar(
-                  title: 'Disease Detection',
-                  textStyle: TextStyles.mainHeading.copyWith(
-                    color: AppColors.sidebarGradientStart,
-                  ),
-                ),
-
-                // Dropdown with selected value and state change
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: CameraSelectionDropdown(
-                    onCameraChanged: (cameraId) {
-                      setState(() => selectedCamera = cameraId);
-                      // Use camera_view: true as requested
-                      galleryProvider.loadImages(cameraId, camera_view: true);
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-
-                // Analysis Section
-                Expanded(
-                  flex: 3,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Row(
-                      children: [
-                        // Disease Analysis - Using ElevatedImageCard instead of ElevatedCard
-                        Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: galleryProvider.isLoading
-                                ? const Center(
-                                    child: CircularProgressIndicator())
-                                : ElevatedImageCard(stage: diseaseAnalysisCard),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: BulletPointsCard(
-                              title: 'Key Points',
-                              bulletPoints: [
-                                'Bacterial',
-                                'Downy Mildew On Lettuce',
-                                'Powdery Mildew On Lettuce',
-                                'Septoria Blight On Lettuce',
-                                'Viral',
-                                'Wilt And Leaf Blight On Lettuce',
-                              ],
-                              bulletColors: [
-                                Colors.red,
-                                Colors.green,
-                                Colors.blue,
-                                Colors.yellow,
-                                Colors.purple,
-                                Colors.orange,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+          Row(
+            children: [
+              const NavigationSidebar(),
+              Expanded(
+                child: Column(
+                  children: [
+                    TopBar(
+                      title: 'Disease Detection',
+                      textStyle: TextStyles.mainHeading.copyWith(
+                        color: AppColors.sidebarGradientStart,
+                      ),
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: CameraSelectionDropdown(
+                        onCameraChanged: (cameraId) {
+                          setState(() => selectedCamera = cameraId);
+                          galleryProvider.loadImages(cameraId,
+                              camera_view: true);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: galleryProvider.isLoading
+                                    ? const Center(
+                                        child: CircularProgressIndicator())
+                                    : ElevatedImageCard(
+                                        stage: diseaseAnalysisCard),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: BulletPointsCard(
+                                  title: 'Key Points',
+                                  bulletPoints: [
+                                    'Bacterial',
+                                    'Downy Mildew On Lettuce',
+                                    'Powdery Mildew On Lettuce',
+                                    'Septoria Blight On Lettuce',
+                                    'Viral',
+                                    'Wilt And Leaf Blight On Lettuce',
+                                  ],
+                                  bulletColors: [
+                                    Colors.red,
+                                    Colors.green,
+                                    Colors.blue,
+                                    Colors.yellow,
+                                    Colors.purple,
+                                    Colors.orange,
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: GraphsSection(
+                        title: 'Disease Analytics',
+                        graphs: diseaseGraphs,
+                        height: double.infinity,
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ],
                 ),
-
-                // Graphs Section using the new GraphsSection widget
-                Expanded(
-                  flex: 2,
-                  child: GraphsSection(
-                    title: 'Disease Analytics',
-                    graphs: diseaseGraphs,
-                    height: double.infinity,
-                    padding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),

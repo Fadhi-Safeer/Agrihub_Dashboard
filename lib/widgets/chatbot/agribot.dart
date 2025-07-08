@@ -1,7 +1,6 @@
-// File: lib/widgets/floating_chat_widget.dart
 import 'package:flutter/material.dart';
 
-class FloatingChatWidget extends StatefulWidget {
+class Agribot extends StatefulWidget {
   final Function(String)? onMessageSent;
   final Color? primaryColor;
   final Color? backgroundColor;
@@ -9,7 +8,7 @@ class FloatingChatWidget extends StatefulWidget {
   final double? chatButtonSize;
   final IconData? chatIcon;
 
-  const FloatingChatWidget({
+  const Agribot({
     Key? key,
     this.onMessageSent,
     this.primaryColor,
@@ -20,11 +19,10 @@ class FloatingChatWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<FloatingChatWidget> createState() => _FloatingChatWidgetState();
+  State<Agribot> createState() => _AgribotState();
 }
 
-class _FloatingChatWidgetState extends State<FloatingChatWidget>
-    with TickerProviderStateMixin {
+class _AgribotState extends State<Agribot> with TickerProviderStateMixin {
   bool _isChatOpen = false;
   final TextEditingController _messageController = TextEditingController();
   final List<ChatMessage> _messages = [];
@@ -131,6 +129,14 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
 
   @override
   Widget build(BuildContext context) {
+    // Define green theme colors
+    final Color greenPrimary = widget.primaryColor ?? const Color(0xFF388E3C);
+    final Color greenBackground =
+        widget.backgroundColor ?? const Color(0xFFE8F5E9);
+    final Color greenAccent = const Color(0xFF66BB6A);
+    final Color chatBubbleUser = greenPrimary;
+    final Color chatBubbleBot = greenAccent.withOpacity(0.2);
+
     return Stack(
       children: [
         // Chat Bottom Sheet Overlay
@@ -142,7 +148,7 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
             ),
           ),
 
-        // Sliding Chat Panel
+        // Sliding Chat Panel (Green themed)
         AnimatedPositioned(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
@@ -150,49 +156,46 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
           left: 0,
           right: 0,
           height: 500,
-          child: Container(
-            decoration: BoxDecoration(
-              color: widget.backgroundColor ?? Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
+          child: Material(
+            color: greenBackground,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
+            elevation: 18,
             child: Column(
               children: [
                 // Chat Header
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: widget.primaryColor ?? Colors.blue,
+                    color: greenPrimary,
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
                   ),
                   child: Row(
                     children: [
-                      Icon(widget.chatIcon ?? Icons.chat, color: Colors.white),
-                      const SizedBox(width: 12),
+                      Icon(
+                        widget.chatIcon ?? Icons.chat_bubble,
+                        color: Colors.white,
+                        size: 36, // increased icon size
+                      ),
+                      const SizedBox(width: 14),
                       const Text(
-                        'Chat Support',
+                        'AgriBot Support',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Spacer(),
                       GestureDetector(
                         onTap: _toggleChat,
-                        child: const Icon(Icons.close, color: Colors.white),
+                        child: const Icon(Icons.close,
+                            color: Colors.white, size: 32),
                       ),
                     ],
                   ),
@@ -205,7 +208,8 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
                     itemCount: _messages.length,
                     itemBuilder: (context, index) {
                       final message = _messages[index];
-                      return _buildMessageBubble(message);
+                      return _buildMessageBubble(
+                          message, chatBubbleUser, chatBubbleBot);
                     },
                   ),
                 ),
@@ -214,8 +218,9 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border(top: BorderSide(color: Colors.grey[200]!)),
+                    color: Colors.white,
+                    border: Border(
+                        top: BorderSide(color: greenAccent.withOpacity(0.2))),
                   ),
                   child: Row(
                     children: [
@@ -229,21 +234,22 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
                               borderSide: BorderSide.none,
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: greenBackground,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 12,
+                              vertical: 14,
                             ),
                           ),
                           onSubmitted: (_) => _sendMessage(),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 12),
                       FloatingActionButton(
                         mini: true,
                         onPressed: _sendMessage,
-                        backgroundColor: widget.primaryColor ?? Colors.blue,
-                        child: const Icon(Icons.send, color: Colors.white),
+                        backgroundColor: greenPrimary,
+                        child: const Icon(Icons.send,
+                            color: Colors.white, size: 28),
                       ),
                     ],
                   ),
@@ -258,7 +264,7 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
           left: _buttonPosition.dx,
           bottom: _buttonPosition.dy,
           child: Draggable(
-            feedback: _buildChatButton(),
+            feedback: _buildChatButton(greenPrimary),
             childWhenDragging: Container(),
             onDragEnd: (details) {
               setState(() {
@@ -268,42 +274,43 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
                 );
               });
             },
-            child: _buildChatButton(),
+            child: _buildChatButton(greenPrimary),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildChatButton() {
+  Widget _buildChatButton(Color greenPrimary) {
     return GestureDetector(
       onTap: _toggleChat,
       child: Container(
-        width: widget.chatButtonSize ?? 60,
-        height: widget.chatButtonSize ?? 60,
+        width: widget.chatButtonSize ?? 72,
+        height: widget.chatButtonSize ?? 72,
         decoration: BoxDecoration(
-          color: widget.primaryColor ?? Colors.blue,
+          color: greenPrimary,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+              color: greenPrimary.withOpacity(0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
             ),
           ],
         ),
         child: Icon(
-          _isChatOpen ? Icons.close : (widget.chatIcon ?? Icons.chat),
+          _isChatOpen ? Icons.close : (widget.chatIcon ?? Icons.support_agent),
           color: Colors.white,
-          size: 24,
+          size: 38, // increased size
         ),
       ),
     );
   }
 
-  Widget _buildMessageBubble(ChatMessage message) {
+  Widget _buildMessageBubble(
+      ChatMessage message, Color userColor, Color botColor) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 13),
       child: Align(
         alignment:
             message.isUser ? Alignment.centerRight : Alignment.centerLeft,
@@ -311,18 +318,17 @@ class _FloatingChatWidgetState extends State<FloatingChatWidget>
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width * 0.75,
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
-            color: message.isUser
-                ? (widget.primaryColor ?? Colors.blue)
-                : Colors.grey[200],
-            borderRadius: BorderRadius.circular(20),
+            color: message.isUser ? userColor : botColor,
+            borderRadius: BorderRadius.circular(22),
           ),
           child: Text(
             message.message,
             style: TextStyle(
-              color: message.isUser ? Colors.white : Colors.black87,
-              fontSize: 16,
+              color: message.isUser ? Colors.white : userColor,
+              fontSize: 17,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
