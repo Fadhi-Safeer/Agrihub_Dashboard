@@ -451,44 +451,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildTabContent(List<String> points) {
-    return ListView.separated(
-      itemCount: points.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, index) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("• ", style: TextStyle(fontSize: 16)),
-          Expanded(child: Text(points[index], style: TextStyle(fontSize: 14))),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBulletPoint(String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 4, right: 8),
-          child: Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: AppColors.sidebarGradientStart,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyles.elevatedCardDescription,
-          ),
-        ),
-      ],
-    );
-  }
 }
