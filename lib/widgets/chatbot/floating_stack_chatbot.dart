@@ -17,7 +17,8 @@ class FloatingStackChatbot extends StatelessWidget {
               builder: (context) => Agribot(
                 primaryColor: Colors.deepPurple,
                 backgroundColor: Colors.white,
-                greetingMessage: "Hello! Need any help?",
+                greetingMessage:
+                    "Hello! I’m AgriBot, your smart farming assistant 🤖🌾\nAsk me anything about agriculture – I’m here to help!",
                 chatButtonSize: 56,
                 chatIcon: Icons.support_agent,
               ),

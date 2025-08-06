@@ -40,6 +40,8 @@ async def get_cam_num(hls_url):
 
 # Existing YOLO detection process (Step 1)
 async def yolo_detection(hls_url, model):
+    #Time Interval
+    await asyncio.sleep(3) 
     frame = await capture_frame_from_hls(hls_url)
     save_camera_view_frame(frame, await get_cam_num(hls_url))
     print("captured frame")
@@ -89,7 +91,8 @@ def crop_image(frame, bounding_box):
     return cropped if cropped.size > 0 else None
 
 # Function to classify a cropped image using three classification models
-def classify_cropped_image(cropped_image):
+async def classify_cropped_image(cropped_image):
+    await asyncio.sleep(3)
     if cropped_image is None:
         return {"error": "Invalid cropped image"}
 

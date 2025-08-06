@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Agrihub Dashboard',
         debugShowCheckedModeBanner: false,
+
         theme: ThemeData(
           primaryColor: AppColors.topBar,
           scaffoldBackgroundColor: AppColors.monitoring_pages_background,

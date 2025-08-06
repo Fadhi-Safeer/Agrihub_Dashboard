@@ -1,11 +1,35 @@
 import os
-import re
 import shutil
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 import cv2
 import numpy as np
 from classification_mapper import ClassificationMapper
+
+# Track last save time per camera
+_last_saved_at: dict[str, datetime] = {}
+SAVE_INTERVAL = timedelta(minutes=30)  # Set frequency here (30 minutes)
+
+def _should_save(cam_num: str, now: datetime) -> bool:
+    """
+    Returns True if at least SAVE_INTERVAL has passed since this camera
+    last saved an image (classified or snapshot).
+    """
+    last_time = _last_saved_at.get(cam_num)
+    if last_time is None or now - last_time >= SAVE_INTERVAL:
+        _last_saved_at[cam_num] = now
+        return True
+    return False
+
+
+def get_timestamp_paths(base_dir):
+    now = datetime.now()
+    month_folder = now.strftime("%B_%Y")       # e.g., July_2025
+    date_folder = now.strftime("%Y_%m_%d")     # e.g., 2025_07_09
+    time_folder = now.strftime("%I_%M%p")      # e.g., 12_04PM
+    full_path = os.path.join(base_dir, month_folder, date_folder, time_folder)
+    return full_path, now
+
 
 def save_frame_locally(
     frame: np.ndarray,
@@ -14,107 +38,96 @@ def save_frame_locally(
     base_dir: str = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
 ) -> None:
     """
-    Saves classified crop frame directly in camera folder with structured naming
+    Saves classified crop frame in a timestamped camera folder with structured naming.
     """
-# Extract the filename part of the URL
-    
-    print("cam number:", cam_num)
-    
-    print("base dir:", base_dir)
-    cam_dir = os.path.join(base_dir, str(cam_num))
-    print("cam dir:", cam_dir)
-    os.makedirs(cam_num, exist_ok=True)
-    print("cam dir created successfully")
 
+    # Check time restriction
+    now = datetime.now()
+    if not _should_save(cam_num, now):
+        print(f"[SKIPPED] Classified image save throttled for {cam_num}")
+        return
 
+    # Get time-based directory structure
+    save_path, _ = get_timestamp_paths(base_dir)
 
-    print("cam number got successfully")
-# Extract and normalize classification info
+    # Create camera-specific directory
+    cam_dir = os.path.join(save_path, str(cam_num))
+    os.makedirs(cam_dir, exist_ok=True)
+
+    # Normalize classification fields
     growth_stage = str(classification_results.get("growth", "unknown")).lower().strip().replace(" ", "_")
     health_status = str(classification_results.get("health", "unknown")).lower().strip().replace(" ", "_")
     disease_type = str(classification_results.get("disease", "")).lower().strip().replace(" ", "_")
 
-
-    # Get classification codes
+    # Convert to short codes
     growth_code = ClassificationMapper.get_growth_code(growth_stage)
     health_code = ClassificationMapper.get_health_code(health_status)
     disease_code = ClassificationMapper.get_disease_code(disease_type)
-    print("disease code:", disease_code)
 
-    # Generate filename (without subfolders)
-    filename = f"{cam_num}_{growth_code}_{health_code}_{disease_code}_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
-    print("filename:", filename)
-    # Save directly in camera folder
-    cv2.imwrite(os.path.join(cam_dir, filename), frame)
-    
-    return
+    # Filename format
+    filename = f"{cam_num}_{growth_code}_{health_code}_{disease_code}_{now.strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
 
+    # Save
+    cv2.imwrite(os.path.join(cam_dir, filename))
+    print(f"[SAVED] Classified image: {filename}")
 
 
 def save_camera_view_frame(
     frame: np.ndarray,
     cam_num: str,
-    base_path: str = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
+    base_dir: str = "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
 ) -> None:
     """
-    Saves the camera frame in the base path with structured naming.
-    Naming format: {base_path}/{cam_num}/camera_view/{cam_num}_{timestamp}.jpg
+    Saves the latest camera snapshot in a timestamped camera folder.
     """
-    
-     
 
-    # Create the camera view directory path
-    camera_view_dir = os.path.join(base_path, str(cam_num), "camera_view")
-    os.makedirs(camera_view_dir, exist_ok=True)  # Ensure the directory exists
-    clear_directory(camera_view_dir) 
+    # Check time restriction
+    now = datetime.now()
+    if not _should_save(cam_num, now):
+        print(f"[SKIPPED] Camera view snapshot throttled for {cam_num}")
+        return
 
-    # Generate the filename with timestamp
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"{cam_num}_{timestamp}.jpg"
+    # Get time-based directory structure
+    save_path, _ = get_timestamp_paths(base_dir)
 
-    print("filename:", filename)
-    # Save the frame to the generated file path
-    cv2.imwrite(os.path.join(camera_view_dir, filename), frame)
+    # Camera view folder
+    cam_view_dir = os.path.join(save_path, str(cam_num), "camera_view")
+    os.makedirs(cam_view_dir, exist_ok=True)
 
-    print(f"Frame saved successfully: {os.path.join(camera_view_dir, filename)}")
-    
-    
+    # Clean old snapshot(s)
+    clear_directory(cam_view_dir)
+
+    # Filename
+    filename = f"{cam_num}_{now.strftime('%Y%m%d_%H%M%S')}.jpg"
+
+    # Save
+    cv2.imwrite(os.path.join(cam_view_dir, filename), frame)
+    print(f"[SAVED] Snapshot: {os.path.join(cam_view_dir, filename)}")
 
 
 def clear_directory(directory_path):
-    
-    # Check if directory exists
+    """
+    Clears all files and subdirectories from the given path.
+    """
     if not os.path.exists(directory_path):
-        print(f"Error: Directory '{directory_path}' does not exist.")
+        print(f"[WARN] Directory '{directory_path}' does not exist.")
         return 0
-    
+
     if not os.path.isdir(directory_path):
-        print(f"Error: '{directory_path}' is not a directory.")
+        print(f"[ERROR] '{directory_path}' is not a directory.")
         return 0
-    
+
     deleted_count = 0
-    
     try:
-        # Get all items in the directory
-        items = os.listdir(directory_path)
-        
-        # Delete each item
-        for item in items:
+        for item in os.listdir(directory_path):
             item_path = os.path.join(directory_path, item)
-            
             if os.path.isfile(item_path):
                 os.remove(item_path)
-                print(f"Deleted file: {item_path}")
                 deleted_count += 1
             elif os.path.isdir(item_path):
                 shutil.rmtree(item_path)
-                print(f"Deleted directory: {item_path}")
                 deleted_count += 1
-        
-        print(f"Successfully deleted {deleted_count} items from {directory_path}")
         return deleted_count
-        
     except Exception as e:
-        print(f"Error while clearing directory: {e}")
+        print(f"[ERROR] Failed to clear directory: {e}")
         return deleted_count
-
