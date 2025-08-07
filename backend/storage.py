@@ -11,22 +11,18 @@ _last_saved_at: dict[str, datetime] = {}
 SAVE_INTERVAL = timedelta(minutes=30)  # Set frequency here (30 minutes)
 
 def _should_save(cam_num: str, now: datetime) -> bool:
-    """
-    Returns True if at least SAVE_INTERVAL has passed since this camera
-    last saved an image (classified or snapshot).
-    """
-    last_time = _last_saved_at.get(cam_num)
-    if last_time is None or now - last_time >= SAVE_INTERVAL:
-        _last_saved_at[cam_num] = now
+    last = _last_saved_at.get(cam_num)
+    if not last or now - last >= SAVE_INTERVAL:
         return True
     return False
+
 
 
 def get_timestamp_paths(base_dir):
     now = datetime.now()
     month_folder = now.strftime("%B_%Y")       # e.g., July_2025
     date_folder = now.strftime("%Y_%m_%d")     # e.g., 2025_07_09
-    time_folder = now.strftime("%I_%M%p")      # e.g., 12_04PM
+    time_folder = now.strftime("%H_%M")  # e.g., 14_04 for 2:04 PM
     full_path = os.path.join(base_dir, month_folder, date_folder, time_folder)
     return full_path, now
 
@@ -44,7 +40,7 @@ def save_frame_locally(
     # Check time restriction
     now = datetime.now()
     if not _should_save(cam_num, now):
-        print(f"[SKIPPED] Classified image save throttled for {cam_num}")
+        #print(f"[SKIPPED] Classified image save throttled for {cam_num}")
         return
 
     # Get time-based directory structure
@@ -68,8 +64,9 @@ def save_frame_locally(
     filename = f"{cam_num}_{growth_code}_{health_code}_{disease_code}_{now.strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}.jpg"
 
     # Save
-    cv2.imwrite(os.path.join(cam_dir, filename))
-    print(f"[SAVED] Classified image: {filename}")
+    cv2.imwrite(os.path.join(cam_dir, filename), frame)
+
+    #print(f"[SAVED] Classified image: {filename}")
 
 
 def save_camera_view_frame(
@@ -84,7 +81,7 @@ def save_camera_view_frame(
     # Check time restriction
     now = datetime.now()
     if not _should_save(cam_num, now):
-        print(f"[SKIPPED] Camera view snapshot throttled for {cam_num}")
+        #print(f"[SKIPPED] Camera view snapshot throttled for {cam_num}")
         return
 
     # Get time-based directory structure
@@ -102,7 +99,7 @@ def save_camera_view_frame(
 
     # Save
     cv2.imwrite(os.path.join(cam_view_dir, filename), frame)
-    print(f"[SAVED] Snapshot: {os.path.join(cam_view_dir, filename)}")
+    #print(f"[SAVED] Snapshot: {os.path.join(cam_view_dir, filename)}")
 
 
 def clear_directory(directory_path):
@@ -110,11 +107,11 @@ def clear_directory(directory_path):
     Clears all files and subdirectories from the given path.
     """
     if not os.path.exists(directory_path):
-        print(f"[WARN] Directory '{directory_path}' does not exist.")
+        #print(f"[WARN] Directory '{directory_path}' does not exist.")
         return 0
 
     if not os.path.isdir(directory_path):
-        print(f"[ERROR] '{directory_path}' is not a directory.")
+        #print(f"[ERROR] '{directory_path}' is not a directory.")
         return 0
 
     deleted_count = 0
@@ -129,5 +126,5 @@ def clear_directory(directory_path):
                 deleted_count += 1
         return deleted_count
     except Exception as e:
-        print(f"[ERROR] Failed to clear directory: {e}")
+        #print(f"[ERROR] Failed to clear directory: {e}")
         return deleted_count

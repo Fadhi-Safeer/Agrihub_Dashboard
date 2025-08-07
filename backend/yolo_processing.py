@@ -33,8 +33,8 @@ async def capture_frame_from_hls(hls_url):
     return frame
 
 async def get_cam_num(hls_url):
-    print("hls url:", hls_url)
-    print(hls_url.split('/')[-1].split('.')[0] )
+    #print("hls url:", hls_url)
+    #print(hls_url.split('/')[-1].split('.')[0] )
     return hls_url.split('/')[-1].split('.')[0] 
 
 
@@ -51,7 +51,7 @@ async def yolo_detection(hls_url, model):
     await asyncio.sleep(3)
     frame = await capture_frame_from_hls(hls_url)
     save_camera_view_frame(frame, await get_cam_num(hls_url))
-    print("captured frame")
+    #print("captured frame")
 
     # YOLO prediction with threshold moved to model
     results = model.predict(source=frame, imgsz=640, device=device, verbose=False)
@@ -59,19 +59,23 @@ async def yolo_detection(hls_url, model):
     bounding_boxes = []
 
     for result in results:
-        print("if statement")
+        #print("if statement")
         if result.boxes is None:
             continue  # No detections
 
-        print("result.boxes.data")
+        #print("result.boxes.data")
         img_array = result.orig_img.copy()  # numpy array (BGR)
         
-        for box in result.boxes.data:
-            print("result.boxes.data2")
+        for i, box in enumerate(result.boxes.data):
+
+            #print("result.boxes.data2")
             if len(box) < 5:
                 continue  # Ensure the box contains valid values
 
             x1, y1, x2, y2, conf = box[:5]
+            class_id = int(result.boxes.cls[i])
+            growth_label = model.names[class_id]
+
 
             if None in (x1, y1, x2, y2) or conf < 0.70:
                 continue
@@ -86,15 +90,12 @@ async def yolo_detection(hls_url, model):
                 "x1": x1,
                 "y1": y1,
                 "x2": x2,
-                "y2": y2
+                "y2": y2,
+                "growth" : growth_label
             }
             bounding_boxes.append(bounding_box)
-            print("Bounding box added:", bounding_box)
+            #print("Bounding box added:", bounding_box)
 
-        # Optional: Save image with bounding boxes
-        save_path = "output/detected_frame.jpg"
-        cv2.imwrite(save_path, img_array)
-        print(f"[SAVED] Image with bounding boxes saved to {save_path}")
 
     return json.dumps(bounding_boxes, indent=4)
 
@@ -117,7 +118,6 @@ def crop_image(frame, bounding_box):
 
 # Function to classify a cropped image using three classification models
 async def classify_cropped_image(cropped_image):
-    await asyncio.sleep(3)
     if cropped_image is None:
         return {"error": "Invalid cropped image"}
 
@@ -133,7 +133,7 @@ async def classify_cropped_image(cropped_image):
     growth_result = GROWTH_MODEL.predict(source=tensor, imgsz=224, device=device, verbose=False)
     health_result = HEALTH_MODEL.predict(source=tensor, imgsz=224, device=device, verbose=False)
 
-    print("Proocessed results:")
+    #print("Proocessed results:")
     # Extract predictions from model outputs
     classification = {
         "disease": (DISEASE_MODEL.names[disease_result[0].probs.top1] if disease_result else "Unknown").replace("_", " "),
@@ -141,7 +141,7 @@ async def classify_cropped_image(cropped_image):
         "health": (HEALTH_MODEL.names[health_result[0].probs.top1] if health_result else "Unknown").replace("_", " "),
     }
     
-    print("Classification results:", classification)
+    #print("Classification results:", classification)
     
 
     return classification
@@ -156,20 +156,19 @@ def encode_image_to_base64(image):
 async def handler(websoc):
     try:
         async for message in websoc:
-            await asyncio.sleep(3)
             data = json.loads(message)
-            print("Received message:", message)
+            #print("Received message:", message)
             hls_url = data.get('url')
 
             # Check if the request is detection-only (Step 1) or includes bounding boxes (Step 2)
             if 'bounding_boxes' not in data:
                 # Detection-only request
                 bounding_boxes_json = await yolo_detection(hls_url, DETECTION_MODEL)
-                print("Detection completed")
+                #print("Detection completed")
                 await websoc.send(bounding_boxes_json)
 
             else:
-                print("Detection and classification request")
+                #print("Detection and classification request")
                 # Cropping & Classification request
                 bounding_boxes = data.get('bounding_boxes')
                 frame = await capture_frame_from_hls(hls_url)
@@ -186,16 +185,16 @@ async def handler(websoc):
                     if "error" in classification:
                         continue
                     
-                    print(hls_url)
+                    #print(hls_url)
                     cam_num = await get_cam_num(hls_url)
 
-                    print("cam numberrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr:", cam_num)
+                    #print("cam numberrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr:", cam_num)
 
                     save_frame_locally(
                         cropped, cam_num, classification,
                         base_dir="C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
                     )
-                    print("Frame Saved")
+                    #print("Frame Saved")
                     
 
                     encoded_image = encode_image_to_base64(cropped)
@@ -205,7 +204,7 @@ async def handler(websoc):
                         "classification": classification
                     }
                     results.append(result_entry)
-                    print("Result Added")
+                    #print("Result Added")
 
                 # Send empty array if no valid classification results
                 response = json.dumps(results if results else [], indent=4)
