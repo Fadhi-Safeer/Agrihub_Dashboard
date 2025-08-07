@@ -14,11 +14,6 @@ class BoundingBoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.neonGreen
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
     final scaleX = size.width / previewSize.width;
     final scaleY = size.height / previewSize.height;
 
@@ -29,7 +24,47 @@ class BoundingBoxPainter extends CustomPainter {
       final y2 = (box["y2"] ?? 0).toDouble() * scaleY;
 
       final rect = Rect.fromLTRB(x1, y1, x2, y2);
+
+      // Determine box color by classification label (growth stage)
+      final label = (box["growth"] ?? "").toString().toLowerCase();
+      Color boxColor = AppColors.neonGreen; // Default fallback
+
+      if (label.contains("early")) {
+        boxColor = Colors.lightGreenAccent;
+      } else if (label.contains("leafy")) {
+        boxColor = Colors.green[800]!;
+      } else if (label.contains("harvest")) {
+        boxColor = Colors.orange;
+      }
+
+      final paint = Paint()
+        ..color = boxColor
+        ..strokeWidth = 2
+        ..style = PaintingStyle.stroke;
+
+      // Draw rectangle
       canvas.drawRect(rect, paint);
+
+      // Draw label text above the box
+      if (label.isNotEmpty) {
+        final textSpan = TextSpan(
+          text: label.replaceAll("_", " "), // Optional formatting
+          style: TextStyle(
+            color: boxColor,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        );
+        final textPainter = TextPainter(
+          text: textSpan,
+          textDirection: TextDirection.ltr,
+        );
+        textPainter.layout();
+
+        final offset =
+            Offset(x1, y1 - textPainter.height - 2); // Slightly above box
+        textPainter.paint(canvas, offset);
+      }
     }
   }
 
