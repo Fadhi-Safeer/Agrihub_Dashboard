@@ -134,13 +134,3 @@ async def get_images(cam_num: str):
 
     return images_dict
 
-# Run the server
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(
-        "agribot:app",
-        host="127.0.0.1",
-        port=8001,
-        reload=True,
-        log_level="info"
-    )

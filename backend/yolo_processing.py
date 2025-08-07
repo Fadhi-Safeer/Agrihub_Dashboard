@@ -11,8 +11,7 @@ from PIL import Image
 
 
 # Load YOLO model for detection
-DETECTION_MODEL = YOLO('backend\Models\LETTUCE_DETECTION_MODEL-Agrihub_images.pt')  # Load the YOLOv8 model for detection
-
+DETECTION_MODEL = YOLO('backend\Models\LETTUCE_DETECTION_MODEL-Agrihub_images.pt') 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load classification models
