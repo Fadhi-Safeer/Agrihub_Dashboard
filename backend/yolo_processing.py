@@ -10,7 +10,7 @@ from storage import save_camera_view_frame, save_frame_locally
 
 
 # Load YOLO model for detection
-DETECTION_MODEL = YOLO('C:/Users/Fadhi Safeer/OneDrive/Documents/GitHub/Agrihub_Dashboard/backend/Models/LETTUCE_DETECTION_MODEL-hydroponic.pt')  # Load the YOLOv8 model for detection
+DETECTION_MODEL = YOLO('backend\Models\LETTUCE_DETECTION_MODEL-Agrihub_images.pt')  # Load the YOLOv8 model for detection
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -61,7 +61,7 @@ async def yolo_detection(hls_url, model):
             x1, y1, x2, y2, conf = box[:5]  # Extract coordinates and confidence score
 
             # Ensure coordinates are valid and confidence score is above threshold (80%)
-            if None in (x1, y1, x2, y2) or conf < 0.50:
+            if None in (x1, y1, x2, y2) or conf < 0.70:
                 continue
 
             bounding_box = {
@@ -155,7 +155,7 @@ async def handler(websoc):
                     if cropped is None:
                         continue  # Skip if crop failed
 
-                    classification = classify_cropped_image(cropped)
+                    classification = await classify_cropped_image(cropped)
                     
                     # If classification contains "error", skip sending that result
                     if "error" in classification:

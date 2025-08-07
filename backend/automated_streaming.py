@@ -7,7 +7,7 @@ def run_command_in_new_terminal(command):
 
 def main():
     ffmpeg_cmd1 = (
-    'ffmpeg -rtsp_transport tcp -i "rtsp://admin_agrihub:Agrihub123@10.73.228.72:554/stream1" '
+    'ffmpeg -rtsp_transport tcp -i "rtsp://Agrihub_Cam:Agrihub2025@10.101.102.127:554/stream1" '
     '-an -c:v libx264 -preset veryfast -b:v 1000k -maxrate 1000k -bufsize 2000k -g 30 '
     '-hls_time 2 -hls_list_size 3 -hls_flags delete_segments -f hls C:\\\\ffmpeg\\\\hls\\\\camera1.m3u8'
 )
@@ -15,7 +15,7 @@ def main():
 
     
     ffmpeg_cmd2 = (
-    'ffmpeg -f dshow -i video="Webcam C170" '
+    'ffmpeg -f dshow -i video="Intel(R) RealSense(TM) Depth Camera 435 with RGB Module RGB" '
     '-an -c:v libx264 -preset veryfast -b:v 1000k -maxrate 1000k -bufsize 2000k -g 30 '
     '-hls_time 2 -hls_list_size 3 -hls_flags delete_segments '
     '-f hls C:\\ffmpeg\\hls\\camera2.m3u8'
