@@ -47,8 +47,8 @@ class HomePage extends StatelessWidget {
                         child: Row(
                           children: [
                             _buildTopBarCard(
-                              'FIELD HEALTH',
-                              '89%',
+                              'AI ACCURACY',
+                              '87%',
                               Colors.green,
                               [
                                 Color.fromRGBO(169, 45, 101, 1.0),
@@ -57,8 +57,8 @@ class HomePage extends StatelessWidget {
                             ),
                             const SizedBox(width: 20),
                             _buildTopBarCard(
-                              'IMAGES PROCESSED',
-                              '3,924',
+                              'SITES ACTIVE',
+                              '1 Camera',
                               AppColors.sidebarGradientStart,
                               [
                                 Color.fromRGBO(231, 105, 127, 1.0),
@@ -68,7 +68,7 @@ class HomePage extends StatelessWidget {
                             const SizedBox(width: 20),
                             _buildTopBarCard(
                               'ALERTS',
-                              '12',
+                              '0',
                               Colors.orange,
                               [
                                 Color.fromRGBO(231, 105, 127, 1.0),

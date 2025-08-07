@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
-import '../graphs/area_chart.dart';
 import '../graphs/combination_chart.dart';
 import '../graphs/donut_chart.dart';
 import '../graphs/time_series_chart.dart';
@@ -21,10 +20,6 @@ class InfoBoxOverlay extends StatefulWidget {
 class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
   final ApiService _apiService = ApiService(baseUrl: 'http://127.0.0.1:8002');
   late GraphDataHandler _dataHandler;
-
-  bool _isLoadingGrowthStages = true;
-  String _growthStagesError = '';
-  List<ChartData> _growthStagesData = [];
 
   @override
   void initState() {
@@ -53,23 +48,9 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
         throw Exception('Data length mismatch or empty data received');
       }
 
-      setState(() {
-        _growthStagesData = List.generate(labels.length, (i) {
-          return ChartData(
-            labels[i],
-            earlyGrowth[i],
-            leafyGrowth[i],
-            headFormation[i],
-            harvestStage[i],
-          );
-        });
-        _isLoadingGrowthStages = false;
-      });
+      setState(() {});
     } catch (e) {
-      setState(() {
-        _growthStagesError = 'Error: $e';
-        _isLoadingGrowthStages = false;
-      });
+      setState(() {});
     }
   }
 
@@ -135,24 +116,6 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
         showLabels: true,
         enableTooltip: true,
       ),
-
-      // Stacked area chart from API
-      if (_isLoadingGrowthStages)
-        const Center(child: CircularProgressIndicator())
-      else if (_growthStagesError.isNotEmpty)
-        Center(child: Text(_growthStagesError))
-      else
-        StackedAreaChart(
-          seriesData: _growthStagesData,
-          xAxisTitle: '',
-          yAxisTitle: '',
-          seriesColors: [
-            Colors.lightGreen[300]!,
-            Colors.green[400]!,
-            Colors.amber[300]!,
-            Colors.orange[400]!,
-          ],
-        ),
 
       // Combination Chart
       CombinationChart(
@@ -226,7 +189,7 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
                     children: [
                       _buildStatCard(
                         icon: Icons.eco,
-                        value: '345',
+                        value: '7',
                         label: 'Total Plants',
                         color: Colors.green,
                       ),
@@ -237,10 +200,10 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
                         color: Colors.blue,
                       ),
                       _buildStatCard(
-                        icon: Icons.calendar_today,
-                        value: '12',
-                        label: 'Harvest Days',
-                        color: Colors.orange,
+                        icon: Icons.science,
+                        value: '6.2',
+                        label: 'pH Level',
+                        color: Colors.deepPurple,
                       ),
                     ],
                   ),

@@ -8,13 +8,9 @@ from classification_mapper import ClassificationMapper
 
 # Track last save time per camera
 _last_saved_at: dict[str, datetime] = {}
-SAVE_INTERVAL = timedelta(minutes=30)  # Set frequency here (30 minutes)
+SAVE_INTERVAL = timedelta(minutes=1)  # Set frequency here (30 minutes)
 
-def _should_save(cam_num: str, now: datetime) -> bool:
-    last = _last_saved_at.get(cam_num)
-    if not last or now - last >= SAVE_INTERVAL:
-        return True
-    return False
+
 
 
 
@@ -36,19 +32,25 @@ def save_frame_locally(
     """
     Saves classified crop frame in a timestamped camera folder with structured naming.
     """
+    print(f"[DEBUG] Started Saving classified frame for camera {cam_num}...")
 
     # Check time restriction
     now = datetime.now()
-    if not _should_save(cam_num, now):
-        #print(f"[SKIPPED] Classified image save throttled for {cam_num}")
-        return
 
+    print(f"[DEBUG] Surpassed Saving classified frame for camera {cam_num}...")
     # Get time-based directory structure
     save_path, _ = get_timestamp_paths(base_dir)
 
     # Create camera-specific directory
     cam_dir = os.path.join(save_path, str(cam_num))
     os.makedirs(cam_dir, exist_ok=True)
+    
+    # ✅ Check how many images already exist
+    existing_images = [f for f in os.listdir(cam_dir) if f.endswith('.jpg')]
+    print(existing_images)
+    if len(existing_images) >= 7:
+        print(f"[SKIPPED] Max image count (7) reached for {cam_num} in {cam_dir}")
+        return
 
     # Normalize classification fields
     growth_stage = str(classification_results.get("growth", "unknown")).lower().strip().replace(" ", "_")
@@ -65,8 +67,10 @@ def save_frame_locally(
 
     # Save
     cv2.imwrite(os.path.join(cam_dir, filename), frame)
+    _last_saved_at[cam_num] = now
 
-    #print(f"[SAVED] Classified image: {filename}")
+
+    print(f"[SAVED] Classified image: {filename}")
 
 
 def save_camera_view_frame(
@@ -80,9 +84,7 @@ def save_camera_view_frame(
 
     # Check time restriction
     now = datetime.now()
-    if not _should_save(cam_num, now):
-        #print(f"[SKIPPED] Camera view snapshot throttled for {cam_num}")
-        return
+
 
     # Get time-based directory structure
     save_path, _ = get_timestamp_paths(base_dir)

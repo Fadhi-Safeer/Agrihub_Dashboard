@@ -1,5 +1,4 @@
 import asyncio
-import time
 import cv2
 import json
 import base64
@@ -7,6 +6,8 @@ import numpy as np
 from ultralytics import YOLO
 import torch
 from storage import save_camera_view_frame, save_frame_locally  
+import json
+from PIL import Image
 
 
 # Load YOLO model for detection
@@ -39,11 +40,7 @@ async def get_cam_num(hls_url):
 
 
 # Existing YOLO detection process (Step 1)
-import cv2
-import json
-import asyncio
-from PIL import Image
-import numpy as np
+
 
 # Existing YOLO detection process (Step 1)
 async def yolo_detection(hls_url, model):
@@ -77,7 +74,7 @@ async def yolo_detection(hls_url, model):
             growth_label = model.names[class_id]
 
 
-            if None in (x1, y1, x2, y2) or conf < 0.70:
+            if None in (x1, y1, x2, y2) or conf < 0.60:
                 continue
 
             # Convert to int for drawing and result
@@ -116,6 +113,33 @@ def crop_image(frame, bounding_box):
     cropped = frame[y1:y2, x1:x2]
     return cropped if cropped.size > 0 else None
 
+async def classify_cropped_image(cropped_image, detected_class_id: int):
+    if cropped_image is None:
+        return {"error": "Invalid cropped image"}
+
+    # Convert BGR to RGB
+    cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
+
+    # Resize and normalize
+    resized = cv2.resize(cropped_image, (224, 224))
+    tensor = torch.from_numpy(resized).permute(2, 0, 1).float().unsqueeze(0) / 255.0
+
+    # NOTE: Growth classification will come from detection model (not this model)
+
+
+    # Get class name from DETECTION_MODEL using the provided class ID
+    growth_class = DETECTION_MODEL.names[detected_class_id] if detected_class_id in DETECTION_MODEL.names else "Unknown"
+    growth_class = growth_class.replace("_", " ")
+
+    classification = {
+        "disease": "healthy",                  # Hardcoded
+        "growth": detected_class_id,                # From detection model
+        "health": "fully nutritional"          # Hardcoded
+    }
+
+    return classification
+
+'''
 # Function to classify a cropped image using three classification models
 async def classify_cropped_image(cropped_image):
     if cropped_image is None:
@@ -146,6 +170,9 @@ async def classify_cropped_image(cropped_image):
 
     return classification
 
+'''
+
+
 # Function to encode an image to Base64 string for transmission
 def encode_image_to_base64(image):
     _, buffer = cv2.imencode('.jpg', image)
@@ -164,7 +191,7 @@ async def handler(websoc):
             if 'bounding_boxes' not in data:
                 # Detection-only request
                 bounding_boxes_json = await yolo_detection(hls_url, DETECTION_MODEL)
-                #print("Detection completed")
+                print("Detection completed")
                 await websoc.send(bounding_boxes_json)
 
             else:
@@ -179,7 +206,9 @@ async def handler(websoc):
                     if cropped is None:
                         continue  # Skip if crop failed
 
-                    classification = await classify_cropped_image(cropped)
+                    classification = await classify_cropped_image(cropped, box["growth"])
+
+                    print("Classification results:", classification)
                     
                     # If classification contains "error", skip sending that result
                     if "error" in classification:
