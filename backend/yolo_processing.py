@@ -39,40 +39,65 @@ async def get_cam_num(hls_url):
 
 
 # Existing YOLO detection process (Step 1)
+import cv2
+import json
+import asyncio
+from PIL import Image
+import numpy as np
+
+# Existing YOLO detection process (Step 1)
 async def yolo_detection(hls_url, model):
-    #Time Interval
-    await asyncio.sleep(3) 
+    # Time Interval
+    await asyncio.sleep(3)
     frame = await capture_frame_from_hls(hls_url)
     save_camera_view_frame(frame, await get_cam_num(hls_url))
     print("captured frame")
+
+    # YOLO prediction with threshold moved to model
     results = model.predict(source=frame, imgsz=640, device=device, verbose=False)
+
     bounding_boxes = []
+
     for result in results:
         print("if statement")
         if result.boxes is None:
             continue  # No detections
-        
+
         print("result.boxes.data")
+        img_array = result.orig_img.copy()  # numpy array (BGR)
+        
         for box in result.boxes.data:
             print("result.boxes.data2")
             if len(box) < 5:
                 continue  # Ensure the box contains valid values
-            
-            x1, y1, x2, y2, conf = box[:5]  # Extract coordinates and confidence score
 
-            # Ensure coordinates are valid and confidence score is above threshold (80%)
+            x1, y1, x2, y2, conf = box[:5]
+
             if None in (x1, y1, x2, y2) or conf < 0.70:
                 continue
 
+            # Convert to int for drawing and result
+            x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
+
+            # Draw rectangle on image (BGR: green)
+            cv2.rectangle(img_array, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
             bounding_box = {
-                "x1": int(x1),
-                "y1": int(y1),
-                "x2": int(x2),
-                "y2": int(y2)
+                "x1": x1,
+                "y1": y1,
+                "x2": x2,
+                "y2": y2
             }
             bounding_boxes.append(bounding_box)
             print("Bounding box added:", bounding_box)
+
+        # Optional: Save image with bounding boxes
+        save_path = "output/detected_frame.jpg"
+        cv2.imwrite(save_path, img_array)
+        print(f"[SAVED] Image with bounding boxes saved to {save_path}")
+
     return json.dumps(bounding_boxes, indent=4)
+
 
 # Function to crop an image based on bounding box coordinates
 def crop_image(frame, bounding_box):

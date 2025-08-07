@@ -29,7 +29,7 @@ app.add_middleware(
 )
 
 # Set up OpenAI API key
-openai.api_key = "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"
+openai.api_key = ""
 
 if not openai.api_key:
     logger.warning("OpenAI API key not found. Please set OPENAI_API_KEY environment variable.")
