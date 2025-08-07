@@ -28,8 +28,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Set up OpenAI API key
-#openai.api_key = ""
 
 if not openai.api_key:
     logger.warning("OpenAI API key not found. Please set OPENAI_API_KEY environment variable.")
