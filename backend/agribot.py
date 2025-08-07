@@ -28,6 +28,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+openai.api_key ="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"
 
 if not openai.api_key:
     logger.warning("OpenAI API key not found. Please set OPENAI_API_KEY environment variable.")

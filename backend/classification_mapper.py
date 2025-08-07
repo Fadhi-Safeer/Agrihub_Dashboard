@@ -29,7 +29,7 @@ class ClassificationMapper:
     @staticmethod
     def get_disease_code(disease_type: str) -> str:
         
-        print(f"Received disease type: {disease_type}")
+        #print(f"Received disease type: {disease_type}")
 
         return DISEASE_CODES.get(
             disease_type.strip().lower(), 
