@@ -2,22 +2,69 @@ import asyncio
 import cv2
 import json
 import base64
-import numpy as np
 from ultralytics import YOLO
 import torch
-from storage import save_camera_view_frame, save_frame_locally  
-import json
-from PIL import Image
+from storage import save_camera_view_frame, save_frame_locally, append_agrivision_row
+from datetime import datetime
+from pathlib import Path
+
+DATA_JSON_PATH = Path(__file__).resolve().parent / "Data.json"
 
 
-# Load YOLO model for detection
-DETECTION_MODEL = YOLO('backend\Models\LETTUCE_DETECTION_MODEL-Agrihub_images.pt') 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+def _read_data_json() -> dict:
+    data = json.loads(DATA_JSON_PATH.read_text(encoding="utf-8"))
+    return data
 
-# Load classification models
-HEALTH_MODEL = YOLO('backend/Models/HEALTH_CLASSIFICATION_MODEL.pt').to(device)
-GROWTH_MODEL = YOLO('backend/Models/GROWTH_CLASSIFICATION_MODEL.pt').to(device)
-DISEASE_MODEL = YOLO('backend/Models/DISEASE_CLASSIFICATION_MODEL.pt').to(device)
+
+def _get_model_path_conf(data: dict, key: str):
+    cfg = data["Model"][key]
+    return cfg["path"], float(cfg["confidence"])
+
+
+def _get_image_folder(data: dict) -> str:
+    return data["Image Folder"]["path"]
+
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+class ModelManager:
+    def __init__(self):
+        self._last_mtime = None
+        self.detection_model = None
+        self.health_model = None
+        self.growth_model = None
+        self.disease_model = None
+        self.det_conf = 0.6
+        self.health_conf = 0.85
+        self.growth_conf = 0.8
+        self.disease_conf = 0.85
+        self.image_folder = "backend/Images/"
+
+    def ensure_loaded(self):
+        mtime = DATA_JSON_PATH.stat().st_mtime
+        if self._last_mtime == mtime and self.detection_model is not None:
+            return
+
+        data = _read_data_json()
+
+        det_path, self.det_conf = _get_model_path_conf(data, "Detection")
+        gro_path, self.growth_conf = _get_model_path_conf(data, "Growth")
+        hea_path, self.health_conf = _get_model_path_conf(data, "Health")
+        dis_path, self.disease_conf = _get_model_path_conf(data, "Disease")
+
+        self.image_folder = _get_image_folder(data)
+
+        self.detection_model = YOLO(det_path)
+        self.growth_model = YOLO(gro_path).to(device)
+        self.health_model = YOLO(hea_path).to(device)
+        self.disease_model = YOLO(dis_path).to(device)
+
+        self._last_mtime = mtime
+
+
+MODELS = ModelManager()
+
 
 # Function to capture a frame from the HLS stream
 async def capture_frame_from_hls(hls_url):
@@ -29,51 +76,50 @@ async def capture_frame_from_hls(hls_url):
     cap.release()
     if not ret:
         raise Exception("Failed to capture frame from HLS stream")
-    
+
     return frame
 
+
 async def get_cam_num(hls_url):
-    #print("hls url:", hls_url)
-    #print(hls_url.split('/')[-1].split('.')[0] )
-    return hls_url.split('/')[-1].split('.')[0] 
+    return hls_url.split("/")[-1].split(".")[0]
 
 
 # Existing YOLO detection process (Step 1)
-
-
-# Existing YOLO detection process (Step 1)
-async def yolo_detection(hls_url, model):
+async def yolo_detection(hls_url):
     # Time Interval
     await asyncio.sleep(3)
     frame = await capture_frame_from_hls(hls_url)
     save_camera_view_frame(frame, await get_cam_num(hls_url))
-    #print("captured frame")
 
     # YOLO prediction with threshold moved to model
-    results = model.predict(source=frame, imgsz=640, device=device, verbose=False)
+    MODELS.ensure_loaded()
+    model = MODELS.detection_model
+
+    results = model.predict(
+        source=frame,
+        imgsz=640,
+        device=device,
+        conf=MODELS.det_conf,
+        verbose=False,
+    )
 
     bounding_boxes = []
 
     for result in results:
-        #print("if statement")
         if result.boxes is None:
             continue  # No detections
 
-        #print("result.boxes.data")
         img_array = result.orig_img.copy()  # numpy array (BGR)
-        
-        for i, box in enumerate(result.boxes.data):
 
-            #print("result.boxes.data2")
+        for i, box in enumerate(result.boxes.data):
             if len(box) < 5:
                 continue  # Ensure the box contains valid values
 
             x1, y1, x2, y2, conf = box[:5]
             class_id = int(result.boxes.cls[i])
-            growth_label = model.names[class_id]
+            growth_label = model.names.get(class_id, "Unknown")
 
-
-            if None in (x1, y1, x2, y2) or conf < 0.60:
+            if None in (x1, y1, x2, y2):
                 continue
 
             # Convert to int for drawing and result
@@ -87,11 +133,9 @@ async def yolo_detection(hls_url, model):
                 "y1": y1,
                 "x2": x2,
                 "y2": y2,
-                "growth" : growth_label
+                "growth": growth_label,
             }
             bounding_boxes.append(bounding_box)
-            #print("Bounding box added:", bounding_box)
-
 
     return json.dumps(bounding_boxes, indent=4)
 
@@ -103,141 +147,149 @@ def crop_image(frame, bounding_box):
     """
     h, w, _ = frame.shape
     x1, y1, x2, y2 = (
-        max(0, bounding_box['x1']),
-        max(0, bounding_box['y1']),
-        min(w, bounding_box['x2']),
-        min(h, bounding_box['y2']),
+        max(0, int(bounding_box["x1"])),
+        max(0, int(bounding_box["y1"])),
+        min(w, int(bounding_box["x2"])),
+        min(h, int(bounding_box["y2"])),
     )
 
     cropped = frame[y1:y2, x1:x2]
     return cropped if cropped.size > 0 else None
 
-async def classify_cropped_image(cropped_image, detected_class_id: int):
-    if cropped_image is None:
-        return {"error": "Invalid cropped image"}
 
-    # Convert BGR to RGB
-    cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
-
-    # Resize and normalize
-    resized = cv2.resize(cropped_image, (224, 224))
-    tensor = torch.from_numpy(resized).permute(2, 0, 1).float().unsqueeze(0) / 255.0
-
-    # NOTE: Growth classification will come from detection model (not this model)
-
-
-    # Get class name from DETECTION_MODEL using the provided class ID
-    growth_class = DETECTION_MODEL.names[detected_class_id] if detected_class_id in DETECTION_MODEL.names else "Unknown"
-    growth_class = growth_class.replace("_", " ")
-
-    classification = {
-        "disease": "healthy",                  # Hardcoded
-        "growth": detected_class_id,                # From detection model
-        "health": "fully nutritional"          # Hardcoded
-    }
-
-    return classification
-
-'''
-# Function to classify a cropped image using three classification models
 async def classify_cropped_image(cropped_image):
     if cropped_image is None:
         return {"error": "Invalid cropped image"}
 
-    # Convert BGR to RGB (YOLO models expect RGB format)
     cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
 
-    # Resize for YOLO classification models
-    resized = cv2.resize(cropped_image, (224, 224))  # Resize to required input size
-    tensor = torch.from_numpy(resized).permute(2, 0, 1).float().unsqueeze(0)/255.0  # shape: (1, 3, 224, 224)
+    resized = cv2.resize(cropped_image, (224, 224))
+    tensor = (
+        torch.from_numpy(resized).permute(2, 0, 1).float().unsqueeze(0) / 255.0
+    )
 
-    # Run inference on each model
-    disease_result = DISEASE_MODEL.predict(source=tensor, imgsz=224, device=device, verbose=False)
-    growth_result = GROWTH_MODEL.predict(source=tensor, imgsz=224, device=device, verbose=False)
-    health_result = HEALTH_MODEL.predict(source=tensor, imgsz=224, device=device, verbose=False)
+    MODELS.ensure_loaded()
 
-    #print("Proocessed results:")
-    # Extract predictions from model outputs
+    disease_result = MODELS.disease_model.predict(
+        source=tensor,
+        imgsz=224,
+        device=device,
+        conf=MODELS.disease_conf,
+        verbose=False,
+    )
+    growth_result = MODELS.growth_model.predict(
+        source=tensor,
+        imgsz=224,
+        device=device,
+        conf=MODELS.growth_conf,
+        verbose=False,
+    )
+    health_result = MODELS.health_model.predict(
+        source=tensor,
+        imgsz=224,
+        device=device,
+        conf=MODELS.health_conf,
+        verbose=False,
+    )
+
     classification = {
-        "disease": (DISEASE_MODEL.names[disease_result[0].probs.top1] if disease_result else "Unknown").replace("_", " "),
-        "growth": (GROWTH_MODEL.names[growth_result[0].probs.top1] if growth_result else "Unknown").replace("_", " "),
-        "health": (HEALTH_MODEL.names[health_result[0].probs.top1] if health_result else "Unknown").replace("_", " "),
+        "disease": (
+            MODELS.disease_model.names[disease_result[0].probs.top1]
+            if disease_result
+            else "Unknown"
+        ).replace("_", " "),
+        "growth": (
+            MODELS.growth_model.names[growth_result[0].probs.top1]
+            if growth_result
+            else "Unknown"
+        ).replace("_", " "),
+        "health": (
+            MODELS.health_model.names[health_result[0].probs.top1]
+            if health_result
+            else "Unknown"
+        ).replace("_", " "),
     }
-    
-    #print("Classification results:", classification)
-    
 
     return classification
-
-'''
 
 
 # Function to encode an image to Base64 string for transmission
 def encode_image_to_base64(image):
-    _, buffer = cv2.imencode('.jpg', image)
-    jpg_as_text = base64.b64encode(buffer).decode('utf-8')
+    _, buffer = cv2.imencode(".jpg", image)
+    jpg_as_text = base64.b64encode(buffer).decode("utf-8")
     return jpg_as_text
+
 
 # Updated WebSocket server handler
 async def handler(websoc):
     try:
         async for message in websoc:
             data = json.loads(message)
-            #print("Received message:", message)
-            hls_url = data.get('url')
+            hls_url = data.get("url")
 
             # Check if the request is detection-only (Step 1) or includes bounding boxes (Step 2)
-            if 'bounding_boxes' not in data:
+            if "bounding_boxes" not in data:
                 # Detection-only request
-                bounding_boxes_json = await yolo_detection(hls_url, DETECTION_MODEL)
+                bounding_boxes_json = await yolo_detection(hls_url)
                 print("Detection completed")
                 await websoc.send(bounding_boxes_json)
 
             else:
-                #print("Detection and classification request")
                 # Cropping & Classification request
-                bounding_boxes = data.get('bounding_boxes')
+                bounding_boxes = data.get("bounding_boxes")
                 frame = await capture_frame_from_hls(hls_url)
                 results = []
+
+                # ✅ Improvement: compute cam_num once
+                cam_num = await get_cam_num(hls_url)
 
                 for box in bounding_boxes:
                     cropped = crop_image(frame, box)
                     if cropped is None:
                         continue  # Skip if crop failed
 
-                    classification = await classify_cropped_image(cropped, box["growth"])
+                    classification = await classify_cropped_image(cropped)
 
                     print("Classification results:", classification)
-                    
+
                     # If classification contains "error", skip sending that result
                     if "error" in classification:
                         continue
-                    
-                    #print(hls_url)
-                    cam_num = await get_cam_num(hls_url)
 
-                    #print("cam numberrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr:", cam_num)
+                    plant_id = f"{cam_num}-{len(results)+1}"
+
+                    # ✅ Improvement: protect Excel logging (won't break websocket if it fails)
+                    try:
+                        append_agrivision_row(
+                            camera_number=str(cam_num),
+                            plant_id=plant_id,
+                            growth=str(classification.get("growth", "Unknown")),
+                            health=str(classification.get("health", "Unknown")),
+                            disease=str(classification.get("disease", "Unknown")),
+                        )
+                    except Exception as e:
+                        print(f"Excel logging failed: {e}")
+
+                    MODELS.ensure_loaded()
 
                     save_frame_locally(
-                        cropped, cam_num, classification,
-                        base_dir="C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
+                        cropped,
+                        cam_num,
+                        classification,
+                        base_dir=MODELS.image_folder,
                     )
-                    #print("Frame Saved")
-                    
 
                     encoded_image = encode_image_to_base64(cropped)
 
                     result_entry = {
                         "cropped_image": encoded_image,
-                        "classification": classification
+                        "classification": classification,
                     }
                     results.append(result_entry)
-                    #print("Result Added")
 
                 # Send empty array if no valid classification results
                 response = json.dumps(results if results else [], indent=4)
                 await websoc.send(response)
-
 
     except json.JSONDecodeError as e:
         error_message = {"error": f"JSON decode error: {str(e)}"}

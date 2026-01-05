@@ -2,7 +2,7 @@
   "Model": {
     "Detection": {
       "path": "backend/Models/LETTUCE_DETECTION_MODEL.pt",
-      "confidence": 0.65
+      "confidence": 0.8
     },
     "Growth": {
       "path": "backend/Models/GROWTH_CLASSIFICATION_MODEL.pt",
@@ -28,5 +28,11 @@
     "Notrogen": 140,
     "Phosphorus": 50,
     "Potassium": 250
-  }
+  },
+  "Alert Emails": {
+    "emails": [
+      "fadhisafeer4@gmail.com"
+    ]
+  },
+  "agrivison_data_path": "backend/Data/agrivision_data.xlsx"
 }

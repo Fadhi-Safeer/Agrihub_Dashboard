@@ -5,6 +5,7 @@ from typing import Any, Dict
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Query
 from fastapi.responses import JSONResponse
+import re
 
 router = APIRouter()
 
@@ -170,3 +171,110 @@ async def update_image_folder(payload: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=f"Failed writing Data.json: {e}")
 
     return {"status": "ok"}
+# =========================================================
+# 5) ALERT EMAILS ENDPOINTS (Data.json -> "Alert Emails")
+# =========================================================
+
+ALERT_EMAILS_KEY = "Alert Emails"
+
+EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+def _normalize_emails(value: Any, *, validate: bool = False) -> list[str]:
+    """
+    Accept list of strings only.
+    Trim, remove empties, de-duplicate (case-insensitive).
+    If validate=True, reject invalid emails with 400.
+    """
+    if value is None:
+        return []
+
+    if not isinstance(value, list):
+        raise HTTPException(status_code=400, detail="'emails' must be a list of strings")
+
+    cleaned: list[str] = []
+    seen = set()
+    invalid: list[str] = []
+
+    for item in value:
+        if not isinstance(item, str):
+            raise HTTPException(status_code=400, detail="All emails must be strings")
+
+        e = item.strip()
+        if not e:
+            continue
+
+        if validate and not EMAIL_RE.match(e):
+            invalid.append(e)
+            continue
+
+        key = e.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        cleaned.append(e)
+
+    if validate and invalid:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid email(s): {', '.join(invalid)}",
+        )
+
+    return cleaned
+
+
+@router.get("/config/alert-emails")
+async def get_alert_emails():
+    """
+    Returns:
+      { "emails": ["a@x.com", "b@y.com"] }
+
+    If missing in Data.json, returns empty list (doesn't break your app).
+    """
+    data = _read_data_json()
+    section = data.get(ALERT_EMAILS_KEY)
+
+    # If not present, return empty list (safe default)
+    if section is None:
+        return {"emails": []}
+
+    # Support both formats:
+    # 1) "Alert Emails": {"emails": [...]}
+    # 2) "Alert Emails": [...]  (if old)
+    if isinstance(section, dict):
+        emails_raw = section.get("emails", [])
+    elif isinstance(section, list):
+        emails_raw = section
+    else:
+        raise HTTPException(
+            status_code=500,
+            detail=f"'{ALERT_EMAILS_KEY}' must be an object or list",
+        )
+
+    # Clean + normalize
+    emails = _normalize_emails(emails_raw)
+    return {"emails": emails}
+
+
+@router.put("/config/alert-emails")
+async def update_alert_emails(payload: Dict[str, Any]):
+    """
+    Expects:
+      { "emails": ["a@x.com", "b@y.com"] }
+
+    Writes into Data.json under:
+      "Alert Emails": { "emails": [...] }
+    """
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=400, detail="Payload must be a JSON object.")
+
+    emails = _normalize_emails(payload.get("emails"))
+
+    data = _read_data_json()
+    data[ALERT_EMAILS_KEY] = {"emails": emails}
+
+    try:
+        _atomic_write_json(DATA_JSON_PATH, data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed writing Data.json: {e}")
+
+    return {"status": "ok", "emails": emails}

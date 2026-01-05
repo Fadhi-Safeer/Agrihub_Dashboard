@@ -3,8 +3,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from get_images import router
-from file_path_config import router as get_model_router
-from file_path_config import router as model_config_router  
+from settings_config import router as get_model_router
+from settings_config import router as model_config_router  
 from prediction_model import router as prediction_router
 
 app = FastAPI()

@@ -1,3 +1,4 @@
+// model_config_service.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -5,6 +6,9 @@ class ModelConfigService {
   final String baseUrl;
   const ModelConfigService({required this.baseUrl});
 
+  // =========================
+  // MODELS CONFIG
+  // =========================
   Future<Map<String, dynamic>> fetchModelConfig() async {
     final uri = Uri.parse("$baseUrl/config/models");
     final resp = await http.get(uri);
@@ -55,6 +59,9 @@ class ModelConfigService {
     }
   }
 
+  // =========================
+  // MODEL UPLOAD
+  // =========================
   Future<String> uploadModel({
     required String modelType,
     required String fileName,
@@ -92,6 +99,9 @@ class ModelConfigService {
     return path;
   }
 
+  // =========================
+  // IMAGE FOLDER CONFIG
+  // =========================
   Future<String> fetchImageFolderPath() async {
     final uri = Uri.parse("$baseUrl/config/image-folder");
     final resp = await http.get(uri);
@@ -125,6 +135,58 @@ class ModelConfigService {
     if (resp.statusCode != 200) {
       throw Exception(
           "PUT /config/image-folder failed (${resp.statusCode}): ${resp.body}");
+    }
+  }
+
+  // =========================
+  // NEW: ALERT EMAIL IDS CONFIG
+  // =========================
+  // Backend must provide:
+  // GET  /config/alert-emails  -> { "emails": ["a@x.com","b@y.com"] }
+  // PUT  /config/alert-emails  (body) { "emails": ["a@x.com","b@y.com"] }
+
+  Future<List<String>> fetchAlertEmails() async {
+    final uri = Uri.parse("$baseUrl/config/alert-emails");
+    final resp = await http.get(uri);
+
+    if (resp.statusCode != 200) {
+      throw Exception(
+          "GET /config/alert-emails failed (${resp.statusCode}): ${resp.body}");
+    }
+
+    final decoded = jsonDecode(resp.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw Exception("Invalid response format from /config/alert-emails");
+    }
+
+    final emails = decoded["emails"];
+    if (emails is! List) {
+      throw Exception("Backend returned invalid 'emails' (expected List)");
+    }
+
+    // Keep only valid strings, trim, remove empties
+    return emails
+        .whereType<String>()
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+  }
+
+  Future<void> updateAlertEmails(List<String> emails) async {
+    final uri = Uri.parse("$baseUrl/config/alert-emails");
+
+    final clean =
+        emails.map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+
+    final resp = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"emails": clean}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception(
+          "PUT /config/alert-emails failed (${resp.statusCode}): ${resp.body}");
     }
   }
 }

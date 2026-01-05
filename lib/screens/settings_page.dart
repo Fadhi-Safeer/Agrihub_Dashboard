@@ -1,9 +1,9 @@
+import 'package:agrihub_dashboard/services/settings_config_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../services/model_config_service.dart';
 import '../theme/app_colors.dart';
 import '../theme/text_styles.dart';
 import '../widgets/navigation_sidebar.dart';
@@ -22,6 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late final ModelConfigService _configService =
       const ModelConfigService(baseUrl: _backendBaseUrl);
 
+  // Local cache keys
   static const String _kDetectionPath = "model_path_detection";
   static const String _kGrowthPath = "model_path_growth";
   static const String _kHealthPath = "model_path_health";
@@ -36,6 +37,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   static const String _kImageFolderPath = "image_folder_path";
 
+  // Alert Email IDs cache key
+  static const String _kAlertEmails = "alert_email_ids";
+
+  // State
   String _detectionPath = r"backend\Models\LETTUCE_DETECTION_MODEL.pt";
   int _detectionConfPct = 65;
 
@@ -49,9 +54,20 @@ class _SettingsPageState extends State<SettingsPage> {
   int _diseaseConfPct = 85;
 
   String _predictionPath = r"backend\Models\lettuce_model.joblib";
-  int _predictionConfPct = 75;
+  int _predictionConfPct = 75; // kept for backend + cache compatibility
 
-  String _imageFolderPath = r"backend\Images\";
+  String _imageFolderPath = "backend/Images/";
+
+  // Alert emails
+  List<String> _alertEmails = [];
+
+  // Cache controller (stores comma separated string in SharedPreferences)
+  final TextEditingController _alertEmailsCacheController =
+      TextEditingController();
+
+  // Better UI controllers
+  final TextEditingController _emailInputController = TextEditingController();
+  String? _emailInputError;
 
   @override
   void initState() {
@@ -59,15 +75,143 @@ class _SettingsPageState extends State<SettingsPage> {
     _initLoad();
   }
 
+  @override
+  void dispose() {
+    _alertEmailsCacheController.dispose();
+    _emailInputController.dispose();
+    super.dispose();
+  }
+
   Future<void> _initLoad() async {
     await _loadSettings();
     await _fetchConfigFromBackend();
     await _fetchImageFolderFromBackend();
+    await _fetchAlertEmailsFromBackend();
   }
 
   double _pctToDouble01(int pct) => pct.clamp(0, 100) / 100.0;
   int _double01ToPct(num v) => (v.toDouble() * 100).round().clamp(0, 100);
 
+  // =========================
+  // EMAIL HELPERS (UI)
+  // =========================
+  bool _isValidEmail(String email) {
+    final re = RegExp(r"^[^\s@]+@[^\s@]+\.[^\s@]+$");
+    return re.hasMatch(email.trim());
+  }
+
+  List<String> _parseEmails(String input) {
+    final parts = input
+        .split(RegExp(r"[,\n;]+"))
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty)
+        .toList();
+
+    final seen = <String>{};
+    final uniq = <String>[];
+    for (final e in parts) {
+      final lower = e.toLowerCase();
+      if (!seen.contains(lower)) {
+        seen.add(lower);
+        uniq.add(e);
+      }
+    }
+    return uniq;
+  }
+
+  String? _validateEmails(List<String> emails) {
+    final invalid = emails.where((e) => !_isValidEmail(e)).toList();
+    if (invalid.isNotEmpty) return "Invalid email(s): ${invalid.join(', ')}";
+    return null;
+  }
+
+  void _syncEmailCacheText() {
+    _alertEmailsCacheController.text = _alertEmails.join(", ");
+  }
+
+  void _addEmailFromInput() {
+    final raw = _emailInputController.text.trim();
+    if (raw.isEmpty) {
+      setState(() => _emailInputError = "Enter an email first.");
+      return;
+    }
+    if (!_isValidEmail(raw)) {
+      setState(() => _emailInputError = "Invalid email format.");
+      return;
+    }
+
+    final exists =
+        _alertEmails.any((e) => e.toLowerCase() == raw.toLowerCase());
+    if (exists) {
+      setState(() => _emailInputError = "This email is already added.");
+      return;
+    }
+
+    setState(() {
+      _alertEmails.add(raw);
+      _emailInputController.clear();
+      _emailInputError = null;
+      _syncEmailCacheText();
+    });
+  }
+
+  void _removeEmail(String email) {
+    setState(() {
+      _alertEmails.removeWhere((e) => e.toLowerCase() == email.toLowerCase());
+      _syncEmailCacheText();
+    });
+  }
+
+  Future<void> _openBulkEmailDialog() async {
+    final controller = TextEditingController(text: _alertEmails.join(", "));
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Add Multiple Emails"),
+        content: TextField(
+          controller: controller,
+          minLines: 4,
+          maxLines: 8,
+          decoration: const InputDecoration(
+            hintText: "Paste emails separated by comma / newline / semicolon",
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: const Text("Apply"),
+          ),
+        ],
+      ),
+    );
+
+    if (result == null) return;
+
+    final parsed = _parseEmails(result);
+    final err = _validateEmails(parsed);
+    if (err != null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(err), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    setState(() {
+      _alertEmails = parsed;
+      _emailInputError = null;
+      _syncEmailCacheText();
+    });
+  }
+
+  // =========================
+  // BACKEND FETCH/SAVE
+  // =========================
   Future<void> _fetchConfigFromBackend() async {
     try {
       final data = await _configService.fetchModelConfig();
@@ -93,6 +237,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
         _predictionPath =
             (data["Prediction"]?["path"] as String?) ?? _predictionPath;
+
         _predictionConfPct =
             _double01ToPct((data["Prediction"]?["confidence"] as num?) ?? 0.75);
       });
@@ -118,6 +263,36 @@ class _SettingsPageState extends State<SettingsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Image folder load failed: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _fetchAlertEmailsFromBackend() async {
+    try {
+      final emails = await _configService.fetchAlertEmails();
+      if (!mounted) return;
+
+      final err = _validateEmails(emails);
+      if (err != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err), backgroundColor: Colors.orange),
+        );
+      }
+
+      setState(() {
+        _alertEmails = emails;
+        _syncEmailCacheText();
+      });
+
+      await _saveSettings();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Alert emails load failed: $e"),
             backgroundColor: Colors.red,
           ),
         );
@@ -151,8 +326,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
     await _configService.updateModelConfig(payload);
     await _configService.updateImageFolderPath(_imageFolderPath);
+    await _configService.updateAlertEmails(_alertEmails);
   }
 
+  // =========================
+  // LOCAL CACHE
+  // =========================
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
@@ -171,6 +350,15 @@ class _SettingsPageState extends State<SettingsPage> {
       _predictionConfPct = prefs.getInt(_kPredictionConf) ?? _predictionConfPct;
 
       _imageFolderPath = prefs.getString(_kImageFolderPath) ?? _imageFolderPath;
+
+      final savedEmails = prefs.getString(_kAlertEmails);
+      if (savedEmails != null && savedEmails.trim().isNotEmpty) {
+        _alertEmailsCacheController.text = savedEmails;
+        _alertEmails = _parseEmails(savedEmails);
+      } else {
+        _alertEmailsCacheController.text = "";
+        _alertEmails = [];
+      }
     });
   }
 
@@ -190,8 +378,14 @@ class _SettingsPageState extends State<SettingsPage> {
     await prefs.setInt(_kPredictionConf, _predictionConfPct);
 
     await prefs.setString(_kImageFolderPath, _imageFolderPath);
+
+    // store as a simple comma-separated string
+    await prefs.setString(_kAlertEmails, _alertEmails.join(", "));
   }
 
+  // =========================
+  // PICKERS
+  // =========================
   Future<void> _pickImageFolder() async {
     if (kIsWeb) {
       final controller = TextEditingController(text: _imageFolderPath);
@@ -316,6 +510,9 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  // =========================
+  // BUILD
+  // =========================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -337,6 +534,8 @@ class _SettingsPageState extends State<SettingsPage> {
                     padding: const EdgeInsets.all(32.0),
                     children: [
                       _buildSectionHeader('Model Configuration'),
+
+                      // Detection
                       _buildModelConfigCard(
                         title: "YOLO Detection Model",
                         type: "OBJECT DETECTION",
@@ -354,6 +553,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         }),
                       ),
                       const SizedBox(height: 15),
+
+                      // Growth + Health row
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -397,6 +598,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                       const SizedBox(height: 15),
+
+                      // Disease
                       _buildModelConfigCard(
                         title: "Disease Type Classifier",
                         type: "CLASSIFICATION",
@@ -413,24 +616,29 @@ class _SettingsPageState extends State<SettingsPage> {
                           await _saveSettings();
                         }),
                       ),
+
+                      // ✅ MOVED UP: Alerts (right after Disease)
+                      const SizedBox(height: 30),
+                      _buildSectionHeader('Alerts'),
+                      _buildAlertEmailsCardBetter(),
+
                       const SizedBox(height: 15),
+
+                      // Prediction
                       _buildModelConfigCard(
                         title: "Yield Prediction Model",
                         type: "REGRESSION / PREDICTION",
                         color: Colors.purple,
                         path: _predictionPath,
-                        confidencePct: _predictionConfPct,
-                        onConfChanged: (v) async {
-                          setState(() => _predictionConfPct = v);
-                          await _saveSettings();
-                        },
                         onPathTap: () =>
                             _pickModelFile("Prediction", (path) async {
                           setState(() => _predictionPath = path);
                           await _saveSettings();
                         }),
                       ),
+
                       const SizedBox(height: 30),
+
                       _buildSectionHeader('Image Storage'),
                       _buildFolderConfigCard(
                         title: "Images Folder",
@@ -439,7 +647,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         path: _imageFolderPath,
                         onPathTap: _pickImageFolder,
                       ),
+
                       const SizedBox(height: 50),
+
                       Center(
                         child: SizedBox(
                           width: 300,
@@ -454,6 +664,17 @@ class _SettingsPageState extends State<SettingsPage> {
                               ),
                             ),
                             onPressed: () async {
+                              final err = _validateEmails(_alertEmails);
+                              if (err != null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(err),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
                               try {
                                 await _saveConfigToBackend();
                                 await _saveSettings();
@@ -487,6 +708,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 50),
                     ],
                   ),
@@ -499,13 +721,16 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // =========================
+  // UI HELPERS
+  // =========================
   Widget _buildModelConfigCard({
     required String title,
     required String type,
     required Color color,
     required String path,
-    required int confidencePct,
-    required Function(int) onConfChanged,
+    int? confidencePct,
+    Function(int)? onConfChanged,
     required VoidCallback onPathTap,
   }) {
     return _buildContainer(
@@ -513,35 +738,38 @@ class _SettingsPageState extends State<SettingsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyles.elevatedCardTitle
-                        .copyWith(color: Colors.black87, fontSize: 16),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: color.withOpacity(0.5)),
+              Icon(Icons.tune, color: color),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyles.elevatedCardTitle
+                          .copyWith(color: Colors.black87, fontSize: 16),
                     ),
-                    child: Text(
-                      type,
-                      style: TextStyles.modern.copyWith(
-                        fontSize: 10,
-                        color: color,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: color.withOpacity(0.45)),
+                      ),
+                      child: Text(
+                        type,
+                        style: TextStyles.modern.copyWith(
+                          fontSize: 10,
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -558,7 +786,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: Row(
@@ -575,42 +803,47 @@ class _SettingsPageState extends State<SettingsPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const Icon(Icons.chevron_right, color: Colors.black45),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Confidence Threshold",
-                style: TextStyles.elevatedCardDescription
-                    .copyWith(fontSize: 12, color: Colors.grey),
-              ),
-              Text(
-                "$confidencePct%",
-                style: TextStyles.modern
-                    .copyWith(fontWeight: FontWeight.bold, color: color),
-              ),
-            ],
-          ),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTrackColor: color,
-              inactiveTrackColor: color.withOpacity(0.2),
-              thumbColor: color,
-              overlayColor: color.withOpacity(0.1),
+          if (confidencePct != null && onConfChanged != null) ...[
+            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Confidence Threshold",
+                  style: TextStyles.elevatedCardDescription
+                      .copyWith(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  "$confidencePct%",
+                  style: TextStyles.modern.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ],
             ),
-            child: Slider(
-              value: confidencePct.toDouble(),
-              min: 0,
-              max: 100,
-              divisions: 100,
-              label: "$confidencePct%",
-              onChanged: (v) => onConfChanged(v.round()),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                activeTrackColor: color,
+                inactiveTrackColor: color.withOpacity(0.2),
+                thumbColor: color,
+                overlayColor: color.withOpacity(0.1),
+              ),
+              child: Slider(
+                value: confidencePct.toDouble(),
+                min: 0,
+                max: 100,
+                divisions: 100,
+                label: "$confidencePct%",
+                onChanged: (v) => onConfChanged(v.round()),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -628,35 +861,38 @@ class _SettingsPageState extends State<SettingsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyles.elevatedCardTitle
-                        .copyWith(color: Colors.black87, fontSize: 16),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: color.withOpacity(0.5)),
+              Icon(Icons.folder, color: color),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyles.elevatedCardTitle
+                          .copyWith(color: Colors.black87, fontSize: 16),
                     ),
-                    child: Text(
-                      type,
-                      style: TextStyles.modern.copyWith(
-                        fontSize: 10,
-                        color: color,
-                        fontWeight: FontWeight.bold,
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: color.withOpacity(0.45)),
+                      ),
+                      child: Text(
+                        type,
+                        style: TextStyles.modern.copyWith(
+                          fontSize: 10,
+                          color: color,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
@@ -673,7 +909,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.grey.shade300),
               ),
               child: Row(
@@ -690,10 +926,174 @@ class _SettingsPageState extends State<SettingsPage> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const Icon(Icons.chevron_right, color: Colors.black45),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAlertEmailsCardBetter() {
+    final listErr = _validateEmails(_alertEmails);
+
+    return _buildContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.notifications_active, color: Colors.deepOrange),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  "Disease Alert Recipients",
+                  style: TextStyles.elevatedCardTitle
+                      .copyWith(color: Colors.black87, fontSize: 16),
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.deepOrange.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(999),
+                  border:
+                      Border.all(color: Colors.deepOrange.withOpacity(0.35)),
+                ),
+                child: Text(
+                  "${_alertEmails.length} recipients",
+                  style: TextStyles.modern.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.deepOrange,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "When disease is detected, you will receive an email alert to these addresses.",
+            style: TextStyles.elevatedCardDescription
+                .copyWith(fontSize: 12, color: Colors.grey),
+          ),
+          const Divider(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _emailInputController,
+                  decoration: InputDecoration(
+                    labelText: "Add email",
+                    hintText: "example@gmail.com",
+                    errorText: _emailInputError,
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.alternate_email),
+                  ),
+                  onChanged: (_) {
+                    if (_emailInputError != null) {
+                      setState(() => _emailInputError = null);
+                    }
+                  },
+                  onSubmitted: (_) => _addEmailFromInput(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              SizedBox(
+                height: 52,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.sidebarGradientStart,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () async {
+                    _addEmailFromInput();
+                    await _saveSettings();
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text("Add"),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              TextButton.icon(
+                onPressed: _openBulkEmailDialog,
+                icon: const Icon(Icons.playlist_add),
+                label: const Text("Bulk add"),
+              ),
+              const Spacer(),
+              if (_alertEmails.isNotEmpty)
+                TextButton.icon(
+                  onPressed: () async {
+                    setState(() {
+                      _alertEmails.clear();
+                      _syncEmailCacheText();
+                      _emailInputError = null;
+                    });
+                    await _saveSettings();
+                  },
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text("Clear all"),
+                ),
+            ],
+          ),
+          if (listErr != null) ...[
+            const SizedBox(height: 6),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.07),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.red.withOpacity(0.25)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      listErr,
+                      style: TextStyles.modern.copyWith(
+                        fontSize: 12,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 10),
+          if (_alertEmails.isEmpty)
+            Text(
+              "No recipients added yet.",
+              style: TextStyles.modern.copyWith(color: Colors.black54),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _alertEmails.map((e) {
+                return Chip(
+                  label: Text(e),
+                  deleteIcon: const Icon(Icons.close),
+                  onDeleted: () async {
+                    _removeEmail(e);
+                    await _saveSettings();
+                  },
+                );
+              }).toList(),
+            ),
         ],
       ),
     );
