@@ -79,6 +79,9 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
         return 'HEALTH';
       case '/disease':
         return 'DISEASE';
+      // Added case for Settings
+      case '/settings':
+        return 'SETTINGS';
       default:
         return 'HOME';
     }
@@ -142,6 +145,16 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
             onTap: () {
               if (navigationBarProvider.selectedMenu != 'DISEASE') {
                 Navigator.pushReplacementNamed(context, '/disease');
+              }
+            },
+          ),
+          // Added Settings Menu Item
+          SidebarMenuItem(
+            title: 'SETTINGS',
+            isSelected: navigationBarProvider.selectedMenu == 'SETTINGS',
+            onTap: () {
+              if (navigationBarProvider.selectedMenu != 'SETTINGS') {
+                Navigator.pushReplacementNamed(context, '/settings');
               }
             },
           ),
@@ -240,6 +253,9 @@ class SidebarMenuItem extends StatelessWidget {
         return Icons.health_and_safety;
       case 'DISEASE':
         return Icons.warning;
+      // Added Icon for Settings
+      case 'SETTINGS':
+        return Icons.settings;
       default:
         return Icons.info;
     }

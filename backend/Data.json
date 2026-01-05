@@ -1,0 +1,27 @@
+{
+  "Model": {
+    "Detection": {
+      "path": "backend/Models/LETTUCE_DETECTION_MODEL.pt",
+      "confidence": 0.65
+    },
+    "Growth": {
+      "path": "backend/Models/GROWTH_CLASSIFICATION_MODEL.pt",
+      "confidence": 0.8
+    },
+    "Health": {
+      "path": "backend/Models/HEALTH_CLASSIFICATION_MODEL.pt",
+      "confidence": 0.85
+    },
+    "Disease": {
+      "path": "backend/Models/DISEASE_CLASSIFICATION_MODEL.pt",
+      "confidence": 0.85
+    },
+    "Prediction": {
+      "path": "backend/Models/lettuce_model.joblib",
+      "confidence": 0.75
+    }
+  },
+  "Image Folder": {
+    "path": "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
+  }
+}

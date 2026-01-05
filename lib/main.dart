@@ -10,6 +10,7 @@ import 'screens/growth_monitoring_page.dart';
 import 'providers/yolo_provider.dart';
 import 'screens/health_analyse_page.dart';
 import 'screens/home_page.dart';
+import 'screens/settings_page.dart'; 
 import 'theme/app_colors.dart';
 import 'widgets/chatbot/floating_stack_chatbot.dart';
 
@@ -33,20 +34,19 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Agrihub Dashboard',
         debugShowCheckedModeBanner: false,
-
         theme: ThemeData(
           primaryColor: AppColors.topBar,
           scaffoldBackgroundColor: AppColors.monitoring_pages_background,
         ),
-        initialRoute: '/home', // Define the initial route
+        initialRoute: '/home',
         routes: {
-          '/home': (context) => HomePage(), // Home page route
-          '/growth': (context) => GrowthMonitoringPage(), // Growth page route
-          '/health': (context) => HealthAnalysisPage(), // Health page route
-          '/disease': (context) => DiseaseDetectionPage(), // Disease page route
-          '/agrivision': (context) => AgrivisionPage(), // Agrivision page route
+          '/home': (context) => HomePage(),
+          '/growth': (context) => GrowthMonitoringPage(),
+          '/health': (context) => HealthAnalysisPage(),
+          '/disease': (context) => DiseaseDetectionPage(),
+          '/agrivision': (context) => AgrivisionPage(),
+          '/settings': (context) => SettingsPage(), // <--- Added route
         },
-        // The key line: use builder to wrap the child in FloatingStackChatbot
         builder: (context, child) => FloatingStackChatbot(child: child!),
       ),
     );

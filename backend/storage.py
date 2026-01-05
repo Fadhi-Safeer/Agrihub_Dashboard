@@ -11,9 +11,6 @@ _last_saved_at: dict[str, datetime] = {}
 SAVE_INTERVAL = timedelta(minutes=1)  # Set frequency here (30 minutes)
 
 
-
-
-
 def get_timestamp_paths(base_dir):
     now = datetime.now()
     month_folder = now.strftime("%B_%Y")       # e.g., July_2025
