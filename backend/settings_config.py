@@ -50,7 +50,7 @@ async def get_model(
 # 2) DATA.JSON READ/WRITE HELPERS
 # =========================================================
 # backend\Data.json (same folder as this file)
-DATA_JSON_PATH = Path(__file__).resolve().parent / "Data.json"
+DATA_JSON_PATH = "backend/Data/Data.json"
 
 def _read_data_json() -> Dict[str, Any]:
     if not DATA_JSON_PATH.exists():

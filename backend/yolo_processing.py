@@ -5,10 +5,11 @@ import base64
 from ultralytics import YOLO
 import torch
 from storage import save_camera_view_frame, save_frame_locally, append_agrivision_row
+from classification_mapper import ClassificationMapper
 from datetime import datetime
 from pathlib import Path
 
-DATA_JSON_PATH = Path(__file__).resolve().parent / "Data.json"
+DATA_JSON_PATH = "backend/Data/Data.json"
 
 
 def _read_data_json() -> dict:
@@ -260,13 +261,20 @@ async def handler(websoc):
 
                     # ✅ Improvement: protect Excel logging (won't break websocket if it fails)
                     try:
+                        disease_label = str(classification.get("disease", "unknown"))
+                        health_label  = str(classification.get("health", "unknown"))
+
                         append_agrivision_row(
                             camera_number=str(cam_num),
                             plant_id=plant_id,
                             growth=str(classification.get("growth", "Unknown")),
-                            health=str(classification.get("health", "Unknown")),
-                            disease=str(classification.get("disease", "Unknown")),
+                            health=health_label,
+                            disease=disease_label,
+                            disease_status=ClassificationMapper.get_disease_status(disease_label),          
+                            health_status=ClassificationMapper.get_health_status_binary(health_label),     
                         )
+
+
                     except Exception as e:
                         print(f"Excel logging failed: {e}")
 

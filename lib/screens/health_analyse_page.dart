@@ -332,27 +332,3 @@ class _HealthAnalysisPageState extends State<HealthAnalysisPage> {
     );
   }
 }
-
-// Data classes for the charts
-class NutritionData {
-  final String week;
-  final double value;
-
-  NutritionData(this.week, this.value);
-}
-
-class HealthData {
-  final String category;
-  final double percentage;
-  final Color color;
-
-  HealthData(this.category, this.percentage, this.color);
-}
-
-class WaterData {
-  final String day;
-  final double waterUsage;
-  final double phLevel;
-
-  WaterData(this.day, this.waterUsage, this.phLevel);
-}

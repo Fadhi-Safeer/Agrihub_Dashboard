@@ -10,11 +10,12 @@ from datetime import datetime
 import json
 import threading
 from openpyxl import Workbook, load_workbook
+from typing import Optional
+
 
 
 # Track last save time per camera
 _last_saved_at: dict[str, datetime] = {}
-SAVE_INTERVAL = timedelta(minutes=1)  # Set frequency here (30 minutes)
 
 
 def get_timestamp_paths(base_dir):
@@ -134,15 +135,32 @@ def clear_directory(directory_path):
         #print(f"[ERROR] Failed to clear directory: {e}")
         return deleted_count
 
+
+
 _EXCEL_LOCK = threading.Lock()
-HEADERS = ["date", "time", "camera_number", "plant_id", "growth", "health", "disease"]
-DATA_JSON_PATH = Path(__file__).resolve().parent / "Data.json"
+
+HEADERS = [
+    "date", "time", "camera_number", "plant_id",
+    "growth", "health", "disease",
+    "disease_status", "health_status",
+]
+
+DATA_JSON_PATH = "backend/Data/Data.json"
+
+
 def _get_agrivision_excel_path() -> Path:
-    data = json.loads(DATA_JSON_PATH.read_text(encoding="utf-8"))
+    data_path = Path(DATA_JSON_PATH)
+    if not data_path.exists():
+        raise FileNotFoundError(f"Data.json not found: {data_path}")
+
+    data = json.loads(data_path.read_text(encoding="utf-8"))
+
     p = data.get("agrivison_data_path")
-    if not p or not isinstance(p, str):
+    if not isinstance(p, str) or not p.strip():
         raise ValueError("Data.json missing or invalid 'agrivison_data_path'")
+
     return Path(p)
+
 
 def append_agrivision_row(
     *,
@@ -151,15 +169,9 @@ def append_agrivision_row(
     growth: str,
     health: str,
     disease: str,
+    disease_status: Optional[int] = None,  # 0/1/None
+    health_status: Optional[int] = None,   # 0/1/None
 ) -> str:
-    """
-    Appends a row to the Excel file defined in Data.json -> 'agrivison_data_path'.
-
-    Columns:
-    date,time,camera number,plant id,growth,health,disease
-
-    Returns: saved excel path as string
-    """
     now = datetime.now()
     date_str = now.strftime("%Y-%m-%d")
     time_str = now.strftime("%H:%M:%S")
@@ -171,23 +183,29 @@ def append_agrivision_row(
         if excel_path.exists():
             wb = load_workbook(excel_path)
             ws = wb.active
-            # If file exists but first row is not headers, ensure headers
-            if ws.max_row < 1:
+
+            # Ensure headers exist and match
+            if ws.max_row == 0:
                 ws.append(HEADERS)
             else:
                 first_row = [c.value for c in ws[1]]
                 if first_row != HEADERS:
-                    ws.insert_rows(1)
-                    ws.append([])  # keep structure safe
-                    for i, h in enumerate(HEADERS, start=1):
-                        ws.cell(row=1, column=i, value=h)
+                    # overwrite header row
+                    for col, h in enumerate(HEADERS, start=1):
+                        ws.cell(row=1, column=col, value=h)
         else:
             wb = Workbook()
             ws = wb.active
             ws.title = "agrivision"
             ws.append(HEADERS)
 
-        ws.append([date_str, time_str, camera_number, plant_id, growth, health, disease])
+        ws.append([
+            date_str, time_str, camera_number, plant_id,
+            growth, health, disease,
+            "" if disease_status is None else disease_status,
+            "" if health_status is None else health_status,
+        ])
+
         wb.save(excel_path)
 
     return str(excel_path)

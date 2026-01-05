@@ -61,3 +61,36 @@ class ClassificationMapper:
             if value == disease_code:
                 return key
         return "unknown" 
+    
+    @staticmethod
+    def get_disease_status(disease_label: str) -> Optional[int]:
+        """
+        Returns:
+        0 = healthy (HLT)
+        1 = disease present
+        None = unknown (not counted)
+        """
+        code = ClassificationMapper.get_disease_code(disease_label)
+
+        if code == ClassificationMapper.UNKNOWN_DISEASE:
+            return None
+        if code == "HLT":
+            return 0
+        return 1
+
+    @staticmethod
+    def get_health_status_binary(health_label: str) -> Optional[int]:
+        """
+        Returns:
+        1 = healthy (FN)
+        0 = not healthy (deficient)
+        None = unknown (not counted)
+        """
+        code = ClassificationMapper.get_health_code(health_label)
+
+        if code == ClassificationMapper.UNKNOWN_HEALTH:
+            return None
+        if code == "FN":
+            return 1
+        return 0
+
