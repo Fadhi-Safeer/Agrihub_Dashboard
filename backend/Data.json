@@ -17,11 +17,16 @@
       "confidence": 0.85
     },
     "Prediction": {
-      "path": "backend/Models/lettuce_model.joblib",
+      "path": "C:\\Users\\Fadhi Safeer\\OneDrive\\Documents\\Internship\\Agri hub\\backend\\Models\\lettuce_model.joblib",
       "confidence": 0.75
     }
   },
   "Image Folder": {
     "path": "C:/Users/Fadhi Safeer/OneDrive/Documents/Internship/Agri hub/STORAGE/camera_storage"
+  },
+  "NPK": {
+    "Notrogen": 140,
+    "Phosphorus": 50,
+    "Potassium": 250
   }
 }

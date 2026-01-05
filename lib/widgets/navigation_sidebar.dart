@@ -18,7 +18,6 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
   void initState() {
     super.initState();
     _routeObserver = RouteObserver<PageRoute>();
-    // Delay the initial sync to avoid build-phase conflicts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _syncWithCurrentRoute();
     });
@@ -60,7 +59,6 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
     String menuFromRoute = _getMenuFromRouteName(currentRoute);
 
     if (navigationBarProvider.selectedMenu != menuFromRoute) {
-      // Schedule the update for the next frame
       Future.microtask(() {
         navigationBarProvider.updateSelectedMenu(menuFromRoute);
       });
@@ -79,7 +77,8 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
         return 'HEALTH';
       case '/disease':
         return 'DISEASE';
-      // Added case for Settings
+      case '/prediction': // ✅ ADD
+        return 'PREDICTION';
       case '/settings':
         return 'SETTINGS';
       default:
@@ -112,6 +111,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
             style: TextStyles.mainHeading.copyWith(fontSize: 30),
           ),
           const SizedBox(height: 20),
+
           SidebarMenuItem(
             title: 'HOME',
             isSelected: navigationBarProvider.selectedMenu == 'HOME',
@@ -148,7 +148,18 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
               }
             },
           ),
-          // Added Settings Menu Item
+
+          // ✅ ADD: PREDICTION MENU ITEM (same style)
+          SidebarMenuItem(
+            title: 'PREDICTION',
+            isSelected: navigationBarProvider.selectedMenu == 'PREDICTION',
+            onTap: () {
+              if (navigationBarProvider.selectedMenu != 'PREDICTION') {
+                Navigator.pushReplacementNamed(context, '/prediction');
+              }
+            },
+          ),
+
           SidebarMenuItem(
             title: 'SETTINGS',
             isSelected: navigationBarProvider.selectedMenu == 'SETTINGS',
@@ -158,6 +169,7 @@ class _NavigationSidebarState extends State<NavigationSidebar> with RouteAware {
               }
             },
           ),
+
           const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -253,7 +265,8 @@ class SidebarMenuItem extends StatelessWidget {
         return Icons.health_and_safety;
       case 'DISEASE':
         return Icons.warning;
-      // Added Icon for Settings
+      case 'PREDICTION':
+        return Icons.analytics;
       case 'SETTINGS':
         return Icons.settings;
       default:

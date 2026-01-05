@@ -5,6 +5,7 @@ from pathlib import Path
 from get_images import router
 from file_path_config import router as get_model_router
 from file_path_config import router as model_config_router  
+from prediction_model import router as prediction_router
 
 app = FastAPI()
 
@@ -25,3 +26,4 @@ app.mount("/static", StaticFiles(directory=BASE_STORAGE), name="static")
 app.include_router(router)
 app.include_router(get_model_router)
 app.include_router(model_config_router) 
+app.include_router(prediction_router)
