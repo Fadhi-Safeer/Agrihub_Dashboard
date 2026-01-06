@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
           primaryColor: AppColors.topBar,
           scaffoldBackgroundColor: AppColors.monitoring_pages_background,
         ),
-        home: const AuthGate(),
+        initialRoute: '/login',
         routes: {
           '/home': (context) => HomePage(),
           '/growth': (context) => GrowthMonitoringPage(),
@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
           '/agrivision': (context) => AgrivisionPage(),
           '/settings': (context) => SettingsPage(),
           '/prediction': (context) => const PredictionPage(),
+          '/login': (context) => AuthGate(),
         },
         builder: (context, child) => FloatingStackChatbot(child: child!),
       ),

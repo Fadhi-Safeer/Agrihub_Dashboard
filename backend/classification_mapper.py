@@ -1,6 +1,6 @@
 # classification_mapper.py
 from typing import Optional
-from classification_codes import GROWTH_STAGE_CODES, HEALTH_STATUS_CODES, DISEASE_CODES
+from backend.classification_codes import GROWTH_STAGE_CODES, HEALTH_STATUS_CODES, DISEASE_CODES
 
 class ClassificationMapper:
     """Maps classification results to standardized codes with consistent unknown handling."""
