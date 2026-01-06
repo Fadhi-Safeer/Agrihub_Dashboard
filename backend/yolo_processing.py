@@ -4,12 +4,14 @@ import json
 import base64
 from ultralytics import YOLO
 import torch
+from backend.email_alerts import send_disease_alert_email
 from storage import save_camera_view_frame, save_frame_locally, append_agrivision_row
 from classification_mapper import ClassificationMapper
 from datetime import datetime
 from pathlib import Path
 
-DATA_JSON_PATH = "backend/Data/Data.json"
+DATA_JSON_PATH = Path("backend/Data/Data.json")
+
 
 
 def _read_data_json() -> dict:
@@ -263,6 +265,8 @@ async def handler(websoc):
                     try:
                         disease_label = str(classification.get("disease", "unknown"))
                         health_label  = str(classification.get("health", "unknown"))
+                        disease_status = ClassificationMapper.get_disease_status(disease_label)        # 0/1/None
+                        health_status  = ClassificationMapper.get_health_status_binary(health_label)   # 1/0/None
 
                         append_agrivision_row(
                             camera_number=str(cam_num),
@@ -270,9 +274,22 @@ async def handler(websoc):
                             growth=str(classification.get("growth", "Unknown")),
                             health=health_label,
                             disease=disease_label,
-                            disease_status=ClassificationMapper.get_disease_status(disease_label),          
-                            health_status=ClassificationMapper.get_health_status_binary(health_label),     
+                            disease_status = disease_status,          
+                            health_status = health_status,     
                         )
+                        
+                        if disease_status == 1:
+                            try:
+                                # run blocking smtp in a worker thread so websocket doesn't lag
+                                await asyncio.to_thread(
+                                    send_disease_alert_email,
+                                    camera_number=str(cam_num),
+                                    plant_id=plant_id,
+                                    classification=classification,
+                                    image_bgr=cropped,  # cropped is BGR already
+                                )
+                            except Exception as e:
+                                print(f"[ALERT] Failed to send email: {e}")
 
 
                     except Exception as e:
