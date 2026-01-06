@@ -131,14 +131,14 @@ class _LoginPageState extends State<LoginPage> {
                               TextField(
                                 controller: _email,
                                 style: TextStyles.modern.copyWith(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                   color: Colors.white,
                                 ),
                                 decoration: InputDecoration(
                                   labelText: 'Email',
                                   labelStyle: TextStyles.modern.copyWith(
                                     color: Colors.white70,
-                                    fontSize: 20,
+                                    fontSize: 18,
                                   ),
                                   prefixIcon: const Icon(
                                     Icons.email_outlined,
@@ -159,13 +159,13 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: _pass,
                                 obscureText: _obscure,
                                 style: TextStyles.modern.copyWith(
-                                  fontSize: 20,
+                                  fontSize: 18,
                                   color: Colors.white,
                                 ),
                                 decoration: InputDecoration(
                                   labelText: 'Password',
                                   labelStyle: TextStyles.modern.copyWith(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     color: Colors.white70,
                                   ),
                                   prefixIcon: const Icon(

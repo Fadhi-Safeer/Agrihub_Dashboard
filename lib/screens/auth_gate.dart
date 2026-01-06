@@ -21,7 +21,7 @@ class AuthGate extends StatelessWidget {
         final user = snap.data;
         if (user == null) return const LoginPage();
 
-        return const HomePage();
+        return HomePage();
       },
     );
   }

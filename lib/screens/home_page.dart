@@ -9,44 +9,14 @@ import '../widgets/monitoring_pages/elevated_card.dart';
 import '../widgets/navigation_sidebar.dart';
 import '../globals.dart';
 
+// ✅ Firestore logic separated into a service file
+import '../../services/firestore_history_service.dart';
+
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
 
-  /// Tries to read a value from Firestore record['readings'] using common aliases.
-  /// This is important because your Firestore might use different key names.
-  double? _getReadingValue(
-      Map<String, dynamic> record, List<String> possibleKeys) {
-    final readings = record['readings'];
-    if (readings is! Map<String, dynamic>) return null;
-
-    for (final k in possibleKeys) {
-      final v = readings[k];
-      if (v is num) return v.toDouble();
-    }
-    return null;
-  }
-
-  Stream<QuerySnapshot<Map<String, dynamic>>> _historyStream() {
-    final now = DateTime.now();
-    final from = now
-        .subtract(const Duration(days: 30)); // last 30 days like your UI demo
-
-    return FirebaseFirestore.instance
-        .collection('artifacts')
-        .doc(appId)
-        .collection('device_history')
-        .where(
-          'timestamp',
-          isGreaterThanOrEqualTo: Timestamp.fromDate(from),
-        )
-        .orderBy('timestamp', descending: false)
-        .limit(5000)
-        .withConverter<Map<String, dynamic>>(
-          fromFirestore: (snap, _) => (snap.data() ?? <String, dynamic>{}),
-          toFirestore: (data, _) => data,
-        )
-        .snapshots();
-  }
+  // ✅ Single service instance (keeps HomePage clean)
+  final FirestoreHistoryService _historyService = FirestoreHistoryService();
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +50,11 @@ class HomePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      // Top Metrics Row (increased height)
+                      // Top Metrics Row
                       SizedBox(
                         height: availableHeight * 0.3,
                         child: Row(
                           children: [
-                            // List<String>
-
                             _buildTopBarCard(
                               'AI MODELS',
                               '5',
@@ -130,7 +98,7 @@ class HomePage extends StatelessWidget {
                               flex: 2,
                               child: Column(
                                 children: [
-                                  // Smart Insights (Field Summary)
+                                  // Smart Insights
                                   Expanded(
                                     flex: 1,
                                     child: InkWell(
@@ -193,7 +161,7 @@ class HomePage extends StatelessWidget {
 
                                   const SizedBox(height: 20),
 
-                                  // Crop Health Trend (NOW FROM FIRESTORE)
+                                  // Crop Health Trend (FROM FIRESTORE SERVICE)
                                   Expanded(
                                     flex: 3,
                                     child: Container(
@@ -207,7 +175,11 @@ class HomePage extends StatelessWidget {
                                         child: StreamBuilder<
                                             QuerySnapshot<
                                                 Map<String, dynamic>>>(
-                                          stream: _historyStream(),
+                                          stream: _historyService.historyStream(
+                                            appId: appId,
+                                            days: 30,
+                                            limit: 5000,
+                                          ),
                                           builder: (context, snapshot) {
                                             if (snapshot.hasError) {
                                               return Center(
@@ -222,15 +194,17 @@ class HomePage extends StatelessWidget {
 
                                             if (!snapshot.hasData) {
                                               return const Center(
-                                                  child:
-                                                      CircularProgressIndicator());
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
                                             }
 
                                             final docs = snapshot.data!.docs;
                                             if (docs.isEmpty) {
                                               return const Center(
                                                 child: Text(
-                                                    'No historical data found for the last 30 days.'),
+                                                  'No historical data found for the last 30 days.',
+                                                ),
                                               );
                                             }
 
@@ -248,27 +222,27 @@ class HomePage extends StatelessWidget {
                                               if (ts is! Timestamp) continue;
                                               final time = ts.toDate();
 
-                                              // Temperature aliases
-                                              final temp = _getReadingValue(
-                                                  record, const [
+                                              final temp = _historyService
+                                                  .getReadingValue(
+                                                      record, const [
                                                 'Temperature',
                                                 'environment_temperature',
                                                 'temp',
                                                 'temperature',
                                               ]);
 
-                                              // Humidity aliases
-                                              final hum = _getReadingValue(
-                                                  record, const [
+                                              final hum = _historyService
+                                                  .getReadingValue(
+                                                      record, const [
                                                 'Humidity',
                                                 'environment_humidity',
                                                 'hum',
                                                 'humidity',
                                               ]);
 
-                                              // Soil moisture aliases (adjust if your key differs)
-                                              final soil = _getReadingValue(
-                                                  record, const [
+                                              final soil = _historyService
+                                                  .getReadingValue(
+                                                      record, const [
                                                 'Soil Moisture',
                                                 'Soil_Moisture',
                                                 'soil_moisture',
@@ -276,18 +250,20 @@ class HomePage extends StatelessWidget {
                                                 'moisture',
                                               ]);
 
-                                              if (temp != null)
+                                              if (temp != null) {
                                                 tempPoints.add(
                                                     TimeSeriesData(time, temp));
-                                              if (hum != null)
+                                              }
+                                              if (hum != null) {
                                                 humidityPoints.add(
                                                     TimeSeriesData(time, hum));
-                                              if (soil != null)
+                                              }
+                                              if (soil != null) {
                                                 soilPoints.add(
                                                     TimeSeriesData(time, soil));
+                                              }
                                             }
 
-                                            // If EVERYTHING missing, show a helpful message
                                             if (tempPoints.isEmpty &&
                                                 humidityPoints.isEmpty &&
                                                 soilPoints.isEmpty) {
@@ -418,7 +394,6 @@ class HomePage extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(16),
                                       onTap: () => Navigator.pushNamed(
                                           context, '/agrivision'),
-                                      onHover: (hovering) {},
                                       child: Padding(
                                         padding: const EdgeInsets.all(20.0),
                                         child: Column(
@@ -523,8 +498,8 @@ class HomePage extends StatelessWidget {
     String value,
     Color color, [
     List<Color> topBarGradientColors = const [
-      Color(0xFFFF5E9C), // Pink
-      Color(0xFFFFB157), // Orange
+      Color(0xFFFF5E9C),
+      Color(0xFFFFB157),
     ],
   ]) {
     return Expanded(

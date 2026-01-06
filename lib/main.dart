@@ -1,3 +1,4 @@
+import 'package:agrihub_dashboard/providers/sensorHistoryProvider.dart';
 import 'package:agrihub_dashboard/screens/auth_gate.dart';
 import 'package:agrihub_dashboard/screens/prediction_page.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'theme/app_colors.dart';
 import 'widgets/chatbot/floating_stack_chatbot.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import '../globals.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +40,9 @@ class MyApp extends StatelessWidget {
             create: (_) => CameraSelectionDropdownProvider()),
         ChangeNotifierProvider(create: (_) => ImageListProvider()),
         ChangeNotifierProvider(create: (_) => HealthStatusProvider()),
+        ChangeNotifierProvider(
+          create: (_) => SensorHistoryProvider(appId: appId),
+        ),
       ],
       child: MaterialApp(
         title: 'Agrihub Dashboard',
