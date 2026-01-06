@@ -6,6 +6,11 @@ from typing import Any, Dict
 from fastapi import APIRouter, HTTPException, UploadFile, File, Query
 from fastapi.responses import JSONResponse
 import re
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_JSON_PATH = BASE_DIR / "Data" / "Data.json"
+
 
 router = APIRouter()
 
@@ -50,7 +55,6 @@ async def get_model(
 # 2) DATA.JSON READ/WRITE HELPERS
 # =========================================================
 # backend\Data.json (same folder as this file)
-DATA_JSON_PATH = "backend/Data/Data.json"
 
 def _read_data_json() -> Dict[str, Any]:
     if not DATA_JSON_PATH.exists():

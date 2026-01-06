@@ -10,10 +10,10 @@ from fastapi.responses import JSONResponse
 router = APIRouter()
 
 # -----------------------------
-# Paths
-# -----------------------------
-# Expecting: backend/Data.json (same folder as this file)
-DATA_JSON_PATH = Path(__file__).resolve().parent / "Data.json"
+
+BASE_DIR = Path(__file__).resolve().parent
+DATA_JSON_PATH = BASE_DIR / "Data" / "Data.json"
+
 
 # Cache model in memory
 _PRED_MODEL = None

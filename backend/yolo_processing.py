@@ -1,4 +1,5 @@
 import asyncio
+from zoneinfo import ZoneInfo
 import cv2
 import json
 import base64
@@ -12,6 +13,18 @@ from pathlib import Path
 
 DATA_JSON_PATH = Path("backend/Data/Data.json")
 
+now = datetime.now(ZoneInfo("Asia/Kuala_Lumpur"))
+
+
+def _is_alert_time(now: datetime) -> bool:
+    try:
+        data = _read_data_json()
+        hours_raw = data.get("Data_saving_time", {}).get("hours", [])
+        alert_hours = {int(h) for h in hours_raw}  
+    except Exception:
+        alert_hours = {9, 12, 15, 18}  # fallback if json missing/broken
+
+    return now.hour in alert_hours and now.minute < 10
 
 
 def _read_data_json() -> dict:
@@ -267,29 +280,30 @@ async def handler(websoc):
                         health_label  = str(classification.get("health", "unknown"))
                         disease_status = ClassificationMapper.get_disease_status(disease_label)        # 0/1/None
                         health_status  = ClassificationMapper.get_health_status_binary(health_label)   # 1/0/None
+                        if _is_alert_time(now):
 
-                        append_agrivision_row(
-                            camera_number=str(cam_num),
-                            plant_id=plant_id,
-                            growth=str(classification.get("growth", "Unknown")),
-                            health=health_label,
-                            disease=disease_label,
-                            disease_status = disease_status,          
-                            health_status = health_status,     
-                        )
-                        
-                        if disease_status == 1:
-                            try:
-                                # run blocking smtp in a worker thread so websocket doesn't lag
-                                await asyncio.to_thread(
-                                    send_disease_alert_email,
-                                    camera_number=str(cam_num),
-                                    plant_id=plant_id,
-                                    classification=classification,
-                                    image_bgr=cropped,  # cropped is BGR already
-                                )
-                            except Exception as e:
-                                print(f"[ALERT] Failed to send email: {e}")
+                            append_agrivision_row(
+                                camera_number=str(cam_num),
+                                plant_id=plant_id,
+                                growth=str(classification.get("growth", "Unknown")),
+                                health=health_label,
+                                disease=disease_label,
+                                disease_status = disease_status,          
+                                health_status = health_status,     
+                            )
+                            
+                            if disease_status == 1:
+                                try:
+                                    # run blocking smtp in a worker thread so websocket doesn't lag
+                                    await asyncio.to_thread(
+                                        send_disease_alert_email,
+                                        camera_number=str(cam_num),
+                                        plant_id=plant_id,
+                                        classification=classification,
+                                        image_bgr=cropped,  # cropped is BGR already
+                                    )
+                                except Exception as e:
+                                    print(f"[ALERT] Failed to send email: {e}")
 
 
                     except Exception as e:
@@ -297,12 +311,13 @@ async def handler(websoc):
 
                     MODELS.ensure_loaded()
 
-                    save_frame_locally(
-                        cropped,
-                        cam_num,
-                        classification,
-                        base_dir=MODELS.image_folder,
-                    )
+                    if _is_alert_time(now):
+                        save_frame_locally(
+                            cropped,
+                            cam_num,
+                            classification,
+                            base_dir=MODELS.image_folder,
+                        )
 
                     encoded_image = encode_image_to_base64(cropped)
 

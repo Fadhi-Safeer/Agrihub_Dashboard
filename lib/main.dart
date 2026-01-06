@@ -1,3 +1,5 @@
+import 'package:agrihub_dashboard/screens/auth_gate.dart';
+import 'package:agrihub_dashboard/screens/prediction_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/cameraSelectionDropdown_provider.dart';
@@ -10,11 +12,17 @@ import 'screens/growth_monitoring_page.dart';
 import 'providers/yolo_provider.dart';
 import 'screens/health_analyse_page.dart';
 import 'screens/home_page.dart';
-import 'screens/settings_page.dart'; 
+import 'screens/settings_page.dart';
 import 'theme/app_colors.dart';
 import 'widgets/chatbot/floating_stack_chatbot.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -38,14 +46,15 @@ class MyApp extends StatelessWidget {
           primaryColor: AppColors.topBar,
           scaffoldBackgroundColor: AppColors.monitoring_pages_background,
         ),
-        initialRoute: '/home',
+        home: const AuthGate(),
         routes: {
           '/home': (context) => HomePage(),
           '/growth': (context) => GrowthMonitoringPage(),
           '/health': (context) => HealthAnalysisPage(),
           '/disease': (context) => DiseaseDetectionPage(),
           '/agrivision': (context) => AgrivisionPage(),
-          '/settings': (context) => SettingsPage(), // <--- Added route
+          '/settings': (context) => SettingsPage(),
+          '/prediction': (context) => const PredictionPage(),
         },
         builder: (context, child) => FloatingStackChatbot(child: child!),
       ),

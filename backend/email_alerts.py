@@ -12,9 +12,9 @@ from typing import Optional, List, Dict
 import cv2
 import numpy as np
 
-# ✅ Correct path (as you confirmed)
-DATA_JSON_PATH = Path("backend/Data/Data.json")
+from pathlib import Path
 
+DATA_JSON_PATH = Path("backend/Data/Data.json")
 # 1 email per camera per 1 hour
 _ALERT_INTERVAL = timedelta(hours=1)
 _LAST_ALERT_SENT: Dict[str, datetime] = {}

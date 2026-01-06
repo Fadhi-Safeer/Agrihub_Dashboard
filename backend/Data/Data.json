@@ -2,7 +2,7 @@
   "Model": {
     "Detection": {
       "path": "backend/Models/LETTUCE_DETECTION_MODEL.pt",
-      "confidence": 0.8
+      "confidence": 0.7
     },
     "Growth": {
       "path": "backend/Models/GROWTH_CLASSIFICATION_MODEL.pt",

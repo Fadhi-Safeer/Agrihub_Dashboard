@@ -12,7 +12,9 @@ import threading
 from openpyxl import Workbook, load_workbook
 from typing import Optional
 
+from pathlib import Path
 
+DATA_JSON_PATH = Path("backend/Data/Data.json")
 
 # Track last save time per camera
 _last_saved_at: dict[str, datetime] = {}
@@ -145,7 +147,6 @@ HEADERS = [
     "disease_status", "health_status",
 ]
 
-DATA_JSON_PATH = "backend/Data/Data.json"
 
 
 def _get_agrivision_excel_path() -> Path:
