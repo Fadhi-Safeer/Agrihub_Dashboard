@@ -23,11 +23,11 @@ from google import genai
 from google.genai import types
 
 # --- Your backend tools ---
-from backend.mcp_tools.vision_tools import (
+from mcp_tools.vision_tools import (
     get_overall_status,
     get_disease_overview,
 )
-from backend.mcp_tools.iot_tools import (
+from mcp_tools.iot_tools import (
     get_environment_trends,
 )
 

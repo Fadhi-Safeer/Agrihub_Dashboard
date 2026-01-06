@@ -30,4 +30,28 @@ class ApiService {
       throw Exception('Failed to post data: ${response.statusCode}');
     }
   }
+
+  Future<Map<String, dynamic>> fetchAgrivisionSummary({
+    int days = 30,
+    int? cameraId,
+    String? day, // "YYYY-MM-DD"
+  }) async {
+    final query = <String, String>{
+      'days': days.toString(),
+    };
+    if (cameraId != null) query['camera_id'] = cameraId.toString();
+    if (day != null && day.isNotEmpty) query['day'] = day;
+
+    final uri = Uri.parse('$baseUrl/agrivision/summary').replace(
+      queryParameters: query,
+    );
+
+    final res = await http.get(uri);
+
+    if (res.statusCode != 200) {
+      throw Exception('API error ${res.statusCode}: ${res.body}');
+    }
+
+    return jsonDecode(res.body) as Map<String, dynamic>;
+  }
 }

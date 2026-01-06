@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pathlib import Path
-from backend.classification_mapper import ClassificationMapper
+from classification_mapper import ClassificationMapper
 
 router = APIRouter()
 

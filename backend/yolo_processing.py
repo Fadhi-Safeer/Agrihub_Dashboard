@@ -5,7 +5,7 @@ import json
 import base64
 from ultralytics import YOLO
 import torch
-from backend.email_alerts import send_disease_alert_email
+from email_alerts import send_disease_alert_email
 from storage import save_camera_view_frame, save_frame_locally, append_agrivision_row
 from classification_mapper import ClassificationMapper
 from datetime import datetime

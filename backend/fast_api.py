@@ -2,11 +2,14 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
-from backend.get_images import router
-from backend.settings_config import router as get_model_router
-from backend.settings_config import router as model_config_router  
-from backend.prediction_model import router as prediction_router
-from backend.agribot_api import router as agribot_router
+from get_images import router
+from settings_config import router as get_model_router
+from settings_config import router as model_config_router  
+from prediction_model import router as prediction_router
+from agribot_api import router as agribot_router
+from excel_handler import router as excel_router
+
+
 
 
 app = FastAPI()
@@ -30,6 +33,7 @@ app.include_router(get_model_router)
 app.include_router(model_config_router) 
 app.include_router(prediction_router)
 app.include_router(agribot_router)
+app.include_router(excel_router)
 
 
 
