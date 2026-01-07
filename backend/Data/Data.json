@@ -5,8 +5,8 @@
       "confidence": 0.82
     },
     "Growth": {
-      "path": "backend\\Models\\GROWTH_CLASSIFICATION_MODEL.pt",
-      "confidence": 0.8
+      "path": "C:\\Users\\Fadhi Safeer\\OneDrive\\Documents\\Internship\\Agri hub\\backend\\Models\\GROWTH_CLASSIFICATION_MODEL.pt",
+      "confidence": 0.81
     },
     "Health": {
       "path": "backend\\Models\\HEALTH_CLASSIFICATION_MODEL.pt",
@@ -31,7 +31,8 @@
   },
   "Alert Emails": {
     "emails": [
-      "fadhisafeer4@gmail.com"
+      "fadhisafeer4@gmail.com",
+      "123@gmail.com"
     ]
   },
   "agrivison_data_path": "backend/Data/agrivision_data.xlsx",
@@ -40,6 +41,7 @@
       "15:00",
       "15:40",
       "15:43",
+      "17:56",
       "9:00"
     ]
   }
