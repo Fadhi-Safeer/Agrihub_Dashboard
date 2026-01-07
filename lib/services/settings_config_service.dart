@@ -139,7 +139,7 @@ class ModelConfigService {
   }
 
   // =========================
-  // NEW: ALERT EMAIL IDS CONFIG
+  // ALERT EMAIL IDS CONFIG
   // =========================
   // Backend must provide:
   // GET  /config/alert-emails  -> { "emails": ["a@x.com","b@y.com"] }
@@ -187,6 +187,62 @@ class ModelConfigService {
     if (resp.statusCode != 200) {
       throw Exception(
           "PUT /config/alert-emails failed (${resp.statusCode}): ${resp.body}");
+    }
+  }
+
+  // =========================
+  // NEW: ALERT TIMES CONFIG
+  // =========================
+  // Backend must provide:
+  // GET /config/alert-time  -> { "time": ["09:00","15:00"] }
+  // PUT /config/alert-time  -> body { "time": ["09:00","15:00"] }
+
+  Future<List<String>> fetchAlertTimes() async {
+    final uri = Uri.parse("$baseUrl/config/alert-time");
+    final resp = await http.get(uri);
+
+    if (resp.statusCode != 200) {
+      throw Exception(
+          "GET /config/alert-time failed (${resp.statusCode}): ${resp.body}");
+    }
+
+    final decoded = jsonDecode(resp.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw Exception("Invalid response format from /config/alert-time");
+    }
+
+    final times = decoded["time"];
+    if (times is! List) {
+      throw Exception("Backend returned invalid 'time' (expected List)");
+    }
+
+    // Keep only valid strings, trim, remove empties
+    final list = times
+        .whereType<String>()
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
+
+    // Optional: sort them so UI always gets ordered list
+    list.sort();
+    return list;
+  }
+
+  Future<void> updateAlertTimes(List<String> times) async {
+    final uri = Uri.parse("$baseUrl/config/alert-time");
+
+    final clean =
+        times.map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
+
+    final resp = await http.put(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"time": clean}),
+    );
+
+    if (resp.statusCode != 200) {
+      throw Exception(
+          "PUT /config/alert-time failed (${resp.statusCode}): ${resp.body}");
     }
   }
 }

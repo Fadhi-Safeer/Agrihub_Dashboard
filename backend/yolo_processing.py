@@ -19,7 +19,7 @@ now = datetime.now(ZoneInfo("Asia/Kuala_Lumpur"))
 def _is_alert_time(now: datetime) -> bool:
     try:
         data = _read_data_json()
-        hours_raw = data.get("Data_saving_time", {}).get("hours", [])
+        hours_raw = data.get("alert_time", {}).get("time", [])
         alert_hours = {int(h) for h in hours_raw}  
     except Exception:
         alert_hours = {9, 12, 15, 18}  # fallback if json missing/broken
@@ -311,13 +311,12 @@ async def handler(websoc):
 
                     MODELS.ensure_loaded()
 
-                    if _is_alert_time(now):
-                        save_frame_locally(
+                    save_frame_locally(
                             cropped,
                             cam_num,
                             classification,
                             base_dir=MODELS.image_folder,
-                        )
+                    )
 
                     encoded_image = encode_image_to_base64(cropped)
 

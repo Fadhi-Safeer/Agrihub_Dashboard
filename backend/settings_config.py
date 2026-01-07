@@ -282,3 +282,94 @@ async def update_alert_emails(payload: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=f"Failed writing Data.json: {e}")
 
     return {"status": "ok", "emails": emails}
+# =========================================================
+# 6) ALERT TIME ENDPOINTS (Data.json -> "alert_time")
+# =========================================================
+
+ALERT_TIME_KEY = "alert_time"
+TIME_RE = re.compile(r"^(2[0-3]|[01]?[0-9]):[0-5][0-9]$")
+
+
+def _normalize_times(value: Any) -> list[str]:
+    """
+    Accepts list[str] and validates HH:MM format.
+    Removes duplicates & trims spaces.
+    """
+    if value is None:
+        return []
+
+    if not isinstance(value, list):
+        raise HTTPException(status_code=400, detail="'time' must be a list of strings")
+
+    cleaned = []
+    seen = set()
+    invalid = []
+
+    for t in value:
+        if not isinstance(t, str):
+            raise HTTPException(status_code=400, detail="All time values must be strings")
+
+        t = t.strip()
+
+        if not t:
+            continue
+
+        if not TIME_RE.match(t):
+            invalid.append(t)
+            continue
+
+        key = t
+        if key in seen:
+            continue
+
+        seen.add(key)
+        cleaned.append(t)
+
+    if invalid:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid time format (expected HH:MM): {', '.join(invalid)}"
+        )
+
+    return cleaned
+
+
+
+@router.get("/config/alert-time")
+async def get_alert_time():
+    """
+    Returns:
+      { "time": ["09:00","15:00"] }
+    If missing, safely return an empty list.
+    """
+    data = _read_data_json()
+    section = data.get(ALERT_TIME_KEY)
+
+    if not section or "time" not in section:
+        return {"time": []}
+
+    times = _normalize_times(section.get("time"))
+    return {"time": times}
+
+
+
+@router.put("/config/alert-time")
+async def update_alert_time(payload: Dict[str, Any]):
+    """
+    Expects:
+      { "time": ["09:00","15:00"] }
+    """
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=400, detail="Payload must be a JSON object.")
+
+    times = _normalize_times(payload.get("time"))
+
+    data = _read_data_json()
+    data[ALERT_TIME_KEY] = {"time": times}
+
+    try:
+        _atomic_write_json(DATA_JSON_PATH, data)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed writing Data.json: {e}")
+
+    return {"status": "ok", "time": times}

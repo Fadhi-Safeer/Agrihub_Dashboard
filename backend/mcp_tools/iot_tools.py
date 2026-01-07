@@ -25,7 +25,7 @@ if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
 from google.cloud import firestore
-from keys.app_config import APP_ID  # now we import from 'keys', not 'backend.keys'
+from keys.app_config import APP_ID # now we import from 'keys', not 'backend.keys'
 
 
 

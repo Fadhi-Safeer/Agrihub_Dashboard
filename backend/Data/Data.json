@@ -34,5 +34,13 @@
       "fadhisafeer4@gmail.com"
     ]
   },
-  "agrivison_data_path": "backend/Data/agrivision_data.xlsx"
+  "agrivison_data_path": "backend/Data/agrivision_data.xlsx",
+  "alert_time": {
+    "time": [
+      "15:00",
+      "15:40",
+      "15:43",
+      "9:00"
+    ]
+  }
 }

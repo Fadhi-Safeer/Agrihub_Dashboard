@@ -26,6 +26,7 @@ class _GrowthMonitoringPageState extends State<GrowthMonitoringPage> {
   Widget build(BuildContext context) {
     SizeConfig().init(context);
     final galleryProvider = Provider.of<ImageListProvider>(context);
+    print('✅ images length = ${galleryProvider.images.length}');
 
     // Group images by growth stage, collecting URLs instead of widget instances
     Map<String, List<String>> groupedImageUrls = {

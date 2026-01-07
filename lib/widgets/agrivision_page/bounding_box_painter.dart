@@ -29,10 +29,10 @@ class BoundingBoxPainter extends CustomPainter {
       final label = (box["growth"] ?? "").toString().toLowerCase();
       Color boxColor = AppColors.neonGreen; // Default fallback
 
-      if (label.contains("early")) {
-        boxColor = Colors.lightGreenAccent;
-      } else if (label.contains("leafy")) {
-        boxColor = Colors.green[800]!;
+      if (label.contains("Lettuce-Not-Ready-to-Harvest")) {
+        boxColor = const Color.fromARGB(255, 176, 255, 87);
+      } else if (label.contains("Lettuce-Ready-to-Harvest")) {
+        boxColor = const Color.fromARGB(255, 30, 96, 33)!;
       } else if (label.contains("harvest")) {
         boxColor = Colors.orange;
       }

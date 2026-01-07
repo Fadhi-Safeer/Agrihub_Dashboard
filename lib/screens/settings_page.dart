@@ -40,6 +40,9 @@ class _SettingsPageState extends State<SettingsPage> {
   // Alert Email IDs cache key
   static const String _kAlertEmails = "alert_email_ids";
 
+  // ✅ NEW: Alert Times cache key
+  static const String _kAlertTimes = "alert_times";
+
   // State
   String _detectionPath = r"backend\Models\LETTUCE_DETECTION_MODEL.pt";
   int _detectionConfPct = 65;
@@ -60,6 +63,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   // Alert emails
   List<String> _alertEmails = [];
+
+  // ✅ NEW: Alert times (e.g. ["09:00", "15:00"])
+  List<String> _alertTimes = [];
 
   // Cache controller (stores comma separated string in SharedPreferences)
   final TextEditingController _alertEmailsCacheController =
@@ -87,6 +93,8 @@ class _SettingsPageState extends State<SettingsPage> {
     await _fetchConfigFromBackend();
     await _fetchImageFolderFromBackend();
     await _fetchAlertEmailsFromBackend();
+    // ✅ NEW: also fetch alert times from backend
+    await _fetchAlertTimesFromBackend();
   }
 
   double _pctToDouble01(int pct) => pct.clamp(0, 100) / 100.0;
@@ -210,6 +218,53 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   // =========================
+  // ALERT TIME HELPERS (UI)
+  // =========================
+
+  String _formatTimeOfDay(TimeOfDay t) {
+    final h = t.hour.toString().padLeft(2, '0');
+    final m = t.minute.toString().padLeft(2, '0');
+    return "$h:$m";
+  }
+
+  Future<void> _addAlertTime() async {
+    final now = TimeOfDay.now();
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: now,
+    );
+
+    if (picked == null) return;
+
+    final formatted = _formatTimeOfDay(picked);
+
+    final exists = _alertTimes.contains(formatted);
+    if (exists) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Time $formatted is already added."),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _alertTimes.add(formatted);
+      _alertTimes.sort(); // keep it neat
+    });
+
+    await _saveSettings();
+  }
+
+  void _removeAlertTime(String time) {
+    setState(() {
+      _alertTimes.remove(time);
+    });
+  }
+
+  // =========================
   // BACKEND FETCH/SAVE
   // =========================
   Future<void> _fetchConfigFromBackend() async {
@@ -300,6 +355,32 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  // ✅ NEW: fetch alert times from backend
+  Future<void> _fetchAlertTimesFromBackend() async {
+    try {
+      // You’ll need to implement these methods in ModelConfigService:
+      // fetchAlertTimes() -> List<String>
+      final times = await _configService.fetchAlertTimes();
+      if (!mounted) return;
+
+      setState(() {
+        _alertTimes = List<String>.from(times);
+        _alertTimes.sort();
+      });
+
+      await _saveSettings();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Alert times load failed: $e"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _saveConfigToBackend() async {
     final payload = <String, dynamic>{
       "Detection": {
@@ -327,6 +408,9 @@ class _SettingsPageState extends State<SettingsPage> {
     await _configService.updateModelConfig(payload);
     await _configService.updateImageFolderPath(_imageFolderPath);
     await _configService.updateAlertEmails(_alertEmails);
+
+    // ✅ NEW: push alert times to backend
+    await _configService.updateAlertTimes(_alertTimes);
   }
 
   // =========================
@@ -359,6 +443,15 @@ class _SettingsPageState extends State<SettingsPage> {
         _alertEmailsCacheController.text = "";
         _alertEmails = [];
       }
+
+      // ✅ NEW: load alert times from cache
+      final savedTimes = prefs.getStringList(_kAlertTimes);
+      if (savedTimes != null) {
+        _alertTimes = List<String>.from(savedTimes);
+        _alertTimes.sort();
+      } else {
+        _alertTimes = [];
+      }
     });
   }
 
@@ -381,6 +474,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
     // store as a simple comma-separated string
     await prefs.setString(_kAlertEmails, _alertEmails.join(", "));
+
+    // ✅ NEW: store alert times as string list
+    await prefs.setStringList(_kAlertTimes, _alertTimes);
   }
 
   // =========================
@@ -617,10 +713,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         }),
                       ),
 
-                      // ✅ MOVED UP: Alerts (right after Disease)
+                      // Alerts section
                       const SizedBox(height: 30),
                       _buildSectionHeader('Alerts'),
                       _buildAlertEmailsCardBetter(),
+                      const SizedBox(height: 15),
+                      // ✅ NEW: Alert Times card
+                      _buildAlertTimesCard(),
 
                       const SizedBox(height: 15),
 
@@ -1089,6 +1188,103 @@ class _SettingsPageState extends State<SettingsPage> {
                   deleteIcon: const Icon(Icons.close),
                   onDeleted: () async {
                     _removeEmail(e);
+                    await _saveSettings();
+                  },
+                );
+              }).toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // ✅ NEW: Alert Times card
+  Widget _buildAlertTimesCard() {
+    return _buildContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.schedule, color: Colors.blueGrey),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  "Alert Times",
+                  style: TextStyles.elevatedCardTitle
+                      .copyWith(color: Colors.black87, fontSize: 16),
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: Colors.blueGrey.withOpacity(0.35)),
+                ),
+                child: Text(
+                  "${_alertTimes.length} times",
+                  style: TextStyles.modern.copyWith(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueGrey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Disease alerts will be sent at the configured times each day.",
+            style: TextStyles.elevatedCardDescription
+                .copyWith(fontSize: 12, color: Colors.grey),
+          ),
+          const Divider(height: 24),
+          Row(
+            children: [
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.sidebarGradientStart,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _addAlertTime,
+                icon: const Icon(Icons.add_alarm),
+                label: const Text("Add alert time"),
+              ),
+              const Spacer(),
+              if (_alertTimes.isNotEmpty)
+                TextButton.icon(
+                  onPressed: () async {
+                    setState(() {
+                      _alertTimes.clear();
+                    });
+                    await _saveSettings();
+                  },
+                  icon: const Icon(Icons.delete_outline),
+                  label: const Text("Clear all"),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (_alertTimes.isEmpty)
+            Text(
+              "No alert times configured.",
+              style: TextStyles.modern.copyWith(color: Colors.black54),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _alertTimes.map((t) {
+                return Chip(
+                  label: Text(t),
+                  deleteIcon: const Icon(Icons.close),
+                  onDeleted: () async {
+                    _removeAlertTime(t);
                     await _saveSettings();
                   },
                 );
