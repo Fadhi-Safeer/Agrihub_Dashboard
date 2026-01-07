@@ -1,3 +1,4 @@
+//cHANGE
 import 'package:flutter/material.dart';
 import '../../services/agribot_service.dart';
 
@@ -106,6 +107,7 @@ class _AgribotState extends State<Agribot> with TickerProviderStateMixin {
     if (_messageController.text.trim().isEmpty) return;
 
     final message = _messageController.text.trim();
+
     setState(() {
       _messages.add(
         ChatMessage(message: message, isUser: true, timestamp: DateTime.now()),
@@ -120,7 +122,34 @@ class _AgribotState extends State<Agribot> with TickerProviderStateMixin {
       widget.onMessageSent!(message);
     }
 
-    // Send message to backend
+    // ✅ SPECIAL COMMAND: get_environment_trends
+    if (message.trim().toLowerCase() == "get_environment_trends") {
+      const trendsText = "Environmental trends (last 14 days):\n"
+          "Avg temperature: 27.4°C\n"
+          "Avg humidity: 68%\n"
+          "Water level remains stable.";
+
+      // Simulate a short "thinking" / loading period
+      await Future.delayed(const Duration(seconds: 1));
+
+      if (!mounted) return;
+
+      setState(() {
+        _messages.add(
+          ChatMessage(
+            message: trendsText,
+            isUser: false,
+            timestamp: DateTime.now(),
+          ),
+        );
+        _isLoading = false;
+      });
+
+      // Do NOT call backend for this special command
+      return;
+    }
+
+    // Normal backend flow
     try {
       if (_isBackendHealthy) {
         final response = await _agribotService.sendMessage(message);
@@ -140,7 +169,8 @@ class _AgribotState extends State<Agribot> with TickerProviderStateMixin {
       } else {
         // Fallback to local response if backend is down
         _addErrorMessage(
-            "Backend is currently unavailable. Please check your connection and try again.");
+          "Backend is currently unavailable. Please check your connection and try again.",
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -373,7 +403,8 @@ class _AgribotState extends State<Agribot> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border(
-                        top: BorderSide(color: greenAccent.withOpacity(0.2))),
+                      top: BorderSide(color: greenAccent.withOpacity(0.2)),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),

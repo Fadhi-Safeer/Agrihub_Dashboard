@@ -1,19 +1,14 @@
 // lib/widgets/monitoring_pages/infobox_overlay.dart
+//CHANGE
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../theme/text_styles.dart';
 import '../../theme/app_colors.dart';
 
+import '../graphs/time_series_chart.dart';
 import '../graphs/donut_chart.dart';
-import '../graphs/dual_axis_combo_chart.dart';
-
-import '../../services/firestore_history_service.dart';
-import '../../services/api_service.dart';
-import '../../services/graph_data_handler.dart';
-
-// ✅ use your globals
-import '../../globals.dart'; // adjust path if different
+import '../graphs/combination_chart.dart';
+import '../monitoring_pages/graph_section.dart';
 
 class InfoBoxOverlay extends StatefulWidget {
   final VoidCallback onClose;
@@ -28,32 +23,95 @@ class InfoBoxOverlay extends StatefulWidget {
 }
 
 class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
-  final ApiService _apiService = ApiService(baseUrl: 'http://127.0.0.1:8001');
-  late final GraphDataHandler _dataHandler;
-
-  late Future<AgrivisionSummary> _summaryFuture;
-
-  final FirestoreHistoryService _history = FirestoreHistoryService();
-
-  @override
-  void initState() {
-    super.initState();
-    _dataHandler = GraphDataHandler(_apiService);
-    _summaryFuture = _dataHandler.fetchAgrivisionSummary(days: 30);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // ✅ get appId from globals.dart
-// <-- change name if needed
+    // ✅ OLD STYLE: custom graphs list (static/custom data)
+    final List<Widget> growthGraphs = [
+      // 1) Time Series Graph (example nutrient trend)
+      TimeSeriesChart(
+        dataSets: [
+          TimeSeriesDataSet(
+            name: 'Nitrogen',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 35),
+              TimeSeriesData(DateTime(2025, 4, 8), 45),
+              TimeSeriesData(DateTime(2025, 4, 15), 60),
+              TimeSeriesData(DateTime(2025, 4, 22), 70),
+              TimeSeriesData(DateTime(2025, 4, 29), 65),
+            ],
+            color: Colors.green,
+            gradient: LinearGradient(
+              colors: [Colors.green, Colors.greenAccent],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          TimeSeriesDataSet(
+            name: 'Phosphorus',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 45),
+              TimeSeriesData(DateTime(2025, 4, 8), 50),
+              TimeSeriesData(DateTime(2025, 4, 15), 40),
+              TimeSeriesData(DateTime(2025, 4, 22), 45),
+              TimeSeriesData(DateTime(2025, 4, 29), 55),
+            ],
+            color: Colors.blue,
+          ),
+          TimeSeriesDataSet(
+            name: 'Potassium',
+            data: [
+              TimeSeriesData(DateTime(2025, 4, 1), 55),
+              TimeSeriesData(DateTime(2025, 4, 8), 60),
+              TimeSeriesData(DateTime(2025, 4, 15), 65),
+              TimeSeriesData(DateTime(2025, 4, 22), 50),
+              TimeSeriesData(DateTime(2025, 4, 29), 60),
+            ],
+            color: Colors.orange,
+          ),
+        ],
+        showMarkers: true,
+        showArea: false,
+      ),
+
+      // 2) Donut chart (example growth stages)
+      DonutChart(
+        data: [
+          DonutChartData('Early Growth', 45, Colors.lightGreen[300]!),
+          DonutChartData('Leafy Growth', 30, Colors.green[400]!),
+          DonutChartData('Head Formation', 56, Colors.amber[300]!),
+          DonutChartData('Harvest Stage', 12, Colors.orange[400]!),
+        ],
+        title: 'Plant Growth Stages',
+        showLegend: true,
+        showLabels: true,
+        enableTooltip: true,
+      ),
+
+      // 3) Combination Chart (example env vs growth)
+      CombinationChart(
+        data: [
+          CombinationChartData('Week 1', 22.5, 26.2),
+          CombinationChartData('Week 2', 28.1, 28.5),
+          CombinationChartData('Week 3', 35.4, 29.8),
+          CombinationChartData('Week 4', 42.0, 27.1),
+          CombinationChartData('Week 5', 48.3, 25.9),
+          CombinationChartData('Week 6', 54.7, 26.8),
+          CombinationChartData('Week 7', 61.2, 28.2),
+          CombinationChartData('Week 8', 68.9, 26.5),
+        ],
+        title: "Environmental Factors vs Plant Growth",
+        xAxisTitle: "Time Period",
+        yAxisTitle: "Growth (%)",
+      ),
+    ];
 
     return GestureDetector(
-      onTap: widget.onClose,
+      onTap: widget.onClose, // tap outside closes
       child: Container(
         color: Colors.transparent,
         child: Center(
           child: GestureDetector(
-            onTap: () {},
+            onTap: () {}, // block inside taps from closing
             child: Container(
               width: MediaQuery.of(context).size.width * 0.85,
               height: MediaQuery.of(context).size.height * 0.8,
@@ -95,197 +153,46 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
                   ),
                   const SizedBox(height: 15),
 
-                  // Stat cards
-                  FutureBuilder<AgrivisionSummary>(
-                    future: _summaryFuture,
-                    builder: (context, snap) {
-                      final loading =
-                          snap.connectionState != ConnectionState.done;
-                      final hasData = snap.hasData && snap.data != null;
-
-                      final totalDetections =
-                          hasData ? snap.data!.totalCount : 0;
-                      final healthyCount =
-                          hasData ? snap.data!.healthyCount : 0;
-                      final diseaseCount =
-                          hasData ? snap.data!.diseaseTotalCount : 0;
-
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildStatCard(
-                            icon: Icons.camera_alt,
-                            value: loading ? '...' : '$totalDetections',
-                            label: 'Detections',
-                            color: Colors.green,
-                          ),
-                          _buildStatCard(
-                            icon: Icons.favorite,
-                            value: loading ? '...' : '$healthyCount',
-                            label: 'Healthy',
-                            color: Colors.blue,
-                          ),
-                          _buildStatCard(
-                            icon: Icons.warning_amber_rounded,
-                            value: loading ? '...' : '$diseaseCount',
-                            label: 'Disease',
-                            color: Colors.deepPurple,
-                          ),
-                        ],
-                      );
-                    },
+                  // ✅ OLD STYLE: static stat cards
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildStatCard(
+                        icon: Icons.eco,
+                        value: '14',
+                        label: 'Total Plants',
+                        color: Colors.green,
+                      ),
+                      _buildStatCard(
+                        icon: Icons.trending_up,
+                        value: '78%',
+                        label: 'Avg Growth',
+                        color: Colors.blue,
+                      ),
+                      _buildStatCard(
+                        icon: Icons.science,
+                        value: '6.2',
+                        label: 'pH Level',
+                        color: Colors.deepPurple,
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 20),
 
-                  // Graphs (3 stacked)
+                  // ✅ OLD STYLE: custom graphs section
                   Expanded(
-                    child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                      stream: _history.historyStream(
-                        appId: appId,
-                        days: 30,
-                        limit: 5000,
-                      ),
-                      builder: (context, historySnap) {
-                        if (historySnap.hasError) {
-                          return Center(
-                            child: Text(
-                              'Firestore error:\n${historySnap.error}',
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                          );
-                        }
-                        if (!historySnap.hasData) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-
-                        final docs = historySnap.data!.docs;
-
-                        final pointsTempGrowth = <DualAxisPoint>[];
-                        final pointsHumGrowth = <DualAxisPoint>[];
-
-                        for (final d in docs) {
-                          final r = d.data();
-
-                          final ts = r['timestamp'];
-                          if (ts is! Timestamp) continue;
-                          final time = ts.toDate();
-
-                          final growth = _history.getReadingValue(r, [
-                            'growth',
-                            'growth_value',
-                            'growthScore',
-                            'growth_score',
-                          ]);
-
-                          final temp = _history.getReadingValue(r, [
-                            'temp',
-                            'temperature',
-                            'temperature_c',
-                            'temp_c',
-                          ]);
-
-                          final hum = _history.getReadingValue(r, [
-                            'humidity',
-                            'hum',
-                            'humidity_percent',
-                          ]);
-
-                          if (growth != null && temp != null) {
-                            pointsTempGrowth
-                                .add(DualAxisPoint(time, temp, growth));
-                          }
-                          if (growth != null && hum != null) {
-                            pointsHumGrowth
-                                .add(DualAxisPoint(time, hum, growth));
-                          }
-                        }
-
-                        pointsTempGrowth
-                            .sort((a, b) => a.time.compareTo(b.time));
-                        pointsHumGrowth
-                            .sort((a, b) => a.time.compareTo(b.time));
-
-                        return FutureBuilder<AgrivisionSummary>(
-                          future: _summaryFuture,
-                          builder: (context, summarySnap) {
-                            if (summarySnap.hasError) {
-                              return Center(
-                                child: Text(
-                                  'API error:\n${summarySnap.error}',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.red),
-                                ),
-                              );
-                            }
-                            if (!summarySnap.hasData) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-
-                            final summary = summarySnap.data!;
-
-                            final growthPalette = <Color>[
-                              Colors.green.shade400,
-                              Colors.orange.shade400,
-                              Colors.blue.shade400,
-                              Colors.purple.shade400,
-                              Colors.red.shade400,
-                            ];
-
-                            final growthDonut = GraphDataHandler.toDonutData(
-                              classes: summary.growthClasses,
-                              counts: summary.growthCounts,
-                              palette: growthPalette,
-                            );
-
-                            return SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _graphCard(
-                                    child: DonutChart(
-                                      data: growthDonut,
-                                      title: 'Growth (Nutrition Classes)',
-                                      showLegend: true,
-                                      showLabels: true,
-                                      enableTooltip: true,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _graphCard(
-                                    height: 280,
-                                    child: DualAxisComboChart(
-                                      title: 'Temperature vs Growth',
-                                      leftName: 'Temperature (°C)',
-                                      rightName: 'Growth (%)',
-                                      points: pointsTempGrowth,
-                                      growthIsRatio: true,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _graphCard(
-                                    height: 280,
-                                    child: DualAxisComboChart(
-                                      title: 'Humidity vs Growth',
-                                      leftName: 'Humidity (%)',
-                                      rightName: 'Growth (%)',
-                                      points: pointsHumGrowth,
-                                      growthIsRatio: true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      },
+                    child: GraphsSection(
+                      title: 'Growth Analytics',
+                      graphs: growthGraphs,
+                      height: double.infinity,
+                      padding: EdgeInsets.zero,
                     ),
                   ),
 
                   const SizedBox(height: 15),
 
+                  // Footer gradient bar
                   Container(
                     height: 4,
                     decoration: BoxDecoration(
@@ -306,25 +213,6 @@ class _InfoBoxOverlayState extends State<InfoBoxOverlay> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _graphCard({required Widget child, double? height}) {
-    return Container(
-      height: height,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 
