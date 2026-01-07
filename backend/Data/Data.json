@@ -2,18 +2,18 @@
   "Model": {
     "Detection": {
       "path": "C:\\Users\\Fadhi Safeer\\OneDrive\\Documents\\Internship\\Agri hub\\backend\\Models\\LETTUCE_DETECTION_MODEL.pt",
-      "confidence": 0.7
+      "confidence": 0.82
     },
     "Growth": {
-      "path": "backend/Models/GROWTH_CLASSIFICATION_MODEL.pt",
+      "path": "backend\\Models\\GROWTH_CLASSIFICATION_MODEL.pt",
       "confidence": 0.8
     },
     "Health": {
-      "path": "backend/Models/HEALTH_CLASSIFICATION_MODEL.pt",
+      "path": "backend\\Models\\HEALTH_CLASSIFICATION_MODEL.pt",
       "confidence": 0.85
     },
     "Disease": {
-      "path": "backend/Models/DISEASE_CLASSIFICATION_MODEL.pt",
+      "path": "backend\\Models\\DISEASE_CLASSIFICATION_MODEL.pt",
       "confidence": 0.85
     },
     "Prediction": {
